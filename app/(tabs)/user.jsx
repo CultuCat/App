@@ -12,7 +12,7 @@ export default function Page() {
     },
     recuadroRojo: {
       width: 300, 
-      height: 190, 
+      height: 170, 
       backgroundColor: '#ff6961', 
       borderRadius: 30,
 
@@ -37,13 +37,14 @@ export default function Page() {
     },
     username: {
       textAlign: 'center',
-      marginTop: -90,
+      marginTop: -18,
       color: 'white',
       marginLeft: 20,
+      fontSize: 15,
     },
     punts: {
       marginLeft: 30,
-      marginTop: 30,
+      marginTop: -20,
       color: 'white',
       fontSize: 17,
       fontWeight: 'bold',
@@ -92,6 +93,28 @@ export default function Page() {
       marginTop:-30,
       
     },
+    friends: {
+      color: 'white',
+      fontWeight: 'bold',
+      marginLeft: 25,
+      marginTop: 10,
+      fontSize: 17,   
+    },
+    numfriends: {
+      color: 'white',
+      marginLeft: 220,
+      marginTop: -15,
+      fontWeight: 'bold',
+    },
+    followersButton: {
+      marginTop: -40,
+      marginRight: 80,
+    },
+    fotoFollowers: {
+      marginLeft: 220,
+      width: 15,
+      height: 15,
+    }
     
   });
 
@@ -114,10 +137,23 @@ export default function Page() {
                 'https://fotografias.antena3.com/clipping/cmsimages02/2018/04/27/15C4A825-FBD2-49FC-B669-AA3AA7C57CB6/98.jpg?crop=1920,1080,x0,y0&width=1900&height=1069&optimize=high&format=webply',
             }}
           />
-          <Text style={styles.punts}>Punts</Text>
-          <Text style= {styles.username}>clararubiio</Text>
-          <Text style={styles.numpunts}>33</Text>
-        </View>
+          <TouchableOpacity
+            style={styles.followersButton}
+            onPress={() => Alert.alert('Cannot press this one')}
+          >
+            <Image
+              style={styles.fotoFollowers}
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/512/1500/1500455.png',
+              }}
+            />
+          </TouchableOpacity>
+
+      
+      <Text style= {styles.username}>clararubiio</Text>
+      <Text style={styles.numpunts}>33</Text>
+      <Text style={styles.punts}>Punts</Text>
+      </View>
       </View>
       <Text style={styles.titles}>Favorite Tags</Text>
       <View style={styles.separator}/>
