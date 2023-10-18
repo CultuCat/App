@@ -4,12 +4,7 @@ import { Link } from 'expo-router';
 
 export default function Page() {
   const styles = StyleSheet.create({
-    boldtext: {
-      fontWeight: 'bold', 
-      fontSize: 16, 
-      marginLeft: 5,
-      marginTop: 5,
-    },
+
     recuadroRojo: {
       width: 300, 
       height: 170, 
@@ -33,7 +28,7 @@ export default function Page() {
       width: 20,
       height: 20,
       marginLeft: 330,
-      marginTop: -15,
+      marginTop: 7,
     },
     username: {
       textAlign: 'center',
@@ -50,7 +45,7 @@ export default function Page() {
       fontWeight: 'bold',
     },
     numpunts: {
-      marginLeft: 220,
+      marginLeft: 100,
       marginTop: 55,
       color: 'white',
       fontSize: 17,
@@ -61,7 +56,7 @@ export default function Page() {
       backgroundColor: 'black', 
       width: 200,
       alignSelf: 'center',
-      marginTop: 20,
+      marginTop: 30,
     },
     titles: {
       marginTop:20,
@@ -69,7 +64,7 @@ export default function Page() {
       fontWeight: 'bold',
     },
     rankingButton: {
-      width: 300, 
+      width: 130, 
       height: 40, 
       backgroundColor: 'transparent', 
       borderWidth: 1, 
@@ -78,56 +73,92 @@ export default function Page() {
       justifyContent: 'center',
       borderRadius: 6, 
       marginLeft: 40,
-      marginTop: 20,
+      marginTop: 60,
+    },
+    editButton: {
+      width: 130, 
+      height: 40, 
+      backgroundColor: 'transparent', 
+      borderWidth: 1, 
+      borderColor: 'black', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 6, 
+      marginLeft: 197,
+      marginTop: -81,
     },
     rankingText: {
       fontSize: 12, 
       marginRight: 20,
 
     },
+    editText: {
+      fontSize: 12, 
+      marginRight: 20,
+      
+
+    },
     fotoStar: {
       width: 15,
       height: 15,
-      marginLeft: 250,
-      marginBottom: 60,
-      marginTop:-30,
+      marginLeft: 145,
+      marginBottom: 55,
+      marginTop:-29,
+      
+    },
+    fotoProfile: {
+      width: 15,
+      height: 15,
+      marginLeft: 95,
+      marginBottom: -14,
+      
       
     },
     friends: {
       color: 'white',
       fontWeight: 'bold',
-      marginLeft: 25,
-      marginTop: 10,
+      marginLeft: 170,
+      marginTop: -20,
       fontSize: 17,   
     },
     numfriends: {
       color: 'white',
-      marginLeft: 220,
-      marginTop: -15,
+      marginLeft: 250,
+      marginTop: -25,
       fontWeight: 'bold',
+      fontSize: 17,
     },
     followersButton: {
       marginTop: -40,
       marginRight: 80,
     },
-    fotoFollowers: {
+    fotoVerificacio: {
       marginLeft: 220,
+      marginTop : -50,
       width: 15,
       height: 15,
-    }
+    },
+    separator2: {
+      height: 30,
+      backgroundColor: 'white', 
+      width: 0.5,
+      alignSelf: 'center',
+      marginTop: -25,
+    },
     
   });
 
   return (
     <View>
-      <Text style={styles.boldtext}> User page</Text>
-      <Image
-            style={styles.configuracio}
-            source={{
-              uri:
-                'https://images.vexels.com/media/users/3/153359/isolated/preview/f253c46ff6fb727415fc70750ac1fb6e-configuracion-del-sistema-icono-de-trazo-de-color.png',
-            }}
-          />
+      <TouchableOpacity onPress={() => Alert.alert('Cannot press this one')} >
+        <Image
+              style={styles.configuracio}
+              source={{
+                uri:
+                  'https://images.vexels.com/media/users/3/153359/isolated/preview/f253c46ff6fb727415fc70750ac1fb6e-configuracion-del-sistema-icono-de-trazo-de-color.png',
+              }}
+            />
+      </TouchableOpacity>
       <View style={styles.container}>
         <View style={styles.recuadroRojo}>
           <Image
@@ -136,36 +167,35 @@ export default function Page() {
               uri:
                 'https://fotografias.antena3.com/clipping/cmsimages02/2018/04/27/15C4A825-FBD2-49FC-B669-AA3AA7C57CB6/98.jpg?crop=1920,1080,x0,y0&width=1900&height=1069&optimize=high&format=webply',
             }}
-          />
-          <TouchableOpacity
-            style={styles.followersButton}
-            onPress={() => Alert.alert('Cannot press this one')}
-          >
+          /> 
             <Image
-              style={styles.fotoFollowers}
+              style={styles.fotoVerificacio}
               source={{
-                uri: 'https://cdn-icons-png.flaticon.com/512/1500/1500455.png',
+                uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
             />
-          </TouchableOpacity>
 
       
       <Text style= {styles.username}>clararubiio</Text>
       <Text style={styles.numpunts}>33</Text>
       <Text style={styles.punts}>Punts</Text>
+      <View style={styles.separator2}/>
+      <Text style={styles.numfriends}>20</Text>
+      <Text style={styles.friends}>Amics</Text>
+
       </View>
       </View>
-      <Text style={styles.titles}>Favorite Tags</Text>
+      <Text style={styles.titles}>Tags Favorites</Text>
       <View style={styles.separator}/>
-      <Text style={styles.titles}>Favorite Places</Text>
+      <Text style={styles.titles}>Llocs Favorits</Text>
       <View style={styles.separator}/>
-      <Text style={styles.titles}>Trophies</Text>
+      <Text style={styles.titles}>Trofeus</Text>
       <View style={styles.separator}/>
       <TouchableOpacity
         style={styles.rankingButton}
         onPress={() => Alert.alert('Cannot press this one')}
       >
-        <Text style={styles.rankingText}>Check ranking</Text>
+      <Text style={styles.rankingText}>Veure rànquing</Text>
       </TouchableOpacity>
       <Image
               style={styles.fotoStar}
@@ -173,7 +203,19 @@ export default function Page() {
                 uri:
                   'https://cdn-icons-png.flaticon.com/512/149/149220.png',
               }}
-          />
+      />
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => Alert.alert('Cannot press this one')}>
+          <Image
+              style={styles.fotoProfile}
+              source={{
+                uri:
+                  'https://cdn-icons-png.flaticon.com/512/1144/1144760.png',
+              }}
+        />
+      <Text style={styles.editText}>Editar perfil</Text>
+      </TouchableOpacity>
       <Link href={'/'} replace asChild>
         <Button title='Log out' />
       </Link>
