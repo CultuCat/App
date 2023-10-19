@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Button, StyleSheet, Image,TouchableOpacity } from 'react-native';
+import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router';
 
 export default function Page() {
@@ -56,7 +56,7 @@ export default function Page() {
       backgroundColor: 'black', 
       width: 200,
       alignSelf: 'center',
-      marginTop: 30,
+      marginTop: 35,
     },
     titles: {
       marginTop:20,
@@ -150,7 +150,8 @@ export default function Page() {
 
   return (
     <View>
-      <TouchableOpacity onPress={() => Alert.alert('Cannot press this one')} >
+      <Link href={'/(tabs)/(user)/configuracions'} asChild>
+      <TouchableOpacity >
         <Image
               style={styles.configuracio}
               source={{
@@ -159,6 +160,7 @@ export default function Page() {
               }}
             />
       </TouchableOpacity>
+      </Link>
       <View style={styles.container}>
         <View style={styles.recuadroRojo}>
           <Image
@@ -181,8 +183,11 @@ export default function Page() {
       <Text style={styles.punts}>Punts</Text>
       <View style={styles.separator2}/>
       <Text style={styles.numfriends}>20</Text>
-      <Text style={styles.friends}>Amics</Text>
-
+      <TouchableOpacity 
+        onPress={() => Alert.alert('Cannot press this one')}
+      >
+        <Text style={styles.friends}>Amics</Text>
+      </TouchableOpacity>
       </View>
       </View>
       <Text style={styles.titles}>Tags Favorites</Text>
@@ -204,21 +209,22 @@ export default function Page() {
                   'https://cdn-icons-png.flaticon.com/512/149/149220.png',
               }}
       />
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => Alert.alert('Cannot press this one')}>
-          <Image
-              style={styles.fotoProfile}
-              source={{
-                uri:
-                  'https://cdn-icons-png.flaticon.com/512/1144/1144760.png',
-              }}
-        />
-      <Text style={styles.editText}>Editar perfil</Text>
-      </TouchableOpacity>
-      <Link href={'/'} replace asChild>
-        <Button title='Log out' />
+      <View>
+      <Link href={'/(tabs)/(user)/editprofile'} asChild>
+        <TouchableOpacity
+          style={styles.editButton}
+        >
+            <Image
+                style={styles.fotoProfile}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/1144/1144760.png',
+                }}
+          />
+        <Text style={styles.editText}>Editar perfil</Text>
+        </TouchableOpacity>
       </Link>
-    </View>
+      </View>
+      </View>
   );
 }

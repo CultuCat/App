@@ -35,8 +35,9 @@ export default function Layout() {
           tabBarIcon: ({ size, color }) => <Ionicons name="ios-chatbox" size={size} color={color} />,
         }} />
       <Tabs.Screen
-        name="user"
+        name="(user)"
         options={{
+          headerShown: false,
           tabBarIcon: ({ size, color }) => <Ionicons name="ios-person" size={size} color={color} />,
         }} />
     </Tabs>
