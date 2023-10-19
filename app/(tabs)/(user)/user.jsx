@@ -46,7 +46,7 @@ export default function Page() {
     },
     numpunts: {
       marginLeft: 100,
-      marginTop: 55,
+      marginTop: 65,
       color: 'white',
       fontSize: 17,
       fontWeight: 'bold',
