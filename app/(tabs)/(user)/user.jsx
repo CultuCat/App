@@ -150,7 +150,7 @@ export default function Page() {
 
   return (
     <View>
-      <Link href={'/(tabs)/(user)/configuracions'} asChild>
+      <Link href={'/(tabs)/(user)/configuration'} asChild>
       <TouchableOpacity >
         <Image
               style={styles.configuracio}
