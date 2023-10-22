@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
       marginTop: -39
     },
     searchBarInputContainer: {
-      width: 300,
+      width: 290,
       height: 30,
       borderWidth: 0,
       marginBottom: 10,
