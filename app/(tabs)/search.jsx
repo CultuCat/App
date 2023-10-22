@@ -1,38 +1,9 @@
-import React from 'react';
+import React,  { useState }  from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
+import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
-  const DATA = [
-    {
-      id: '1',
-      title: 'Barcelona Tech',
-      data: 'dg, 22 octubre',
-      ubicacion: 'Barcelona',
-      image: require('../../assets/teatro.png')
-    },
-    {
-      id: '2',
-      title: 'Rooftop Party',
-      data: 'dg, 22 octubre',
-      ubicacion: 'Barcelona',
-      image: require('../../assets/rooftop.png')
-    },
-    {
-      id: '3',
-      title: 'Fira Àpat',
-      data: 'dg, 22 octubre',
-      ubicacion: 'Tarragona',
-      image: require('../../assets/rooftop.png')
-    },
-    {
-      id: '4',
-      title: 'Obra Romeu i Julieta',
-      data: 'dg, 22 octubre',
-      ubicacion: 'Reus',
-      image: require('../../assets/teatro.png')
-    }
-  ];
 
   const Item = ({ title, ubicacion, data, image }) => (
     <TouchableOpacity style={styles.item}>
@@ -51,20 +22,58 @@ export default function Page() {
     </TouchableOpacity>
   );
 
+  state = {
+    search: '',
+  };
+  const [search, setSearch] = useState('');
+  const updateSearch = (text) => {
+    setSearch(text); 
+  };
+   
+    const DATA = [
+      {
+        id: '1',
+        title: 'Barcelona Tech',
+        data: 'dg, 22 octubre',
+        ubicacion: 'Barcelona',
+        image: require('../../assets/teatro.png')
+      },
+      {
+        id: '2',
+        title: 'Rooftop Party',
+        data: 'dg, 22 octubre',
+        ubicacion: 'Barcelona',
+        image: require('../../assets/rooftop.png')
+      },
+      {
+        id: '3',
+        title: 'Fira Àpat',
+        data: 'dg, 22 octubre',
+        ubicacion: 'Tarragona',
+        image: require('../../assets/rooftop.png')
+      },
+      {
+        id: '4',
+        title: 'Obra Romeu i Julieta',
+        data: 'dg, 22 octubre',
+        ubicacion: 'Reus',
+        image: require('../../assets/teatro.png')
+      }
+    ];
+  
+ const filteredData = DATA.filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity>
-      <MaterialIcons
-        style={styles.camera}
-        name="search"
-        
+      
+      <SearchBar
+        inputContainerStyle={styles.searchBarInputContainer}
+        placeholder="Type Here..."
+        onChangeText={updateSearch}
+        value={search}
+        platform="ios"
+        containerStyle={styles.searchBarContainer}
       />
-      </TouchableOpacity>
-      <TextInput
-          style={styles.input2}
-          placeholder="search.."
-          
-      />
+       
       <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons
           name="filter-list"
@@ -81,7 +90,7 @@ export default function Page() {
       </TouchableOpacity>
 
       <FlatList
-        data={DATA}
+        data={filteredData}
         renderItem={({ item }) => (
           <Item title={item.title} data={item.data} ubicacion={item.ubicacion} image={item.image} />
         )}
@@ -90,6 +99,8 @@ export default function Page() {
     </SafeAreaView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -178,6 +189,21 @@ const styles = StyleSheet.create({
       borderColor: 'black',
       borderWidth: 1, 
       marginTop: -39
-    }
+    },
+    searchBarInputContainer: {
+      width: 300,
+      height: 30,
+      borderWidth: 0,
+      marginBottom: 10,
+      padding: 10,
+      marginTop: 5,
+      marginLeft: 20,
+      borderRadius: 15,
+      default: 'ios',
+    },
+    searchBarContainer: {
+      backgroundColor: 'transparent', 
+    },
   
 });
+
