@@ -17,7 +17,7 @@ export default function Page() {
   fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    const url = `http://nattech.fib.upc.edu:40401/spaces/?latitud=41.3927672&longitud=2.057617&num_objs=5`;
+    const url = `http://nattech.fib.upc.edu:40401/spaces/?latitud=${region.latitud}&longitud=${region.longitude}&num_objs=10`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
