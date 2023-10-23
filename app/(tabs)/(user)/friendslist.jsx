@@ -26,22 +26,22 @@ export default function Page() {
       {
         id: '1',
         title: 'Avril Rubio',
-        image: require('../../../assets/teatro.png')
+        image: require('../../../assets/user.png')
       },
       {
         id: '2',
         title: 'Selena Gomez',
-        image: require('../../../assets/rooftop.png')
+        image: require('../../../assets/user.png')
       },
       {
         id: '3',
         title: 'Angelo Peluso',
-        image: require('../../../assets/rooftop.png')
+        image: require('../../../assets/user.png')
       },
       {
         id: '4',
         title: 'Taylor Swift',
-        image: require('../../../assets/teatro.png')
+        image: require('../../../assets/user.png')
       }
     ];
   
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   image: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     marginRight: 10,
     borderRadius: 40
   },
@@ -93,8 +93,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 19,
+    marginTop: 7,
+    marginLeft: 10,
   },
  
     searchBarInputContainer: {
