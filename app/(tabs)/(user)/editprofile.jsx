@@ -1,13 +1,19 @@
 import React , { useState } from 'react';
 import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react-native';
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import SelectDropdown from 'react-native-select-dropdown'
 import { Link } from 'expo-router';
+
 
 export default function Page() {
   const genere = ["Dona", "Home", "Altre"]
   const [name, setName] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [password, setPassword] = useState(''); 
+  const [showPassword, setShowPassword] = useState(false); 
+  const toggleShowPassword = () => { 
+      setShowPassword(!showPassword); 
+  };
 
   const styles = StyleSheet.create({
     fotoProfile: {
@@ -51,17 +57,7 @@ export default function Page() {
       marginLeft: 150,
       borderRadius: 15,
     },
-    input3: {
-      width: 200,
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginBottom: 10,
-      padding: 10,
-      marginTop: 40,
-      marginLeft: 150,
-      borderRadius: 15,
-    },
+    
     username: {
       fontWeight: 'bold',
       marginLeft: 50,
@@ -76,7 +72,14 @@ export default function Page() {
     genere: {
       fontWeight: 'bold',
       marginLeft: 50,
-      marginTop: -35,
+      marginTop: -30,
+      
+    },
+    contrasenya: {
+      fontWeight: 'bold',
+      marginLeft: 50,
+      marginTop: -25,
+      marginBottom: 34,
     },
     cancelButton: {
       width: 130, 
@@ -88,7 +91,8 @@ export default function Page() {
       justifyContent: 'center',
       borderRadius: 6, 
       marginLeft: 40,
-      marginTop: 50,
+      marginTop: 20,
+      marginBottom: 10,
     },
     saveButton: {
       width: 130, 
@@ -100,8 +104,36 @@ export default function Page() {
       justifyContent: 'center',
       borderRadius: 6, 
       marginLeft: 220,
-      marginTop: -40,
+      marginTop: -50,
+      
     },
+    container: { 
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      backgroundColor: '#f3f3f3', 
+      borderRadius: 8, 
+      paddingHorizontal: 14, 
+      marginTop: 20,
+  },
+    icon: {
+      marginTop: 15,
+      marginLeft: 10,
+      
+    },
+    input3: {
+      color: '#333', 
+      paddingVertical: 10, 
+      padding: 10, 
+      fontSize: 12, 
+      marginLeft: 140,
+      borderColor: 'gray',
+      borderWidth: 1,
+      borderRadius: 15,
+      marginTop: 20,
+      width: 170,
+    }
+    
   });
 
   return (
@@ -143,16 +175,25 @@ export default function Page() {
     />
     </View>
     <Text style= {styles.genere}>Gènere: </Text>
-    <TextInput
-        style={styles.input3}
-        placeholder="*******"
-      
-    />
-    <MaterialIcons
-        style={styles.lock}
-        name="lock"
-        
-      />
+    <View style={styles.container}> 
+      <TextInput 
+          style={styles.input3} 
+          secureTextEntry={!showPassword} 
+          value={password} 
+          onChangeText={setPassword} 
+          placeholder="Change Password"
+          placeholderTextColor="#aaa"
+          
+          /> 
+        <MaterialCommunityIcons 
+          name={showPassword ? 'eye' : 'eye-off'} 
+          size={24} 
+          color="#aaa"
+          style={styles.icon} 
+          onPress={toggleShowPassword} 
+        />                
+    </View> 
+    <Text style= {styles.contrasenya}>Contrasenya: </Text>
     <Link href={'(user)/user'} replace asChild>
     <TouchableOpacity
         style={styles.cancelButton}
