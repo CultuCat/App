@@ -42,6 +42,7 @@ export default function Page() {
 
   const handleLogout = () => {
     toggleModal();
+    async()=> await AsyncStorage.removeItem("@user")
     navigation.navigate('index');
   };
 
