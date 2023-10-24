@@ -183,11 +183,12 @@ export default function Page() {
       <Text style={styles.punts}>Punts</Text>
       <View style={styles.separator2}/>
       <Text style={styles.numfriends}>20</Text>
-      <TouchableOpacity 
-        onPress={() => Alert.alert('Cannot press this one')}
-      >
-        <Text style={styles.friends}>Amics</Text>
-      </TouchableOpacity>
+
+      <Link href={'/(tabs)/(user)/friendslist'} asChild>
+        <TouchableOpacity >
+          <Text style={styles.friends}>Amics</Text>
+        </TouchableOpacity>
+      </Link>
       </View>
       </View>
       <Text style={styles.titles}>Tags Favorites</Text>

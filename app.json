@@ -16,13 +16,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.anonymous.App"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ff6961"
-      }
+        "backgroundColor": "#ff6961",
+        "googleServicesFile": "./google-services.json"
+      },
+      "package": "com.anonymous.App"
     },
     "web": {
       "favicon": "./assets/favicon.png"
