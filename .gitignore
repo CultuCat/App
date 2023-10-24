@@ -36,3 +36,7 @@ yarn-error.*
 
 #environment
 .vscode/
+
+#build
+android/
+ios/

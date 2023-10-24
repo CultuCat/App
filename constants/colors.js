@@ -5,4 +5,5 @@ export default {
     white: '#ffffff',
     black: '#000000',
     tapIconDefault: '#e0e0e0',
+    greyText: 'rgba(0, 0, 0, 0.5)',
 }
