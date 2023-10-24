@@ -1,10 +1,17 @@
-import React,  { useState }  from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
-import { MaterialIcons } from "@expo/vector-icons";
+import React, { useState, useEffect } from 'react';
+import {
+  Text,
+  View,
+  FlatList,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
-
   const Item = ({ title, ubicacion, data, image }) => (
     <TouchableOpacity style={styles.item}>
       <Image source={image} style={styles.image} />
@@ -13,102 +20,77 @@ export default function Page() {
         <Text style={styles.data}>{data}</Text>
         <Text style={styles.ubicacion}>{ubicacion}</Text>
         <TouchableOpacity>
-          <MaterialIcons
-          style={styles.ticket}
-          name="local-activity"    
-          />
+          <MaterialIcons style={styles.ticket} name="local-activity" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
-  state = {
-    search: '',
-  };
   const [search, setSearch] = useState('');
-  const updateSearch = (text) => {
-    setSearch(text); 
-  };
-   
-    const DATA = [
-      {
-        id: '1',
-        title: 'Barcelona Tech',
-        data: 'dg, 22 octubre',
-        ubicacion: 'Barcelona',
-        image: require('../../assets/teatro.png')
-      },
-      {
-        id: '2',
-        title: 'Rooftop Party',
-        data: 'dg, 22 octubre',
-        ubicacion: 'Barcelona',
-        image: require('../../assets/rooftop.png')
-      },
-      {
-        id: '3',
-        title: 'Fira Àpat',
-        data: 'dg, 22 octubre',
-        ubicacion: 'Tarragona',
-        image: require('../../assets/rooftop.png')
-      },
-      {
-        id: '4',
-        title: 'Obra Romeu i Julieta',
-        data: 'dg, 22 octubre',
-        ubicacion: 'Reus',
-        image: require('../../assets/teatro.png')
-      }
-    ];
-  
- const filteredData = DATA.filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/events/', {
+      method: "GET"
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      })
+      .then((dataFromServer) => {
+        setData(dataFromServer.results);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const filteredData = data.filter((item) =>
+    item.nom.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
         placeholder="Type Here..."
-        onChangeText={updateSearch}
+        onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
       />
-       
+
       <TouchableOpacity style={styles.filtersButton}>
-        <MaterialIcons
-          name="filter-list"
-          style={styles.filtersIcon}
-        />
+        <MaterialIcons name="filter-list" style={styles.filtersIcon} />
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.mapButton}>
-        <MaterialIcons
-          name="location-on"
-          style={styles.location}
-        />
+        <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
 
       <FlatList
         data={filteredData}
         renderItem={({ item }) => (
-          <Item title={item.title} data={item.data} ubicacion={item.ubicacion} image={item.image} />
+          <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} />
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
     </SafeAreaView>
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ffffff',
   },
   item: {
     backgroundColor: '#e0e0e0',
-    padding: 15,
+    padding: 14,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 20,
@@ -119,7 +101,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     marginRight: 10,
-    borderRadius: 10
+    borderRadius: 10,
+    marginTop: 5,
   },
   itemText: {
     flex: 1,
@@ -188,7 +171,8 @@ const styles = StyleSheet.create({
       marginLeft: 120,
       borderColor: 'black',
       borderWidth: 1, 
-      marginTop: -39
+      marginTop: -39,
+      marginBottom: 8,
     },
     searchBarInputContainer: {
       width: 290,
