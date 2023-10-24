@@ -1,6 +1,7 @@
 import React,  { useState }  from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
@@ -21,6 +22,11 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
+
+  const navigation = useNavigation();
+  const handlePress = () => {
+    navigation.navigate('map');
+  };
 
   state = {
     search: '',
@@ -81,7 +87,7 @@ export default function Page() {
         />
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.mapButton}>
+      <TouchableOpacity style={styles.mapButton} onPress={handlePress}>
         <MaterialIcons
           name="location-on"
           style={styles.location}
