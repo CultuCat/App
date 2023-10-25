@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Text,
-  View,
-  FlatList,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
+import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
@@ -25,6 +18,16 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
+
+
+  const navigation = useNavigation();
+  const handlePress = () => {
+    navigation.navigate('map');
+  };
+
+  state = {
+    search: '',
+  };
 
   const [search, setSearch] = useState('');
   const [data, setData] = useState([]);
@@ -67,7 +70,8 @@ export default function Page() {
         <MaterialIcons name="filter-list" style={styles.filtersIcon} />
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.mapButton}>
+
+      <TouchableOpacity style={styles.mapButton} onPress={handlePress}>
         <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
