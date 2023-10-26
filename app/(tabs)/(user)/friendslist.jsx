@@ -1,10 +1,8 @@
-import React,  { useState }  from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
-import { MaterialIcons } from "@expo/vector-icons";
+import React, { useState, useEffect } from 'react';
+import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
-
   const Item = ({ title, image }) => (
     <TouchableOpacity style={styles.item}>
       <Image source={image} style={styles.image} />
@@ -14,41 +12,38 @@ export default function Page() {
     </TouchableOpacity>
   );
 
-  state = {
-    search: '',
-  };
   const [search, setSearch] = useState('');
   const updateSearch = (text) => {
-    setSearch(text); 
+    setSearch(text);
   };
-   
-    const DATA = [
-      {
-        id: '1',
-        title: 'Avril Rubio',
-        image: require('../../../assets/user.png')
-      },
-      {
-        id: '2',
-        title: 'Selena Gomez',
-        image: require('../../../assets/user.png')
-      },
-      {
-        id: '3',
-        title: 'Angelo Peluso',
-        image: require('../../../assets/user.png')
-      },
-      {
-        id: '4',
-        title: 'Taylor Swift',
-        image: require('../../../assets/user.png')
-      }
-    ];
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/users/', {
+      method: "GET"
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      })
+      .then((dataFromServer) => {
+        setData(dataFromServer);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const filteredData = data.filter((item) =>
+    item.username.toLowerCase().includes(search.toLowerCase())
+  );
   
- const filteredData = DATA.filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
   return (
     <SafeAreaView style={styles.container}>
-      
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
         placeholder="Type Here..."
@@ -56,19 +51,18 @@ export default function Page() {
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
-      />    
+      />
 
       <FlatList
         data={filteredData}
         renderItem={({ item }) => (
-          <Item title={item.title} data={item.data} ubicacion={item.ubicacion} image={item.image} />
+          <Item title={item.username} image={{ uri: item.imatge[0] }} />
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -97,21 +91,18 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginLeft: 10,
   },
- 
-    searchBarInputContainer: {
-      width: 290,
-      height: 30,
-      borderWidth: 0,
-      marginBottom: 10,
-      padding: 10,
-      marginTop: 5,
-      marginLeft: 20,
-      borderRadius: 15,
-      default: 'ios',
-    },
-    searchBarContainer: {
-      backgroundColor: 'transparent', 
-    },
-  
-});
 
+  searchBarInputContainer: {
+    width: 290,
+    height: 30,
+    borderWidth: 0,
+    marginBottom: 10,
+    padding: 10,
+    marginTop: 5,
+    marginLeft: 20,
+    borderRadius: 15,
+  },
+  searchBarContainer: {
+    backgroundColor: 'transparent',
+  },
+});
