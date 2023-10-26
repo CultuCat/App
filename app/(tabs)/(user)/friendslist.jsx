@@ -56,7 +56,7 @@ export default function Page() {
       <FlatList
         data={filteredData}
         renderItem={({ item }) => (
-          <Item title={item.username} image={{ uri: item.imatge[0] }} />
+          <Item title={item.username} image={{ uri: item.imatge}} />
         )}
         keyExtractor={(item) => item.id}
       />
