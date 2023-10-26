@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router';
+import { useState, useEffect } from 'react';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -56,7 +57,7 @@ export default function Page() {
       backgroundColor: 'black', 
       width: 200,
       alignSelf: 'center',
-      marginTop: 35,
+      marginTop: 15,
     },
     titles: {
       marginTop:20,
@@ -73,7 +74,7 @@ export default function Page() {
       justifyContent: 'center',
       borderRadius: 6, 
       marginLeft: 40,
-      marginTop: 60,
+      marginTop: 40,
     },
     editButton: {
       width: 130, 
@@ -94,9 +95,11 @@ export default function Page() {
     },
     editText: {
       fontSize: 12, 
-      marginRight: 20,
-      
+      marginRight: 20,    
 
+    },
+    bio: {
+      marginLeft: 100,
     },
     fotoStar: {
       width: 15,
@@ -147,6 +150,29 @@ export default function Page() {
     },
     
   });
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Hacer una solicitud GET para obtener el perfil del usuario usando fetch
+    fetch('http://127.0.0.1:8000/users/7/')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUser(data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener el perfil del usuario:', error);
+      });
+  }, []);
+
+  if (!user) {
+    return <Text>Cargando...</Text>;
+  }
+
 
   return (
     <View>
@@ -167,7 +193,7 @@ export default function Page() {
             style={styles.fotoLogo}
             source={{
               uri:
-                'https://fotografias.antena3.com/clipping/cmsimages02/2018/04/27/15C4A825-FBD2-49FC-B669-AA3AA7C57CB6/98.jpg?crop=1920,1080,x0,y0&width=1900&height=1069&optimize=high&format=webply',
+              user.imatge,
             }}
           /> 
             <Image
@@ -178,8 +204,8 @@ export default function Page() {
             />
 
       
-      <Text style= {styles.username}>clararubiio</Text>
-      <Text style={styles.numpunts}>33</Text>
+      <Text style= {styles.username}>{user.username}</Text>
+      <Text style={styles.numpunts}>{user.puntuacio}</Text>
       <Text style={styles.punts}>Punts</Text>
       <View style={styles.separator2}/>
       <Text style={styles.numfriends}>20</Text>
@@ -191,6 +217,9 @@ export default function Page() {
       </Link>
       </View>
       </View>
+      <Text style={styles.titles}>Bio</Text>
+      <Text style={styles.bio}>{user.bio}</Text>
+      <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
