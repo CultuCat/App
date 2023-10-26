@@ -2,7 +2,6 @@ import React from 'react';
 import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import ShareMenu from './components/shareMenu.jsx';
 import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
@@ -10,8 +9,49 @@ import Comment from './components/comment.jsx';
 
 export default function Page() {
 
-  const handleMaps = () => {
-    const mapUrl = "https://maps.google.com/?q=41.637325,2.1574353";
+  const [event, setEvent] = useState([]);
+  const [commentsEvent, setComments] = useState([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/events/20231011039/', {
+      method: "GET"
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      })
+      .then((dataFromServer) => {
+        setEvent(dataFromServer);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/comments/?event=20231011039/', {
+      method: "GET"
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      })
+      .then((dataFromServer) => {
+        setComments(dataFromServer);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const handleMaps = () => { //"https://maps.google.com/?q=41.637325,2.1574353"
+    const mapUrl = `https://maps.google.com/?q=${event.latitud},${event.longitud}`;
 
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
@@ -24,8 +64,7 @@ export default function Page() {
           <ImageBackground
             style={styles.fotoLogo}
             source={{
-              uri:
-                'https://paral-lel62.cat/wp-content/uploads/2023/09/maxresdefault.jpg',
+              uri: event.imatges_list[0],
             }}
           >
             <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]}>
@@ -42,12 +81,12 @@ export default function Page() {
           </ImageBackground>
         </View>
         <View style={{ marginHorizontal: '7.5%' }}>
-          <Text style={styles.title}>The Tyets</Text>
-          <Text style={{ color: '#ff6961' }}>dv, 10 novembre</Text>
-          <Text>Balaguer</Text>
+          <Text style={styles.title}>{event.nom}</Text>
+          <Text style={{ color: '#ff6961' }}>{event.dataIni}</Text>
+          <Text>{event.espai}</Text>
           <Chip text="Music" color="#d2d0d0"></Chip>
           <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
-          <Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eget aliquet odio. Integer fringilla turpis vitae purus ultricies, nec bibendum dolor fermentum. Sed venenatis massa a justo venenatis, sit amet scelerisque augue bibendum. Vivamus luctus, justo sit amet interdum tincidunt, arcu libero tincidunt ipsum, non feugiat urna ex at risus. Nulla facilisi. Vestibulum tincidunt quam in quam laoreet, ac aliquam felis volutpat. Curabitur vel metus ut libero efficitur tincidunt. Sed non ligula eu est dignissim scelerisque. Curabitur ultricies lectus eget laoreet tincidunt. Vivamus in justo varius, posuere orci at, egestas metus.</Text>
+          <Text>{event.descripcio}</Text>
           <View style={{ marginVertical: 10 }}>
             <TouchableOpacity style={styles.accionButton}>
               <Text style={{ margin: 10 }}>Veure usuaris que asisteixen a l'event</Text>
@@ -62,16 +101,16 @@ export default function Page() {
           <Text style={styles.subtitle}>Comentaris</Text>
           <CommentForm></CommentForm>
           <FlatList
-            data={comments}
+            data={commentsEvent.results}
             renderItem={({ item }) => (
-              <Comment username={item.username} data={item.time} text={item.text} />
+              <Comment username={item.user} time={item.created_at} text={item.text} />
             )}
             keyExtractor={item => item.id}
           />
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
-        <Text style={styles.price}>18.00€</Text>
+        <Text style={styles.price}>{event.preu ? event.preu : 'Preu no disponible'}</Text>
         <TouchableOpacity style={styles.buyButton}>
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
@@ -79,19 +118,6 @@ export default function Page() {
     </View>
   );
 }
-
-const comments = [
-  {
-    username: "Ericriiera",
-    time: "today",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac sapien quis libero ullamcorper varius. In ut turpis id quam auctor porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nullam auctor bibendum justo, a rhoncus turpis hendrerit ac. Maecenas id tellus sed dolor tempus congue. Nunc at diam vel massa mattis elementum ac a dolor. Nulla facilisi. Sed in lacinia nunc. Quisque vel justo euismod, feugiat arcu ac, efficitur ipsum. Sed vulputate mi id odio consequat, sit amet varius neque rhoncus. Integer eu sollicitudin libero."
-  },
-  {
-    username: "Marc",
-    time: "today",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac sapien quis libero ullamcorper varius. In ut turpis id quam auctor porta. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nullam auctor bibendum justo, a rhoncus turpis hendrerit ac. Maecenas id tellus sed dolor tempus congue. Nunc at diam vel massa mattis elementum ac a dolor. Nulla facilisi. Sed in lacinia nunc. Quisque vel justo euismod, feugiat arcu ac, efficitur ipsum. Sed vulputate mi id odio consequat, sit amet varius neque rhoncus. Integer eu sollicitudin libero."
-  }
-]
 
 const styles = StyleSheet.create({
   container: {
