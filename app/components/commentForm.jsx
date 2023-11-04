@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
-const CommentForm = () => {
+const CommentForm = ({ eventId }) => {
     const [comment, setComment] = useState('');
 
     const handleSubmit = () => {
         const data = {
-            user: 1,
-            event: 20231011039,
+            event: eventId,
             text: comment
         };
         fetch('http://127.0.0.1:8000/comments', {
@@ -18,16 +17,16 @@ const CommentForm = () => {
             body: JSON.stringify(data),
         })
         .then((response) => {
-            if (response.status === 201) { // 201 es el código de respuesta para una creación exitosa.
+            if (response.status === 201) {
                 return response.json();
             } else {
                 throw new Error('Error al enviar el comentario');
             }
         })
         .then((responseData) => {
-            // Puedes manejar la respuesta de la solicitud POST aquí si es necesario.
             console.log('Comentario enviado:', responseData);
-            setComment(''); // Limpiar el campo de comentario después de enviarlo con éxito.
+            setComment(''); 
+            fetchComments(); 
         })
         .catch((error) => {
             console.error('Error:', error);

@@ -12,8 +12,27 @@ export default function Page() {
   const [event, setEvent] = useState([]);
   const [commentsEvent, setComments] = useState([]);
 
+  const fetchComments = () => {
+    fetch('http://127.0.0.1:8000/comments/?event=' + event.id, {
+      method: 'GET'
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error in the request');
+        }
+      })
+      .then((dataFromServer) => {
+        setComments(dataFromServer);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/20231011039/', {
+    fetch('http://127.0.0.1:8000/events/' + event.id, {
       method: "GET"
     })
       .then((response) => {
@@ -32,22 +51,7 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/comments/?event=20231011039/', {
-      method: "GET"
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Error en la solicitud');
-        }
-      })
-      .then((dataFromServer) => {
-        setComments(dataFromServer);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    fetchComments();
   }, []);
 
   const handleMaps = () => { //"https://maps.google.com/?q=41.637325,2.1574353"
@@ -99,7 +103,7 @@ export default function Page() {
             </TouchableOpacity>
           </View>
           <Text style={styles.subtitle}>Comentaris</Text>
-          <CommentForm></CommentForm>
+          <CommentForm eventId={event.id} fetchComments={fetchComments} />
           <FlatList
             data={commentsEvent.results}
             renderItem={({ item }) => (
