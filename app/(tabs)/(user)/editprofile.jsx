@@ -1,19 +1,16 @@
 import React , { useState } from 'react';
-import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react-native';
+import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput, Switch} from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import SelectDropdown from 'react-native-select-dropdown'
 import { Link } from 'expo-router';
 
 
 export default function Page() {
-  const genere = ["Dona", "Home", "Altre"]
-  const [name, setName] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [password, setPassword] = useState(''); 
-  const [showPassword, setShowPassword] = useState(false); 
-  const toggleShowPassword = () => { 
-      setShowPassword(!showPassword); 
-  };
+  const [first_name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [username, setUsername] = useState(''); 
+  const [initialVisibility, setInitialVisibility] = useState(true); 
+  const [visibility, setVisibility] = useState(initialVisibility);
 
   const styles = StyleSheet.create({
     fotoProfile: {
@@ -91,7 +88,7 @@ export default function Page() {
       justifyContent: 'center',
       borderRadius: 6, 
       marginLeft: 40,
-      marginTop: 20,
+      marginTop: 25,
       marginBottom: 10,
     },
     saveButton: {
@@ -126,15 +123,56 @@ export default function Page() {
       paddingVertical: 10, 
       padding: 10, 
       fontSize: 12, 
-      marginLeft: 140,
+      marginLeft: 150,
       borderColor: 'gray',
       borderWidth: 1,
       borderRadius: 15,
+      marginTop: 40,
+      width: 200,
+      height: 80,
+    },
+    visibilitatText: {
+      fontWeight: 'bold',
+      marginLeft: -280,
       marginTop: 20,
-      width: 170,
+    },
+    visibilitatButton: {
+      marginTop: 20,
     }
     
   });
+
+  const handleSaveChanges = () => {
+    const updatedProfile = {
+      first_name: first_name,
+      bio: bio, 
+      username:username,
+      visibility: visibility,
+      
+    };
+
+    fetch('http://127.0.0.1:8000/users/7/', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedProfile),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Cambios guardados con éxito');
+        } else {
+          console.error('Error al guardar cambios en el perfil');
+        }
+      })
+      .then((dataFromServer) => {
+        setData(dataFromServer);
+      })
+      .catch((error) => {
+        console.error('Error en la solicitud:', error);
+      });
+  };
+
 
   return (
   <View>
@@ -154,46 +192,34 @@ export default function Page() {
     </TouchableOpacity>
     <TextInput
         style={styles.input}
-        placeholder="clararubiio"
+        placeholder="nou"
+        value={username}
+        onChangeText={(text) => setUsername(text)} 
        
     />
     <Text style= {styles.username}>Username: </Text>
     <TextInput
         style={styles.input2}
-        placeholder="clara rubio"
-        value={name}
+        placeholder=""
+        value={first_name}
         onChangeText={text => setName(text)}
     />
     <Text style= {styles.username}>Nom: </Text>
-    <View style={styles.pickerContainer}>
-    <SelectDropdown
-        style={styles.picker}
-        data={genere}
-	      onSelect={(selectedItem, index) => {
-		    console.log(selectedItem, index)
-	    }}
+    <TextInput
+        style={styles.input3}
+        placeholder=""
+        value={bio}
+        onChangeText={text => setBio(text)}
     />
+    <Text style= {styles.genere}>Bio: </Text>
+    <View style={styles.container}>
+    <Switch
+      style={styles.visibilitatButton}
+      value={visibility}
+      onValueChange={(newValue) => setVisibility(newValue)} 
+    />
+    <Text style={styles.visibilitatText}>Visibilitat: </Text>
     </View>
-    <Text style= {styles.genere}>Gènere: </Text>
-    <View style={styles.container}> 
-      <TextInput 
-          style={styles.input3} 
-          secureTextEntry={!showPassword} 
-          value={password} 
-          onChangeText={setPassword} 
-          placeholder="Change Password"
-          placeholderTextColor="#aaa"
-          
-          /> 
-        <MaterialCommunityIcons 
-          name={showPassword ? 'eye' : 'eye-off'} 
-          size={24} 
-          color="#aaa"
-          style={styles.icon} 
-          onPress={toggleShowPassword} 
-        />                
-    </View> 
-    <Text style= {styles.contrasenya}>Contrasenya: </Text>
     <Link href={'(user)/user'} replace asChild>
     <TouchableOpacity
         style={styles.cancelButton}
@@ -204,7 +230,7 @@ export default function Page() {
     
     <Link href={'(user)/user'} replace asChild>
     <TouchableOpacity
-        style={styles.saveButton}
+        style={styles.saveButton } onPress={handleSaveChanges}
       >
       <Text style={styles.rankingText}>Desar canvis</Text>
     </TouchableOpacity>
