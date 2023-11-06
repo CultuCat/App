@@ -23,6 +23,7 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
+  const [urldef, setUrldef] = useState('http://nattech.fib.upc.edu:40401/');
   const [customMarkers, setCustomMarkers] = useState([
     {
       latlng: { latitude: 41.3894491, longitude: 2.1107903 },
@@ -91,11 +92,10 @@ export default function Page() {
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    const url = `http://nattech.fib.upc.edu:40401/spaces/?latitud=${region.latitud}&longitud=${region.longitude}&num_objs=10`;
+    const url = `http://10.0.2.2:8000/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
     fetch(url)
-      .then((response) => response.json())
+    .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setCustomMarkers(
           data.map((item) => ({
             //key: item.id,
@@ -120,7 +120,22 @@ export default function Page() {
   const toggleEvents = (marker) => {
     if (marker) {
       setSelectedMarker(marker);
-      setEvents(marker.events);
+      const url = `http://10.0.2.2:8000/events/?espai=${marker.title}`;
+      console.log(url)
+      fetch(url)
+      .then((response) => response.json())
+        .then((data) => {
+            setEvents(
+              data.results.map((item) => ({
+                id: item.id,
+                title: item.nom,
+                data: item.dataIni,
+                ubicacion: item.espai,
+                image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : require('../assets/teatro.png'),
+              }))
+            );
+        })
+        .catch((error) => console.error(error));
     } else {
       setSelectedMarker(null);
       setEvents([]);
