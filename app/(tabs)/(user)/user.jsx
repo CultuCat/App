@@ -148,6 +148,15 @@ export default function Page() {
       alignSelf: 'center',
       marginTop: -25,
     },
+    botoFletxa: {
+      width: 10,
+      height: 10,
+    },
+    fletxaButton: {
+      borderColor: 'transparent',
+      marginLeft: 270,
+      marginTop: -10,
+    }
     
   });
   const [user, setUser] = useState(null);
@@ -221,10 +230,44 @@ export default function Page() {
       <Text style={styles.bio}>{user.bio}</Text>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxa}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
+      <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxa}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Trofeus</Text>
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxa}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
       <View style={styles.separator}/>
       <TouchableOpacity
         style={styles.rankingButton}
