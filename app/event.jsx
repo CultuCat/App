@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect,useState} from 'react';
 import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
@@ -11,9 +11,11 @@ export default function Page() {
 
   const [event, setEvent] = useState([]);
   const [commentsEvent, setComments] = useState([]);
-
+  const params = useLocalSearchParams();
+  const image = '';
+  
   const fetchComments = () => {
-    fetch('http://127.0.0.1:8000/comments/?event=' + event.id, {
+    fetch('http://127.0.0.1:8000/comments/?event=' + params.eventId, {
       method: 'GET'
     })
       .then((response) => {
@@ -32,7 +34,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/' + event.id, {
+    fetch('http://127.0.0.1:8000/events/' + params.eventId, {
       method: "GET"
     })
       .then((response) => {
@@ -47,8 +49,10 @@ export default function Page() {
       })
       .catch((error) => {
         console.error(error);
-      });
+      }); 
+      
   }, []);
+
 
   useEffect(() => {
     fetchComments();
@@ -60,20 +64,24 @@ export default function Page() {
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
-
+  if (event == []) {
+    return <Text>Cargando...</Text>;
+  }
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.imageContainer}>
-          <ImageBackground
-            style={styles.fotoLogo}
-            source={{
-              uri: event.imatges_list[0],
-            }}
-          >
+        {event && event.imatges_list && event.imatges_list.length > 0 ? (
+    <ImageBackground
+      style={styles.fotoLogo}
+      source={{
+        uri: event.imatges_list[0],
+      }}
+    >
+          
             <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]}>
               <Link href={'/(tabs)/home'} replace asChild>
-                <Ionicons name="ios-close-outline" size={36} color="black" />
+                <Ionicons name="ios-close-outline" size={36} color="black" /> 
               </Link>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
@@ -82,7 +90,10 @@ export default function Page() {
             <TouchableOpacity style={[styles.iconContainer, styles.shareIcon]} >
               <Ionicons name="share-social-outline" size={24} color="black" style={{ margin: 6 }} />
             </TouchableOpacity>
-          </ImageBackground>
+            </ImageBackground>
+            ) : (
+              <Text>No hay imágenes disponibles</Text>
+            )}
         </View>
         <View style={{ marginHorizontal: '7.5%' }}>
           <Text style={styles.title}>{event.nom}</Text>

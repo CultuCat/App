@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'expo-router';
-import { Text, Button, View } from 'react-native';
+import { Text, Button, View, TouchableOpacity } from 'react-native';
 
 export default function Page() {
     return (
         <View>
             <Text>Home page</Text>
-            <Link href={'/event'} replace asChild params={{ path: '/(tabs)/home' }}>
-                <Button title='Event' />
+            
+            <Link href={{ pathname: '/event', params: { path: '/(tabs)/home',  eventId: '20231011039' } }} replace asChild>
+            <Button title='Event' />
             </Link>
         </View>
     );
