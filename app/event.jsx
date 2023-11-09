@@ -80,7 +80,7 @@ export default function Page() {
     >
           
             <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]}>
-              <Link href={'/(tabs)/home'} replace asChild>
+              <Link href={'/(tabs)/search'} replace asChild>
                 <Ionicons name="ios-close-outline" size={36} color="black" /> 
               </Link>
             </TouchableOpacity>
@@ -121,7 +121,7 @@ export default function Page() {
               <Comment username={item.user} time={item.created_at} text={item.text} />
             )}
             keyExtractor={item => item.id}
-          />
+          />     
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    marginTop: 60,
   },
   imageContainer: {
     marginVertical: 20,

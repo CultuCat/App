@@ -17,7 +17,7 @@ export default function Layout() {
         <Stack.Screen
         name="event"
         options={{
-          //headerShown: false,
+          headerShown: false,
         }} />
     </Stack>
   );
