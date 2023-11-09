@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image }) => (
-    <TouchableOpacity style={styles.item}>
+  const Item = ({ title, ubicacion, data, image, id}) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
       <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
@@ -18,11 +18,32 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const loadMoreData = async () => {
+    if (loading) return;
+  
+    try {
+      setLoading(true);
+      const response = await fetch(`http://127.0.0.1:8000/events/?page=${page + 1}`);
+      const newData = await response.json();
+  
+      if (newData.results.length > 0) {
+        setData((prevData) => [...prevData, ...newData.results]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
 
   const navigation = useNavigation();
-  const handlePress = () => {
-    navigation.navigate('map');
+  const handlePress = (eventId) => {
+    navigation.navigate('event', { eventId });
   };
 
   state = {
@@ -77,12 +98,14 @@ export default function Page() {
       </TouchableOpacity>
 
       <FlatList
-        data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      data={filteredData}
+      renderItem={({ item }) => (
+        <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} id={item.id} />
+      )}
+      keyExtractor={(item) => item.id}
+      onEndReached={loadMoreData}
+      onEndReachedThreshold={0.1}
+    />
     </SafeAreaView>
   );
 }
@@ -194,4 +217,3 @@ const styles = StyleSheet.create({
     },
   
 });
-
