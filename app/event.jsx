@@ -6,6 +6,7 @@ import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
 import Comment from './components/comment.jsx';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Page() {
 
@@ -13,6 +14,7 @@ export default function Page() {
   const [commentsEvent, setComments] = useState([]);
   const params = useLocalSearchParams();
   const image = '';
+  const navigation = useNavigation();
   
   const fetchComments = () => {
     fetch('http://127.0.0.1:8000/comments/?event=' + params.eventId, {
@@ -79,10 +81,8 @@ export default function Page() {
       }}
     >
           
-            <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]}>
-              <Link href={'/(tabs)/search'} replace asChild>
-                <Ionicons name="ios-close-outline" size={36} color="black" /> 
-              </Link>
+          <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() =>navigation.goBack()}>
+               <Ionicons name="ios-close-outline" size={36} color="black" /> 
             </TouchableOpacity>
             <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
               <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
