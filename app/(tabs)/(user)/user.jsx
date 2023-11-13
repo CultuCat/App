@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
+import Chip from './components/chip.jsx';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -162,7 +163,6 @@ export default function Page() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Hacer una solicitud GET para obtener el perfil del usuario usando fetch
     fetch('http://127.0.0.1:8000/users/7/')
       .then((response) => {
         if (!response.ok) {
@@ -244,6 +244,7 @@ export default function Page() {
       <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
+      <Chip></Chip>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
