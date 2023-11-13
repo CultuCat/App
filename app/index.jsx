@@ -48,11 +48,42 @@ export default function Page() {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            const user = await response.json();
-            await AsyncStorage.setItem("@user", JSON.stringify(user));
-            setUserInfo(user);
+
+            if (response.ok) {
+                const user = await response.json();
+                await AsyncStorage.setItem("@user", JSON.stringify(user));
+                setUserInfo(user);
+
+                await postUserData(token);
+            } else {
+                console.error(`Error al obtener la información del usuario: ${response.status}`);
+            }
         } catch (e) {
-            console.log(e);
+            console.error(e);
+        }
+    };
+
+    const postUserData = async (token) => {
+        try {
+            const postResponse = await fetch(
+                "http://localhost:8000/users",
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({}),
+                }
+            );
+
+            if (postResponse.ok) {
+                console.log("Información del usuario enviada con éxito.");
+            } else {
+                console.error(`Error al enviar la información del usuario: ${postResponse.status}`);
+            }
+        } catch (e) {
+            console.error(e);
         }
     };
 
