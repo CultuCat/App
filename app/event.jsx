@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ export default function Page() {
   const params = useLocalSearchParams();
   const image = '';
   const navigation = useNavigation();
-  
+
   const fetchComments = () => {
     fetch('http://127.0.0.1:8000/comments/?event=' + params.eventId, {
       method: 'GET'
@@ -51,8 +51,8 @@ export default function Page() {
       })
       .catch((error) => {
         console.error(error);
-      }); 
-      
+      });
+
   }, []);
 
 
@@ -60,12 +60,18 @@ export default function Page() {
     fetchComments();
   }, []);
 
-  const handleMaps = () => { //"https://maps.google.com/?q=41.637325,2.1574353"
+  const handleMaps = () => {
     const mapUrl = `https://maps.google.com/?q=${event.latitud},${event.longitud}`;
 
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
+  const parsedPrice = (price) => {
+    if (price && price.includes('€'))
+      return price;
+    else return 'Gratuït'
+  };
+
   if (event == []) {
     return <Text>Cargando...</Text>;
   }
@@ -73,27 +79,26 @@ export default function Page() {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.imageContainer}>
-        {event && event.imatges_list && event.imatges_list.length > 0 ? (
-    <ImageBackground
-      style={styles.fotoLogo}
-      source={{
-        uri: event.imatges_list[0],
-      }}
-    >
-          
-          <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() =>navigation.goBack()}>
-               <Ionicons name="ios-close-outline" size={36} color="black" /> 
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
-              <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconContainer, styles.shareIcon]} >
-              <Ionicons name="share-social-outline" size={24} color="black" style={{ margin: 6 }} />
-            </TouchableOpacity>
+          {event && event.imatges_list && event.imatges_list.length > 0 ? (
+            <ImageBackground
+              style={styles.fotoLogo}
+              source={{
+                uri: event.imatges_list[0],
+              }}
+            >
+              <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+                <Ionicons name="ios-close-outline" size={36} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
+                <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconContainer, styles.shareIcon]} >
+                <Ionicons name="share-social-outline" size={24} color="black" style={{ margin: 6 }} />
+              </TouchableOpacity>
             </ImageBackground>
-            ) : (
-              <Text>No hay imágenes disponibles</Text>
-            )}
+          ) : (
+            <Text>No hay imágenes disponibles</Text>
+          )}
         </View>
         <View style={{ marginHorizontal: '7.5%' }}>
           <Text style={styles.title}>{event.nom}</Text>
@@ -121,11 +126,11 @@ export default function Page() {
               <Comment username={item.user} time={item.created_at} text={item.text} />
             )}
             keyExtractor={item => item.id}
-          />     
+          />
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
-        <Text style={styles.price}>{event.preu ? event.preu : 'Preu no disponible'}</Text>
+        <Text style={styles.price}>{parsedPrice(event.price)}</Text>
         <TouchableOpacity style={styles.buyButton}>
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
