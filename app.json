@@ -26,7 +26,12 @@
         "backgroundColor": "#ff6961",
         "googleServicesFile": "./google-services.json"
       },
-      "package": "com.anonymous.App"
+      "package": "com.anonymous.App",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDKNpDQG6YYQIBwYIAjbCxYAXMogsZSvYg"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

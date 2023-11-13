@@ -6,7 +6,7 @@ import { SearchBar } from 'react-native-elements';
 
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
+    <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
       <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
@@ -21,7 +21,10 @@ export default function Page() {
 
 
   const navigation = useNavigation();
-  const handlePress = (eventId) => {
+  const handlePressMap = () => {
+    navigation.navigate('map');
+  };
+  const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
 
@@ -71,7 +74,7 @@ export default function Page() {
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.mapButton} onPress={handlePress}>
+      <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
