@@ -83,7 +83,7 @@ export default function Page() {
           <ImageBackground
             style={styles.fotoLogo}
             source={{
-              uri: event && event.imatges_list && event.imatges_list.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
+              uri: event?.imatges_list?.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
             }}
           >
             <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
@@ -93,7 +93,7 @@ export default function Page() {
               <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.shareIcon}>
-              <ShareMenu enllac={event && event.enllaços_list && event.enllaços_list.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
+              <ShareMenu enllac={event?.enllaços_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
             </TouchableOpacity>
           </ImageBackground>
         </View>
