@@ -1,16 +1,14 @@
 import React from 'react';
-import { Text, Alert, Share, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, Share, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 
 const ShareMenu = (props) => {
-    console.log("Todos los props en ShareMenu:", props);
     const { enllac } = props;
     const onShare = async () => {
         try {
             const result = await Share.share({
-                message: enllac,
-                url: enllac
+                message: enllac
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
