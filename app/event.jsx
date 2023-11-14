@@ -6,6 +6,7 @@ import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
 import Comment from './components/comment.jsx';
+import ShareMenu from './components/shareMenu.jsx';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Page() {
@@ -79,7 +80,7 @@ export default function Page() {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.imageContainer}>
-          {event && event.imatges_list && event.imatges_list.length > 0 ? (
+          {event && event.imatges_list && event.imatges_list.length > 0 && event.enllaços_list && event.enllaços_list.length > 0 ? (
             <ImageBackground
               style={styles.fotoLogo}
               source={{
@@ -92,12 +93,27 @@ export default function Page() {
               <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
                 <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.iconContainer, styles.shareIcon]} >
-                <Ionicons name="share-social-outline" size={24} color="black" style={{ margin: 6 }} />
+              <TouchableOpacity style={styles.shareIcon}>
+                <ShareMenu enllac={event.enllacos_list[0]}/>
               </TouchableOpacity>
             </ImageBackground>
           ) : (
-            <Text>No hay imágenes disponibles</Text>
+            <ImageBackground
+              style={styles.fotoLogo}
+              source={{
+                uri: 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
+              }}
+            >
+              <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+                <Ionicons name="ios-close-outline" size={36} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
+                <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareIcon}>
+                <ShareMenu enllac="https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"/>
+              </TouchableOpacity>
+            </ImageBackground>
           )}
         </View>
         <View style={{ marginHorizontal: '7.5%' }}>
@@ -171,6 +187,7 @@ const styles = StyleSheet.create({
     right: 55,
   },
   shareIcon: {
+    position: 'absolute',
     bottom: 10,
     right: 10,
   },
