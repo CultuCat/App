@@ -3,6 +3,8 @@ import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpa
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
@@ -19,6 +21,9 @@ export default function Page() {
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    AsyncStorage.clear();
+  }, []);
 
   const navigation = useNavigation();
   const handlePressMap = () => {
@@ -62,7 +67,7 @@ export default function Page() {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder="Cerca..."
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
