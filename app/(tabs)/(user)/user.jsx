@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
-import Chip from './components/chip.jsx';
+import Chip from '../../components/chip.jsx';
+import { ScrollView } from 'react-native';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -230,6 +231,9 @@ export default function Page() {
       <Text style={styles.bio}>{user.bio}</Text>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
+      
+      <Chip text="Music" color="#d2d0d0"></Chip>
+      <Chip text="Music" color="#d2d0d0"></Chip>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
@@ -244,7 +248,6 @@ export default function Page() {
       <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
-      <Chip></Chip>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
