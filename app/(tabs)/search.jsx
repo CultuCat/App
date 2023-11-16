@@ -3,6 +3,7 @@ import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpa
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
@@ -38,6 +39,9 @@ export default function Page() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    AsyncStorage.clear();
+  }, []);
 
   const navigation = useNavigation();
   const handlePressMap = () => {
