@@ -17,7 +17,7 @@ export default function Page() {
     },
     container: {
       alignItems: 'center',
-      marginTop: 20,
+      marginTop: 8,
     },
     fotoLogo: {
       borderRadius: 30,
@@ -59,7 +59,7 @@ export default function Page() {
       backgroundColor: 'black', 
       width: 200,
       alignSelf: 'center',
-      marginTop: 15,
+      marginTop: 25,
     },
     titles: {
       marginTop:20,
@@ -153,28 +153,34 @@ export default function Page() {
     botoFletxa: {
       width: 10,
       height: 10,
+      marginTop: -40,
+    },
+    botoFletxaTr: {
+      width: 10,
+      height: 10,
+      marginTop: -5,
     },
     fletxaButton: {
       borderColor: 'transparent',
-      marginLeft: 270,
+      marginLeft: 310,
       marginTop: -10,
     },
     chipContainer: {
       paddingTop: 10,
       marginRight: 50,
       flexDirection: 'row', 
-
+      
     },
     
     scroll: {
-      marginRight: 105,
-      marginLeft: 50,
+      marginRight: 75,
+      marginLeft: 60,
     }
     
     
   });
   const [user, setUser] = useState(null);
-  const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues"]); 
+  const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues","Gavà"]); 
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
 
 
@@ -220,6 +226,7 @@ export default function Page() {
 
 
   return (
+    <ScrollView>
     <View>
       <Link href={'/(tabs)/(user)/configuration'} asChild>
       <TouchableOpacity >
@@ -272,7 +279,7 @@ export default function Page() {
           style={styles.fletxaButton}
         >
             <Image
-                style={styles.botoFletxa}
+                style={styles.botoFletxaTr}
                 source={{
                   uri:
                     'https://cdn-icons-png.flaticon.com/512/60/60762.png',
@@ -313,7 +320,7 @@ export default function Page() {
           style={styles.fletxaButton}
         >
             <Image
-                style={styles.botoFletxa}
+                style={styles.botoFletxaTr}
                 source={{
                   uri:
                     'https://cdn-icons-png.flaticon.com/512/60/60762.png',
@@ -351,5 +358,6 @@ export default function Page() {
       </Link>
       </View>
       </View>
+      </ScrollView>
   );
 }
