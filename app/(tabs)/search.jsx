@@ -42,7 +42,14 @@ export default function Page() {
 
 
   const navigation = useNavigation();
+  const handlePressMap = () => {
+    navigation.navigate('map');
+  };
   const handlePress = (eventId) => {
+    navigation.navigate('event', { eventId });
+  };
+  
+  const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
 
@@ -92,7 +99,7 @@ export default function Page() {
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.mapButton} onPress={handlePress}>
+      <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
