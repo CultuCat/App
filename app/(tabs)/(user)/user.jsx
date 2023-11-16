@@ -1,7 +1,9 @@
 import React from 'react';
-import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
+import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert,Modal } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
+import Chip from '../../components/chip.jsx';
+import { ScrollView } from 'react-native';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -15,7 +17,7 @@ export default function Page() {
     },
     container: {
       alignItems: 'center',
-      marginTop: 20,
+      marginTop: 8,
     },
     fotoLogo: {
       borderRadius: 30,
@@ -57,7 +59,7 @@ export default function Page() {
       backgroundColor: 'black', 
       width: 200,
       alignSelf: 'center',
-      marginTop: 15,
+      marginTop: 25,
     },
     titles: {
       marginTop:20,
@@ -148,12 +150,61 @@ export default function Page() {
       alignSelf: 'center',
       marginTop: -25,
     },
+    botoFletxa: {
+      width: 10,
+      height: 10,
+      marginTop: -40,
+    },
+    botoFletxaTr: {
+      width: 10,
+      height: 10,
+      marginTop: -5,
+    },
+    fletxaButton: {
+      borderColor: 'transparent',
+      marginLeft: 310,
+      marginTop: -10,
+    },
+    chipContainer: {
+      paddingTop: 10,
+      marginRight: 50,
+      flexDirection: 'row', 
+      
+    },
+    
+    scroll: {
+      marginRight: 75,
+      marginLeft: 60,
+    }
+    
     
   });
   const [user, setUser] = useState(null);
+  const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues","Gavà"]); 
+  const [selectedChipIndex, setSelectedChipIndex] = useState(null);
+
+
+  const handleChipPress = (index) => {
+    setSelectedChipIndex(index);
+    Alert.alert(
+      "Eliminar lloc favorit",
+      "Estàs segur que vols eliminar el lloc favorit ?",
+      [
+        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
+        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
+      ]
+    );
+  };
+
+  const handleDeleteChip = (index) => {
+    const updatedChips = [...chips];
+    updatedChips.splice(index, 1);
+    setChips(updatedChips);
+    setSelectedChipIndex(null);
+  };
+
 
   useEffect(() => {
-    // Hacer una solicitud GET para obtener el perfil del usuario usando fetch
     fetch('http://127.0.0.1:8000/users/7/')
       .then((response) => {
         if (!response.ok) {
@@ -175,6 +226,7 @@ export default function Page() {
 
 
   return (
+    <ScrollView>
     <View>
       <Link href={'/(tabs)/(user)/configuration'} asChild>
       <TouchableOpacity >
@@ -221,10 +273,60 @@ export default function Page() {
       <Text style={styles.bio}>{user.bio}</Text>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
+      
+        
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxaTr}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
+      <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
+      <ScrollView
+          horizontal
+          alwaysBounceHorizontal={true}
+          contentContainerStyle={styles.chipContainer}
+          style={styles.scroll}
+          
+        >
+          {chips.map((chip, index) => (
+            <TouchableOpacity key={index} onPress={() => handleChipPress(index)} 
+               style={{ marginRight: 5}}>
+              <Chip text={chip} color="#d2d0d0" />
+            </TouchableOpacity>
+          ))}
+          </ScrollView>
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxa}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Trofeus</Text>
+      <TouchableOpacity
+          style={styles.fletxaButton}
+        >
+            <Image
+                style={styles.botoFletxaTr}
+                source={{
+                  uri:
+                    'https://cdn-icons-png.flaticon.com/512/60/60762.png',
+                }}
+         />    
+      </TouchableOpacity>
       <View style={styles.separator}/>
       <TouchableOpacity
         style={styles.rankingButton}
@@ -256,5 +358,6 @@ export default function Page() {
       </Link>
       </View>
       </View>
+      </ScrollView>
   );
 }
