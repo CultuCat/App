@@ -161,26 +161,28 @@ export default function Page() {
     },
     chipContainer: {
       paddingTop: 10,
-      paddingLeft: 50,
-      paddingRight: -100,
+      marginRight: 50,
+      flexDirection: 'row', 
 
     },
+    
+    scroll: {
+      marginRight: 105,
+      marginLeft: 50,
+    }
+    
     
   });
   const [user, setUser] = useState(null);
   const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues"]); 
-  const [showAddChipModal, setShowAddChipModal] = useState(false);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
 
-  const handleAddChip = () => {
-    setShowAddChipModal(true);
-  };
 
   const handleChipPress = (index) => {
     setSelectedChipIndex(index);
     Alert.alert(
       "Eliminar lloc favorit",
-      "Estàs segur que vols eliminar el lloc favorit?",
+      "Estàs segur que vols eliminar el lloc favorit ?",
       [
         { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
         { text: "Eliminar", onPress: () => handleDeleteChip(index) },
@@ -265,29 +267,7 @@ export default function Page() {
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
       
-      <ScrollView
-        horizontal
-        alwaysBounceHorizontal={true}
-        contentContainerStyle={styles.chipContainer}
-      >
-        {chips.map((chip, index) => (
-          <TouchableOpacity key={index} onPress={() => handleChipPress(index)}>
-            <Chip text={chip} color="#d2d0d0" />
-          </TouchableOpacity>
-        ))}
-        {/* Aquest botó serveix per afegir botó per afegir lloc preferit */}
-        <TouchableOpacity onPress={handleAddChip}>
-          <Text style={styles.addChipButton}>+ Añadir Chip</Text>
-        </TouchableOpacity>
-      </ScrollView>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showAddChipModal}
-        onRequestClose={() => setShowAddChipModal(false)}
-      >
-      </Modal>
+        
       <TouchableOpacity
           style={styles.fletxaButton}
         >
@@ -302,6 +282,20 @@ export default function Page() {
       <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Llocs Favorits</Text>
+      <ScrollView
+          horizontal
+          alwaysBounceHorizontal={true}
+          contentContainerStyle={styles.chipContainer}
+          style={styles.scroll}
+          
+        >
+          {chips.map((chip, index) => (
+            <TouchableOpacity key={index} onPress={() => handleChipPress(index)} 
+               style={{ marginRight: 5}}>
+              <Chip text={chip} color="#d2d0d0" />
+            </TouchableOpacity>
+          ))}
+          </ScrollView>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
