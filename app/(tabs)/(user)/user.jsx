@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert } from 'react-native';
+import { Text, View, Button, StyleSheet, Image,TouchableOpacity, Alert,Modal } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
@@ -158,10 +158,43 @@ export default function Page() {
       borderColor: 'transparent',
       marginLeft: 270,
       marginTop: -10,
-    }
+    },
+    chipContainer: {
+      paddingTop: 10,
+      paddingLeft: 50,
+      paddingRight: -100,
+
+    },
     
   });
   const [user, setUser] = useState(null);
+  const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues"]); 
+  const [showAddChipModal, setShowAddChipModal] = useState(false);
+  const [selectedChipIndex, setSelectedChipIndex] = useState(null);
+
+  const handleAddChip = () => {
+    setShowAddChipModal(true);
+  };
+
+  const handleChipPress = (index) => {
+    setSelectedChipIndex(index);
+    Alert.alert(
+      "Eliminar lloc favorit",
+      "Estàs segur que vols eliminar el lloc favorit?",
+      [
+        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
+        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
+      ]
+    );
+  };
+
+  const handleDeleteChip = (index) => {
+    const updatedChips = [...chips];
+    updatedChips.splice(index, 1);
+    setChips(updatedChips);
+    setSelectedChipIndex(null);
+  };
+
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/users/7/')
@@ -232,8 +265,29 @@ export default function Page() {
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
       
-      <Chip text="Music" color="#d2d0d0"></Chip>
-      <Chip text="Music" color="#d2d0d0"></Chip>
+      <ScrollView
+        horizontal
+        alwaysBounceHorizontal={true}
+        contentContainerStyle={styles.chipContainer}
+      >
+        {chips.map((chip, index) => (
+          <TouchableOpacity key={index} onPress={() => handleChipPress(index)}>
+            <Chip text={chip} color="#d2d0d0" />
+          </TouchableOpacity>
+        ))}
+        {/* Aquest botó serveix per afegir botó per afegir lloc preferit */}
+        <TouchableOpacity onPress={handleAddChip}>
+          <Text style={styles.addChipButton}>+ Añadir Chip</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showAddChipModal}
+        onRequestClose={() => setShowAddChipModal(false)}
+      >
+      </Modal>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
