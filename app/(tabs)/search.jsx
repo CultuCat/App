@@ -42,6 +42,7 @@ export default function Page() {
   useEffect(() => {
     AsyncStorage.clear();
   }, []);
+  
 
   const navigation = useNavigation();
   const handlePressMap = () => {
@@ -86,7 +87,7 @@ export default function Page() {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder="Cerca..."
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"

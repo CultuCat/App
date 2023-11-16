@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Modal } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
@@ -7,7 +7,10 @@ import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
 import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+
 
 export default function Page() {
 
@@ -16,6 +19,45 @@ export default function Page() {
   const params = useLocalSearchParams();
   const image = '';
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [buyButtonEnabled, setBuyButtonEnabled] = useState(true);
+  const route = useRoute();
+  const eventId = route.params.eventId;
+
+  const openModal = (index) => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleYesClick = async() => {
+      setModalVisible(false);
+      setBuyButtonEnabled(false);
+      try {
+        await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
+      } catch (error) {
+        console.error('Error al guardar el estado del botón de compra:', error);
+      }
+    };
+  
+    const checkButtonState = async () => {
+      try {
+        const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
+        if (value !== null) {
+          setBuyButtonEnabled(value === 'false' ? false : true);
+        }
+      } catch (error) {
+        console.error('Error al recuperar el estado del botón de compra:', error);
+      }
+    };
+    
+    useEffect(() => {
+      checkButtonState();
+    }, []);
+    
+  
 
   const fetchComments = () => {
     fetch('http://127.0.0.1:8000/comments/?event=' + params.eventId, {
@@ -124,18 +166,56 @@ export default function Page() {
             )}
             keyExtractor={item => item.id}
           />
+            <Modal
+            animationType="slide"
+            visible={modalVisible}
+            onRequestClose={closeModal}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>
+                  Vols comprar una entrada per aquest event?
+                </Text>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    onPress={handleYesClick}
+                    style={[styles.button, { backgroundColor: '#ff6961' }]}
+                  >
+                    <Text style={styles.buttonText}>Si</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={closeModal}
+                    style={[
+                      styles.button,
+                      {
+                        borderColor: 'black',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>        
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
         <Text style={styles.price}>{parsedPrice(event.price)}</Text>
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity
+          style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
+          onPress={openModal}
+          disabled={!buyButtonEnabled} 
+        >
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-}
 
+            }        
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -204,5 +284,47 @@ const styles = StyleSheet.create({
     backgroundColor: colors.terciary,
     color: 'black',
     borderRadius: 100,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  closeButton: {
+    marginTop: 30,
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 40,
+    textAlign: 'center',
+    fontWeight: 'bold',
+
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  
+  button: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    alignItems: 'center',
+  },
+  
+  buttonText: {
+    color: 'black',
+    fontSize: 16,
   },
 });
