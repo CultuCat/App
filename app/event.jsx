@@ -48,7 +48,7 @@ export default function Page() {
       return;
     }
 
-    fetch(`http://127.0.0.1:8000/discounts/userDiscount=${discountCodeId}`, {
+    fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${selectedDiscountCode}`, {
       method: 'GET'
     })
       .then((response) => {
@@ -97,7 +97,8 @@ export default function Page() {
 
   const handleYesClick = async () => {
     if (selectedDiscountCode) {
-      fetch(`http://127.0.0.1:8000/discounts/?userDiscount=${selectedDiscountCode}/`)
+      console.log(selectedDiscountCode);
+      fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${selectedDiscountCode}`)
         .then((response) => {
           if (response.ok) {
             return response.json();
