@@ -9,6 +9,8 @@ import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
+
 
 
 
@@ -23,25 +25,107 @@ export default function Page() {
   const [buyButtonEnabled, setBuyButtonEnabled] = useState(true);
   const route = useRoute();
   const eventId = route.params.eventId;
+  const [selectedDiscountCode, setSelectedDiscountCode] = useState(null);
+  const [discountedPrice, setDiscountedPrice] = useState(null);
+  const [trophyLevel, setTrophyLevel] = useState(null);
+  const [discountCodes, setDiscountCodes] = useState([]); 
+  const [discountInfo, setDiscountInfo] = useState(null);
 
-  const openModal = (index) => {
+  const openModal = () => {
+    fetch('http://127.0.0.1:8000/discounts/')
+      .then((response) => response.json())
+      .then((discountData) => {
+        setDiscountCodes(discountData);
+      })
+      .catch((error) => console.error('Error al obtener códigos de descuento:', error));
+
     setModalVisible(true);
+  };
+
+  const handleDiscountCodeValidation = (discountCodeId) => {
+    if (!discountCodeId) {
+      setDiscountInfo(null);
+      return;
+    }
+
+    fetch(`http://127.0.0.1:8000/discounts/userDiscount=${discountCodeId}`, {
+      method: 'GET'
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error in the request');
+        }
+      })
+      .then((discountInfoFromServer) => {
+        setDiscountInfo(discountInfoFromServer);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const applyDiscount = (price) => {
+    if (!discountInfo) {
+      return price;
+    }
+
+    const { nivellTrofeu } = discountInfo;
+
+    let discountPercentage;
+    switch (nivellTrofeu) {
+      case 1:
+        discountPercentage = 0.1;
+        break;
+      case 2:
+        discountPercentage = 0.25;
+        break;
+      case 3:
+        discountPercentage = 0.5;
+        break;
+      default:
+        discountPercentage = 0;
+    }
+
+    return (1 - discountPercentage) * price;
   };
 
   const closeModal = () => {
     setModalVisible(false);
   };
 
-  const handleYesClick = async() => {
-      setModalVisible(false);
-      setBuyButtonEnabled(false);
-      try {
-        await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
-      } catch (error) {
-        console.error('Error al guardar el estado del botón de compra:', error);
-      }
-    };
+  const handleYesClick = async () => {
+    if (selectedDiscountCode) {
+      fetch(`http://127.0.0.1:8000/discounts/?userDiscount=${selectedDiscountCode}/`)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error(`Error in the request. Status: ${response.status}`);
+          }
+        })
+        .then((discountData) => {
+          console.log('Discount data:', discountData);
+          const { nivellTrofeu, descuento } = discountData;
+          setTrophyLevel(nivellTrofeu);
+          const discountPercentage = descuento / 100;
+          const originalPrice = event.preu;
+          const discountedPrice = originalPrice - originalPrice * discountPercentage;
+          setDiscountedPrice(discountedPrice);
+        })
+        .catch((error) => console.error('Error al obtener detalles del descuento:', error.message));
+    }
   
+    setModalVisible(false);
+    setBuyButtonEnabled(false);
+  
+    try {
+      await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
+    } catch (error) {
+      console.error('Error al guardar el estado del botón de compra:', error);
+    }
+  };
     const checkButtonState = async () => {
       try {
         const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
@@ -175,7 +259,30 @@ export default function Page() {
               <View style={styles.modalContent}>
                 <Text style={styles.modalText}>
                   Vols comprar una entrada per aquest event?
-                </Text>
+                  </Text>
+                  {discountCodes.length > 0 && (
+                  <View style={styles.pickerContainer}>
+                    <Text>Validar codi descompte:</Text>
+                    <Picker
+                      selectedValue={selectedDiscountCode}
+                      onValueChange={(itemValue, itemIndex) => {
+                        setSelectedDiscountCode(itemValue);
+                        handleDiscountCodeValidation(itemValue);
+                      }}
+                    >
+                      <Picker.Item label="Selecciona un codi" value={null} />
+                      {discountCodes.map((code) => (
+                        <Picker.Item key={code.codi} label={code.codi} value={code.userDiscount} />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+              {discountInfo && (
+                <View>
+                  <Text>{`Nivell del trofeu: ${discountInfo.nivellTrofeu}`}</Text>
+                  <Text>{`Descuento: ${applyDiscount(1) * 100}%`}</Text>
+                </View>
+              )}
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     onPress={handleYesClick}
@@ -203,11 +310,11 @@ export default function Page() {
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
-        <Text style={styles.price}>{parsedPrice(event.price)}</Text>
+      <Text style={styles.price}>{parsedPrice(applyDiscount(event.price))}</Text>
         <TouchableOpacity
           style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
           onPress={openModal}
-          disabled={!buyButtonEnabled} 
+          disabled={!buyButtonEnabled}
         >
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
