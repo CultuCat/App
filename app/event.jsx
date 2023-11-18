@@ -47,32 +47,31 @@ export default function Page() {
       setDiscountInfo(null);
       return;
     }
-
-    fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${selectedDiscountCode}`, {
-      method: 'GET'
-    })
+  
+    const url = `https://cultucat.hemanuelpc.es/discounts/?userDiscount=${encodeURIComponent(discountCodeId)}`;
+  
+    fetch(url)
       .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Error in the request');
+        if (!response.ok) {
+          throw new Error(`Error in the request. Status: ${response.status}`);
         }
+        return response.json();
       })
       .then((discountInfoFromServer) => {
+        console.log('Discount info from server:', discountInfoFromServer);
         setDiscountInfo(discountInfoFromServer);
       })
       .catch((error) => {
-        console.error(error);
+        console.error('Error fetching discount info:', error.message);
       });
   };
+  
 
-  const applyDiscount = (price) => {
+  const applyDiscount = (price, nivellTrofeu) => {
     if (!discountInfo) {
       return price;
     }
-
-    const { nivellTrofeu } = discountInfo;
-
+  
     let discountPercentage;
     switch (nivellTrofeu) {
       case 1:
@@ -87,36 +86,15 @@ export default function Page() {
       default:
         discountPercentage = 0;
     }
-
-    return (1 - discountPercentage) * price;
+    
+    console.log(nivellTrofeu)
+    return discountPercentage * 100; 
   };
 
   const closeModal = () => {
     setModalVisible(false);
   };
-
   const handleYesClick = async () => {
-    if (selectedDiscountCode) {
-      console.log(selectedDiscountCode);
-      fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${selectedDiscountCode}`)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error(`Error in the request. Status: ${response.status}`);
-          }
-        })
-        .then((discountData) => {
-          console.log('Discount data:', discountData);
-          const { nivellTrofeu, descuento } = discountData;
-          setTrophyLevel(nivellTrofeu);
-          const discountPercentage = descuento / 100;
-          const originalPrice = event.preu;
-          const discountedPrice = originalPrice - originalPrice * discountPercentage;
-          setDiscountedPrice(discountedPrice);
-        })
-        .catch((error) => console.error('Error al obtener detalles del descuento:', error.message));
-    }
   
     setModalVisible(false);
     setBuyButtonEnabled(false);
@@ -252,66 +230,85 @@ export default function Page() {
             keyExtractor={item => item.id}
           />
             <Modal
-            animationType="slide"
-            visible={modalVisible}
-            onRequestClose={closeModal}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Vols comprar una entrada per aquest event?
-                  </Text>
-                  {discountCodes.length > 0 && (
-                  <View style={styles.pickerContainer}>
-                    <Text>Validar codi descompte:</Text>
-                    <Picker
-                      selectedValue={selectedDiscountCode}
-                      onValueChange={(itemValue, itemIndex) => {
-                        setSelectedDiscountCode(itemValue);
-                        handleDiscountCodeValidation(itemValue);
-                      }}
-                    >
-                      <Picker.Item label="Selecciona un codi" value={null} />
-                      {discountCodes.map((code) => (
-                        <Picker.Item key={code.codi} label={code.codi} value={code.userDiscount} />
-                      ))}
-                    </Picker>
-                  </View>
-                )}
-              {discountInfo && (
-                <View>
-                  <Text>{`Nivell del trofeu: ${discountInfo.nivellTrofeu}`}</Text>
-                  <Text>{`Descuento: ${applyDiscount(1) * 100}%`}</Text>
-                </View>
-              )}
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    onPress={handleYesClick}
-                    style={[styles.button, { backgroundColor: '#ff6961' }]}
-                  >
-                    <Text style={styles.buttonText}>Si</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={closeModal}
-                    style={[
-                      styles.button,
-                      {
-                        borderColor: 'black',
-                        backgroundColor: 'transparent',
-                        borderWidth: 1,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.buttonText}>Cancelar</Text>
-                  </TouchableOpacity>
-                </View>
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Vols comprar una entrada per aquest event?
+            </Text>
+            {discountCodes.length > 0 && (
+              <View style={styles.pickerContainer}>
+                <Text>Validar codi descompte:</Text>
+                <Picker
+                  selectedValue={selectedDiscountCode}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setSelectedDiscountCode(itemValue);
+                    handleDiscountCodeValidation(itemValue);
+                    if (itemValue) {
+                      fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${itemValue}`)
+                        .then((response) => {
+                          if (response.ok) {
+                            return response.json();
+                          } else {
+                            throw new Error(`Error in the request. Status: ${response.status}`);
+                          }
+                        })
+                        .then((discountData) => {
+                          console.log('Discount data:', discountData);
+                          const nivellTrofeu = discountData[0].nivellTrofeu;
+                          const originalPrice = price;
+                          console.log(originalPrice);
+                          const discountPercentage = applyDiscount(originalPrice,nivellTrofeu)
+                          setDiscountedPrice(discountPercentage);
+                        })
+                        .catch((error) => console.error('Error al obtener detalles del descuento:', error.message));
+                    }
+                  }}
+                >
+                  <Picker.Item label="Selecciona un codi" value={null} />
+                  {discountCodes.map((code) => (
+                    <Picker.Item key={code.codi} label={code.codi} value={code.userDiscount} />
+                  ))}
+                </Picker>
               </View>
+            )}
+            {discountInfo && (
+              <View>
+                <Text>{`Nivell del trofeu: ${discountInfo.nivellTrofeu}`}</Text>
+                <Text>{`Descuento: ${applyDiscount(event.preu, discountInfo.nivellTrofeu)}%`}</Text>
+              </View>
+            )}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={handleYesClick}
+                style={[styles.button, { backgroundColor: '#ff6961' }]}
+              >
+                <Text style={styles.buttonText}>Si</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={closeModal}
+                style={[
+                  styles.button,
+                  {
+                    borderColor: 'black',
+                    backgroundColor: 'transparent',
+                    borderWidth: 1,
+                  },
+                ]}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
             </View>
-          </Modal>        
+          </View>
+        </View>
+      </Modal>     
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
-      <Text style={styles.price}>{parsedPrice(applyDiscount(event.price))}</Text>
+      <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
         <TouchableOpacity
           style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
           onPress={openModal}
