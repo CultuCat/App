@@ -71,6 +71,9 @@ export default function Page() {
     if (!discountInfo) {
       return price;
     }
+    if (price == 'Gratuït') {
+      return 'Gratuït';
+    }
   
     let discountPercentage;
     switch (nivellTrofeu) {
@@ -87,7 +90,6 @@ export default function Page() {
         discountPercentage = 0;
     }
     
-    console.log("nivell trofeu" , nivellTrofeu)
     return price - discountPercentage * price; 
   };
 
@@ -178,6 +180,21 @@ export default function Page() {
     else return 'Gratuït'
   };
 
+  const parsedPriceCalc = (price) => {
+    if (price && typeof price === 'string') {
+
+      const numericPart = price.replace(/[^0-9.]/g, '');
+
+      const numericValue = parseFloat(numericPart);
+  
+      if (!isNaN(numericValue)) {
+        return numericValue;
+      }
+    }
+  
+    return 'Gratuït';
+  };
+  
   if (event == []) {
     return <Text>Cargando...</Text>;
   }
@@ -259,9 +276,7 @@ export default function Page() {
     
             {discountInfo && (
               <View>
-                <Text>{discountInfo[0].codi}</Text>
-                <Text>{`Nivell del trofeu: ${discountInfo[0].nivellTrofeu}`}</Text>
-                <Text>{`Descuento: ${applyDiscount(event.preu, discountInfo[0].nivellTrofeu)}%`}</Text>
+                <Text>{`Preu Final: ${applyDiscount(parsedPriceCalc(event.preu), discountInfo[0].nivellTrofeu)}`}</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
