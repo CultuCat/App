@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Image, View, Text, Button, TextInput, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import colors from '../constants/colors';
-import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleButton from './components/googleButton';
 import Divider from './components/divider';
-
-WebBrowser.maybeCompleteAuthSession();
 
 export default function Page() {
     const [userInfo, setUserInfo] = React.useState(null);
@@ -122,7 +119,7 @@ export default function Page() {
 
     return (
         <View style={styles.container}>
-            <View style={{marginTop: 60}}>
+            <View style={{ marginTop: 60 }}>
                 <Image
                     style={{ margin: 15, width: 270, height: 75 }}
                     source={require('../assets/full-logo.png')}
@@ -171,10 +168,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.primary,
         marginBottom: 10,
-    },
-    subtitle: {
-        fontSize: 15,
-        color: colors.greyText,
     },
     input: {
         height: 40,
