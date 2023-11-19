@@ -26,8 +26,6 @@ export default function Page() {
   const route = useRoute();
   const eventId = route.params.eventId;
   const [selectedDiscountCode, setSelectedDiscountCode] = useState(null);
-  const [discountedPrice, setDiscountedPrice] = useState(null);
-  const [trophyLevel, setTrophyLevel] = useState(null);
   const [discountCodes, setDiscountCodes] = useState([]); 
   const [discountInfo, setDiscountInfo] = useState(null);
 
@@ -43,13 +41,14 @@ export default function Page() {
   };
 
   const handleDiscountCodeValidation = (discountCodeId) => {
+    console.log("Handling discount validation for:", discountCodeId);
     if (!discountCodeId) {
       setDiscountInfo(null);
       return;
     }
   
     const url = `https://cultucat.hemanuelpc.es/discounts/?userDiscount=${encodeURIComponent(discountCodeId)}`;
-  
+ 
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -60,6 +59,7 @@ export default function Page() {
       .then((discountInfoFromServer) => {
         console.log('Discount info from server:', discountInfoFromServer);
         setDiscountInfo(discountInfoFromServer);
+        console.log(discountInfo);
       })
       .catch((error) => {
         console.error('Error fetching discount info:', error.message);
@@ -100,6 +100,7 @@ export default function Page() {
   
     setModalVisible(false);
     setBuyButtonEnabled(false);
+    
   
     try {
       await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
@@ -263,7 +264,7 @@ export default function Page() {
                   selectedValue={selectedDiscountCode}
                   onValueChange={(itemValue, itemIndex) => {
                     setSelectedDiscountCode(itemValue);
-                    handleDiscountCodeValidation(itemValue);
+                    handleDiscountCodeValidation(itemValue); 
                   }}
                 >
                   <Picker.Item label="Selecciona un codi" value={null} />
@@ -271,12 +272,13 @@ export default function Page() {
                     <Picker.Item key={code.codi} label={code.codi} value={code.userDiscount} />
                   ))}
                 </Picker>
+
               </View>
             )}
     
             {discountInfo && (
-              <View>
-                <Text>{`Preu Final: ${applyDiscount(parsedPriceCalc(event.preu), discountInfo[0].nivellTrofeu)}`}</Text>
+              <View style={styles.discountInfoContainer}>
+                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(parsedPriceCalc(event.preu), discountInfo[0].nivellTrofeu)}€`}</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
@@ -429,5 +431,18 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontSize: 16,
+  },
+  discountInfoContainer: {
+    marginTop: 10,
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 30,
+    marginLeft: -140,
+  },
+  discountInfoText: {
+    fontSize: 16,
+    color: '#ff6961',
+    fontWeight: 'bold',
   },
 });
