@@ -32,7 +32,7 @@ export default function Page() {
   const [discountInfo, setDiscountInfo] = useState(null);
 
   const openModal = () => {
-    fetch('http://127.0.0.1:8000/discounts/')
+    fetch('https://cultucat.hemanuelpc.es/discounts/')
       .then((response) => response.json())
       .then((discountData) => {
         setDiscountCodes(discountData);
@@ -87,8 +87,8 @@ export default function Page() {
         discountPercentage = 0;
     }
     
-    console.log(nivellTrofeu)
-    return discountPercentage * 100; 
+    console.log("nivell trofeu" , nivellTrofeu)
+    return price - discountPercentage * price; 
   };
 
   const closeModal = () => {
@@ -229,7 +229,7 @@ export default function Page() {
             )}
             keyExtractor={item => item.id}
           />
-            <Modal
+        <Modal
         animationType="slide"
         visible={modalVisible}
         onRequestClose={closeModal}
@@ -247,25 +247,6 @@ export default function Page() {
                   onValueChange={(itemValue, itemIndex) => {
                     setSelectedDiscountCode(itemValue);
                     handleDiscountCodeValidation(itemValue);
-                    if (itemValue) {
-                      fetch(`https://cultucat.hemanuelpc.es/discounts/?userDiscount=${itemValue}`)
-                        .then((response) => {
-                          if (response.ok) {
-                            return response.json();
-                          } else {
-                            throw new Error(`Error in the request. Status: ${response.status}`);
-                          }
-                        })
-                        .then((discountData) => {
-                          console.log('Discount data:', discountData);
-                          const nivellTrofeu = discountData[0].nivellTrofeu;
-                          const originalPrice = price;
-                          console.log(originalPrice);
-                          const discountPercentage = applyDiscount(originalPrice,nivellTrofeu)
-                          setDiscountedPrice(discountPercentage);
-                        })
-                        .catch((error) => console.error('Error al obtener detalles del descuento:', error.message));
-                    }
                   }}
                 >
                   <Picker.Item label="Selecciona un codi" value={null} />
@@ -275,10 +256,12 @@ export default function Page() {
                 </Picker>
               </View>
             )}
+    
             {discountInfo && (
               <View>
-                <Text>{`Nivell del trofeu: ${discountInfo.nivellTrofeu}`}</Text>
-                <Text>{`Descuento: ${applyDiscount(event.preu, discountInfo.nivellTrofeu)}%`}</Text>
+                <Text>{discountInfo[0].codi}</Text>
+                <Text>{`Nivell del trofeu: ${discountInfo[0].nivellTrofeu}`}</Text>
+                <Text>{`Descuento: ${applyDiscount(event.preu, discountInfo[0].nivellTrofeu)}%`}</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
