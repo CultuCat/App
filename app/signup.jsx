@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, View, Text, Button, TextInput, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import colors from '../constants/colors';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -11,6 +12,7 @@ import Divider from './components/divider';
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Page() {
+    const navigation = useNavigation();
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
@@ -18,8 +20,11 @@ export default function Page() {
         androidClientId: '852693017999-rmrneotl5b6j5p5sf5ukequup60rtrmi.apps.googleusercontent.com',
 
     });
+    const [name, setName] = useState('');
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [password2, setPassword2] = useState('');
 
     useEffect(() => {
         handleSignInWithGoogle();
@@ -92,32 +97,36 @@ export default function Page() {
     };
 
     const onLoginPress = () => {
-        fetch("https://cultucat.hemanuelpc.es/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            }),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Incorrect username or password");
-                }
-                return response.json();
+        if (password !== password2) {
+            Alert.alert("Error", "Les contrasenyes no són iguals");
+        } else {
+            fetch('https://cultucat.hemanuelpc.es/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name: name,
+                    username: username,
+                    email: email,
+                    password: password,
+                }),
             })
-            .then((data) => {
-                if (data.token) {
-                    AsyncStorage.setItem("@user", JSON.stringify(data));
-                    router.replace('/(tabs)/home');
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                Alert.alert("Error", "Incorrect username or password");
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.token) {
+                        AsyncStorage.setItem("@user", JSON.stringify(data));
+                        router.replace('/(tabs)/home');
+                    } else if (data.username) {
+                        Alert.alert("Error", "Ja existeix una usuari amb aquest username");
+                    } else {
+                        Alert.alert("Error", "Ja existeix una usuari amb aquest email");
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
     };
 
     return (
@@ -128,11 +137,17 @@ export default function Page() {
                     source={require('../assets/full-logo.png')}
                 />
                 <View style={styles.centeredContent}>
-                    <Text style={styles.title}>Benvingut</Text>
+                    <Text style={styles.title}>Registra't</Text>
                     <GoogleButton onPress={() => {
                         promptAsync();
                     }} />
                     <Divider />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Name"
+                        value={name}
+                        onChangeText={setName}
+                    />
                     <TextInput
                         style={styles.input}
                         placeholder="Username"
@@ -141,13 +156,26 @@ export default function Page() {
                     />
                     <TextInput
                         style={styles.input}
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    <TextInput
+                        style={styles.input}
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                     />
-                    <Button title="Login" onPress={onLoginPress} />
-                    <Button title="Signup" onPress={() => router.replace('signup')} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Repite Password"
+                        value={password2}
+                        onChangeText={setPassword2}
+                        secureTextEntry
+                    />
+                    <Button title="Signup" onPress={onLoginPress} />
+                    <Button title="Login" onPress={() => navigation.replace('index')} />
                 </View>
             </View>
         </View>
