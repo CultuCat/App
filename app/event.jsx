@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Modal } from 'react-native';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
@@ -9,7 +9,8 @@ import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
+import BuyModal from './components/buyModal.jsx';
+import UserListModal from './components/userListModal.jsx';
 
 
 export default function Page() {
@@ -17,50 +18,38 @@ export default function Page() {
   const [event, setEvent] = useState([]);
   const [commentsEvent, setComments] = useState([]);
   const params = useLocalSearchParams();
-  const image = '';
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [usersVisible, setUsersVisible] = useState(false);
+  const [buyVisible, setBuyVisible] = useState(false);
   const [buyButtonEnabled, setBuyButtonEnabled] = useState(true);
   const route = useRoute();
   const eventId = route.params.eventId;
 
-  const openModal = (index) => {
-    setModalVisible(true);
+  const handleBuy = () => {
+    setBuyVisible(true);
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
+  const handleUsers = () => {
+    setUsersVisible(true);
+  }
+
+  const checkButtonState = async () => {
+    try {
+      const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
+      if (value !== null) {
+        setBuyButtonEnabled(value === 'false' ? false : true);
+      }
+    } catch (error) {
+      console.error('Error al recuperar el estado del botón de compra:', error);
+    }
   };
 
-  const handleYesClick = async() => {
-      setModalVisible(false);
-      setBuyButtonEnabled(false);
-      try {
-        await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
-      } catch (error) {
-        console.error('Error al guardar el estado del botón de compra:', error);
-      }
-    };
-  
-    const checkButtonState = async () => {
-      try {
-        const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
-        if (value !== null) {
-          setBuyButtonEnabled(value === 'false' ? false : true);
-        }
-      } catch (error) {
-        console.error('Error al recuperar el estado del botón de compra:', error);
-      }
-    };
-    
-    useEffect(() => {
-      checkButtonState();
-    }, []);
-    
-  
+  useEffect(() => {
+    checkButtonState();
+  }, []);
 
   const fetchComments = () => {
-    fetch('http://127.0.0.1:8000/comments/?event=' + params.eventId, {
+    fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
       method: 'GET'
     })
       .then((response) => {
@@ -79,7 +68,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/' + params.eventId, {
+    fetch(`https://cultucat.hemanuelpc.es/events/${params.eventId}`, {
       method: "GET"
     })
       .then((response) => {
@@ -131,11 +120,11 @@ export default function Page() {
             <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
               <Ionicons name="ios-close-outline" size={36} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconContainer, styles.buyIcon]} >
+            <View style={[styles.iconContainer, styles.buyIcon]} >
               <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
-            </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.shareIcon}>
-              <ShareMenu enllac={event?.enllaços_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
+              <ShareMenu enllac={event?.enllacos_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
             </TouchableOpacity>
           </ImageBackground>
         </View>
@@ -147,9 +136,10 @@ export default function Page() {
           <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
           <Text>{event.descripcio}</Text>
           <View style={{ marginVertical: 10 }}>
-            <TouchableOpacity style={styles.accionButton}>
-              <Text style={{ margin: 10 }}>Veure usuaris que asisteixen a l'event</Text>
+            <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
+              <Text style={{ margin: 10 }}>Veure assistents a l'esdeveniment</Text>
             </TouchableOpacity>
+            <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible}/>
             <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
               <Text style={{ margin: 10 }}>Veure ubicació al mapa</Text>
             </TouchableOpacity>
@@ -166,56 +156,23 @@ export default function Page() {
             )}
             keyExtractor={item => item.id}
           />
-            <Modal
-            animationType="slide"
-            visible={modalVisible}
-            onRequestClose={closeModal}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Vols comprar una entrada per aquest event?
-                </Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    onPress={handleYesClick}
-                    style={[styles.button, { backgroundColor: '#ff6961' }]}
-                  >
-                    <Text style={styles.buttonText}>Si</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={closeModal}
-                    style={[
-                      styles.button,
-                      {
-                        borderColor: 'black',
-                        backgroundColor: 'transparent',
-                        borderWidth: 1,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.buttonText}>Cancelar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>        
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
         <Text style={styles.price}>{parsedPrice(event.price)}</Text>
         <TouchableOpacity
           style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
-          onPress={openModal}
-          disabled={!buyButtonEnabled} 
+          onPress={handleBuy}
+          disabled={!buyButtonEnabled}
         >
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
+        <BuyModal buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled}/>
       </View>
     </View>
   );
 
-            }        
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -284,47 +241,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.terciary,
     color: 'black',
     borderRadius: 100,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  closeButton: {
-    marginTop: 30,
-    backgroundColor: 'red',
-    padding: 10,
-    borderRadius: 5,
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 40,
-    textAlign: 'center',
-    fontWeight: 'bold',
-
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  
-  button: {
-    flex: 1,
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-    alignItems: 'center',
-  },
-  
-  buttonText: {
-    color: 'black',
-    fontSize: 16,
   },
 });
