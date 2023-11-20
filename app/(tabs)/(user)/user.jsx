@@ -205,7 +205,7 @@ export default function Page() {
 
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/users/7/')
+    fetch('https://cultucat.hemanuelpc.es/users/1/')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');

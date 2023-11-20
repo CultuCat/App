@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
 import { useNavigation } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -11,7 +12,7 @@ export default function Page() {
       width: 130,
       height: 40,
       backgroundColor: 'transparent',
-      color: 'red', 
+      color: 'red',
       borderWidth: 1,
       borderColor: 'black',
       alignItems: 'center',
@@ -32,7 +33,7 @@ export default function Page() {
       alignItems: 'center',
     },
     sessio: {
-      color:'#ff6961',
+      color: '#ff6961',
     },
   });
 
@@ -40,10 +41,10 @@ export default function Page() {
     setModalVisible(!isModalVisible);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     toggleModal();
-    async()=> await AsyncStorage.removeItem("@user")
-    navigation.navigate('index');
+    await AsyncStorage.removeItem("@user");
+    navigation.replace('index');
   };
 
   return (
