@@ -26,7 +26,7 @@ export default function Page() {
   
     try {
       setLoading(true);
-      const response = await fetch(`http://127.0.0.1:8000/events/?page=${page + 1}`);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
       const newData = await response.json();
   
       if (newData.results.length > 0) {
@@ -61,7 +61,7 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/', {
+    fetch('https://cultucat.hemanuelpc.es/events/', {
       method: "GET"
     })
       .then((response) => {

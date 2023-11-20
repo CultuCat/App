@@ -9,7 +9,7 @@ const CommentForm = ({ eventId }) => {
             event: eventId,
             text: comment
         };
-        fetch('http://127.0.0.1:8000/comments', {
+        fetch('https://cultucat.hemanuelpc.es/comments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

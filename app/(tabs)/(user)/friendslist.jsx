@@ -20,7 +20,7 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/users/', {
+    fetch('https://cultucat.hemanuelpc.es/users/', {
       method: "GET"
     })
       .then((response) => {
