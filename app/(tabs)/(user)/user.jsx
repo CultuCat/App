@@ -102,7 +102,7 @@ export default function Page() {
 
     },
     bio: {
-      marginLeft: 100,
+      marginLeft: 70,
     },
     fotoStar: {
       width: 15,
@@ -181,11 +181,11 @@ export default function Page() {
     
   });
   const [user, setUser] = useState(null);
-  const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues","Gavà"]); 
+  const [chips, setChips] = useState(null);
   const [trofeus, setTrofeus] = useState(["Trofeu1", "Trofeu2", "Trofeu3"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
-  const [tags, setTags] = useState(null); 
+  
 
 
   const handleChipPress = (index) => {
@@ -202,8 +202,8 @@ export default function Page() {
   const handleTagPress = (tagId) => {
     setSelectedTagIndex(tagId);
     Alert.alert(
-      "Eliminar lloc favorit",
-      "Estàs segur que vols eliminar el lloc favorit ?",
+      "Eliminar tag",
+      "Estàs segur que vols eliminar aquesta tag ?",
       [
         { text: "Cancelar", onPress: () => setSelectedTagIndex(null), style: "cancel" },
         { text: "Eliminar", onPress: () => handleDeleteTag(tagId) },
@@ -222,34 +222,85 @@ export default function Page() {
     );
   };
 
-  const handleDeleteChip = (index) => {
-    const updatedChips = [...chips];
-    updatedChips.splice(index, 1);
-    setChips(updatedChips);
-    setSelectedChipIndex(null);
-  };
-  const handleDeleteTag = (tagId) => {
-    const index = user.tags_preferits.findIndex((tag) => tag.id === tagId);
+  const handleDeleteChip = async (espaiId) => {
+    const index = user.espais_preferits.findIndex((espai) => espai.id === espaiId);
+    
     if (index !== -1) {
-      const updatedTags = [...user.tags_preferits];
-      
-      updatedTags.splice(index, 1);
+      const updatedEspais = [...user.espais_preferits];
+      updatedEspais.splice(index, 1);
   
-      setUser((prevUser) => ({
-        ...prevUser,
-        tags_preferits: updatedTags,
-      }));
+      try {
+        const userId = user.id;
+        const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}/espais_preferits/${espaiId}`;
   
-      setSelectedTagIndex(null);
+        const response = await fetch(apiUrl, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud DELETE al backend');
+        }
+  
+        setUser((prevUser) => ({
+          ...prevUser,
+          espais_preferits: updatedEspais,
+        }));
+  
+        setSelectedChipIndex(null);
+        Alert.alert('Espai Eliminat', 'El lloc preferit ha estat eliminat correctament');
+      } catch (error) {
+        console.error('Error al eliminar el lloc preferit en el backend:', error);
+      }
     }
   };
+  
+  const handleDeleteTag = async (tagId) => {
+    const index = user.tags_preferits.findIndex((tag) => tag.id === tagId);
+    
+    if (index !== -1) {
+      const updatedTags = [...user.tags_preferits];
+      updatedTags.splice(index, 1);
+  
+      try {
+        const userId = user.id;
+        const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}/tags_preferits/${tagId}`;
+
+        const response = await fetch(apiUrl, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud DELETE al backend');
+        }
+  
+        setUser((prevUser) => ({
+          ...prevUser,
+          tags_preferits: updatedTags,
+        }));
+  
+        setSelectedTagIndex(null);
+        Alert.alert('Tag Eliminat', 'El tag ha estat eliminat correctament');
+      } catch (error) {
+        console.error('Error al eliminar el tag en el backend:', error);
+  
+      }
+    }
+  };
+  
   
 
   const getLocalUser = async () => {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
-  
+      console.log('estic a user', dataString);
       const data = JSON.parse(dataString);
       console.log(data.user.id);
       return data.user.id;
@@ -325,7 +376,7 @@ export default function Page() {
       <Text style={styles.numpunts}>{user.puntuacio}</Text>
       <Text style={styles.punts}>Punts</Text>
       <View style={styles.separator2}/>
-      <Text style={styles.numfriends}>20</Text>
+      <Text style={styles.numfriends}>{user.friends.length}</Text>
 
       <Link href={'/(tabs)/(user)/friendslist'} asChild>
         <TouchableOpacity >
@@ -351,7 +402,7 @@ export default function Page() {
             </TouchableOpacity>
           ))
         ) : (
-          <Text>No tags available</Text>
+          <Text>No hi ha tags</Text>
         )}
       </ScrollView>
 
@@ -378,13 +429,16 @@ export default function Page() {
           style={styles.scroll}
           
         >
-          {chips.map((chip, index) => (
-            <TouchableOpacity key={index} onPress={() => handleChipPress(index)} 
-               style={{ marginRight: 5}}>
-              <Chip text={chip} color="#d2d0d0" />
+          {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
+          user.espais_preferits.map((espai) => (
+            <TouchableOpacity key={espai.id} onPress={() => handleChipPress(espai.id)} style={{ marginRight: 5 }}>
+              <Chip text={espai.nom} color="#d2d0d0" />
             </TouchableOpacity>
-          ))}
-          </ScrollView>
+          ))
+        ) : (
+          <Text>No hi ha llocs preferits</Text>
+        )}
+      </ScrollView>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
