@@ -148,7 +148,7 @@ export default function Configuration() {
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
-      thumbColor={isUserVisible ? "white" : "white"}
+      thumbColor={"white"}
       ios_backgroundColor="#3e3e3e"
       value={isUserVisible}
       onValueChange={toggleUserVisibility}
@@ -163,7 +163,7 @@ export default function Configuration() {
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
-      thumbColor={UserWantsToTalk ? "white" : "white"}
+      thumbColor={"white"}
       ios_backgroundColor="#3e3e3e"
       value={UserWantsToTalk}
       onValueChange={toggleUserWantsToTalk}
