@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisibleSec, setModalVisibleSec] = useState(false);
   const navigation = useNavigation();
 
 
@@ -25,8 +26,8 @@ export default function Configuration() {
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 6,
-      marginLeft: 220,
-      marginTop: 180,
+      marginLeft: 210,
+      marginTop: 40,
     },
     saveButton: {
       width: 130,
@@ -95,6 +96,19 @@ export default function Configuration() {
     chat: {
       marginLeft: 230,
       marginTop: -25,
+    },
+    deleteAcc: {
+      width: 170,
+      height: 40,
+      backgroundColor: 'transparent',
+      color: 'red',
+      borderWidth: 1,
+      borderColor: 'coral',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 6,
+      marginLeft: 100,
+      marginTop: 20,
     }
       
   });
@@ -107,6 +121,9 @@ export default function Configuration() {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+  const toggleModalSec = () => {
+    setModalVisibleSec(!isModalVisibleSec);
   };
 
   const handleLogout = async () => {
@@ -152,6 +169,21 @@ export default function Configuration() {
       onValueChange={toggleUserWantsToTalk}
       />
       </TouchableOpacity>
+      <View style={styles.separator2}/>
+      <Text style={styles.xatejar}> Eliminar compte</Text>
+      <View style={styles.separator2}/>
+      <TouchableOpacity style={styles.deleteAcc} onPress={toggleModalSec}>
+      <Text style={styles.compte}>Eliminar Compte</Text>
+      </TouchableOpacity>
+      <Modal visible={isModalVisibleSec} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text>Estàs segur que vols eliminar el compte ?</Text>
+            <Button title="Si" onPress={handleLogout} />
+            <Button title="Cancelar" onPress={toggleModalSec} />
+          </View>
+        </View>
+      </Modal>
       <View style={styles.separator2}/>
       <TouchableOpacity style={styles.editButton} onPress={toggleModal}>
         <Text style={styles.sessio}>Tancar sessió</Text>
