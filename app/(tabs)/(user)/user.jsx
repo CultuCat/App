@@ -182,12 +182,35 @@ export default function Page() {
   });
   const [user, setUser] = useState(null);
   const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues","Gavà"]); 
-  const [tags, setTags] = useState(["Tag1", "Tag2", "Tag3"]);
   const [trofeus, setTrofeus] = useState(["Trofeu1", "Trofeu2", "Trofeu3"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
+  const [selectedTagIndex, setSelectedTagIndex] = useState(null);
+  const [tags, setTags] = useState(null); 
 
 
   const handleChipPress = (index) => {
+    setSelectedChipIndex(index);
+    Alert.alert(
+      "Eliminar lloc favorit",
+      "Estàs segur que vols eliminar el lloc favorit ?",
+      [
+        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
+        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
+      ]
+    );
+  };
+  const handleTagPress = (tagId) => {
+    setSelectedTagIndex(tagId);
+    Alert.alert(
+      "Eliminar lloc favorit",
+      "Estàs segur que vols eliminar el lloc favorit ?",
+      [
+        { text: "Cancelar", onPress: () => setSelectedTagIndex(null), style: "cancel" },
+        { text: "Eliminar", onPress: () => handleDeleteTag(tagId) },
+      ]
+    );
+  };
+  const handleTrofeuPress = (index) => {
     setSelectedChipIndex(index);
     Alert.alert(
       "Eliminar lloc favorit",
@@ -205,32 +228,62 @@ export default function Page() {
     setChips(updatedChips);
     setSelectedChipIndex(null);
   };
+  const handleDeleteTag = (tagId) => {
+    const index = user.tags_preferits.findIndex((tag) => tag.id === tagId);
+    if (index !== -1) {
+      const updatedTags = [...user.tags_preferits];
+      
+      updatedTags.splice(index, 1);
+  
+      setUser((prevUser) => ({
+        ...prevUser,
+        tags_preferits: updatedTags,
+      }));
+  
+      setSelectedTagIndex(null);
+    }
+  };
+  
 
   const getLocalUser = async () => {
-    const data = await AsyncStorage.getItem("@user");
-    if (!data) return null;
-    console.log(data.token);
-    return data;
-    
-  }
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+  
+      const data = JSON.parse(dataString);
+      console.log(data.user.id);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  
 
   useEffect(() => {
-    const data = getLocalUser();
-    
-    fetch(`https://cultucat.hemanuelpc.es/users/${data.user.id}`)
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const data = await getLocalUser();
+        if (!data) {
+          console.error('User data not found in AsyncStorage');
+          return;
+        }
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
-        return response.json();
-      })
-      .then((data) => {
-        setUser(data);
-      })
-      .catch((error) => {
-        console.error('Error al obtener el perfil del usuario:', error);
-      });
+  
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
 
   if (!user) {
     return <Text>Cargando...</Text>;
@@ -291,12 +344,18 @@ export default function Page() {
         contentContainerStyle={styles.chipContainer}
         style={styles.scroll}
       >
-        {tags.map((tag, index) => (
-          <TouchableOpacity key={index} onPress={() => handleTagPress(index)} style={{ marginRight: 5 }}>
-            <Chip text={tag} color="#d2d0d0" />
-          </TouchableOpacity>
-        ))}
+        {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
+          user.tags_preferits.map((tag) => (
+            <TouchableOpacity key={tag.id} onPress={() => handleTagPress(tag.id)} style={{ marginRight: 5 }}>
+              <Chip text={tag.nom} color="#d2d0d0" />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text>No tags available</Text>
+        )}
       </ScrollView>
+
+
         
       <TouchableOpacity
           style={styles.fletxaButton}
