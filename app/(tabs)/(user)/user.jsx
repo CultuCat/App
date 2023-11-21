@@ -181,6 +181,8 @@ export default function Page() {
   });
   const [user, setUser] = useState(null);
   const [chips, setChips] = useState(["Tarragona", "Barcelona", "Begues","Gavà"]); 
+  const [tags, setTags] = useState(["Tag1", "Tag2", "Tag3"]);
+  const [trofeus, setTrofeus] = useState(["Trofeu1", "Trofeu2", "Trofeu3"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
 
 
@@ -273,7 +275,18 @@ export default function Page() {
       <Text style={styles.bio}>{user.bio}</Text>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Tags Favorites</Text>
-      
+      <ScrollView
+        horizontal
+        alwaysBounceHorizontal={true}
+        contentContainerStyle={styles.chipContainer}
+        style={styles.scroll}
+      >
+        {tags.map((tag, index) => (
+          <TouchableOpacity key={index} onPress={() => handleTagPress(index)} style={{ marginRight: 5 }}>
+            <Chip text={tag} color="#d2d0d0" />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
         
       <TouchableOpacity
           style={styles.fletxaButton}
@@ -316,6 +329,18 @@ export default function Page() {
       </TouchableOpacity>
       <View style={styles.separator}/>
       <Text style={styles.titles}>Trofeus</Text>
+      <ScrollView
+        horizontal
+        alwaysBounceHorizontal={true}
+        contentContainerStyle={styles.chipContainer}
+        style={styles.scroll}
+      >
+        {trofeus.map((trofeu, index) => (
+          <TouchableOpacity key={index} onPress={() => handleTrofeuPress(index)} style={{ marginRight: 5 }}>
+            <Chip text={trofeu} color="#d2d0d0" />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
       <TouchableOpacity
           style={styles.fletxaButton}
         >
