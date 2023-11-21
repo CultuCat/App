@@ -4,6 +4,7 @@ import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
 import { ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -205,9 +206,18 @@ export default function Page() {
     setSelectedChipIndex(null);
   };
 
+  const getLocalUser = async () => {
+    const data = await AsyncStorage.getItem("@user");
+    if (!data) return null;
+    console.log(data.token);
+    return data;
+    
+  }
 
   useEffect(() => {
-    fetch('https://cultucat.hemanuelpc.es/users/1/')
+    const data = getLocalUser();
+    
+    fetch(`https://cultucat.hemanuelpc.es/users/${data.user.id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');
