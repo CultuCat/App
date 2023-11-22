@@ -300,9 +300,7 @@ export default function Page() {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
-      console.log('estic a user', dataString);
       const data = JSON.parse(dataString);
-      console.log(data.user.id);
       return data.user.id;
     } catch (error) {
       console.error('Error getting local user data:', error);

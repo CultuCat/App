@@ -7,9 +7,7 @@ export default function Page() {
         <View>
             <Text>Home page</Text>
             
-            <Link href={{ pathname: '/event', params: { path: '/(tabs)/home',  eventId: '20231011039' } }} replace asChild>
-            <Button title='Event' />
-            </Link>
+            
         </View>
     );
 }
