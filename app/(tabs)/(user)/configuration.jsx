@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -9,7 +10,7 @@ export default function Configuration() {
   const [loading, setLoading] = useState(true);
   const [isUserVisible, setIsUserVisible] = useState(null);
   const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
-  
+  const navigation = useNavigation();
 
 
   const styles = StyleSheet.create({
@@ -160,8 +161,6 @@ export default function Configuration() {
     return <Text>Cargando...</Text>; 
   }
   
-
-
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -180,6 +179,31 @@ export default function Configuration() {
   const toggleUserWantsToTalk = () => {
     setUserWantsToTalk(!UserWantsToTalk);
   };
+  const handleDelete = async () => {
+    try {
+      const userId = user.id;
+      const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}`;
+      await AsyncStorage.removeItem("@user");
+      toggleModalSec();
+  
+      const response = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(`Error en la solicitud DELETE al backend: ${JSON.stringify(errorResponse)}`);
+      }
+    navigation.navigate('index');
+  
+    } catch (error) {
+      console.error('Error al eliminar el usuario en el backend:', error);
+    }
+  };
+  
 
   return (
     <View style={styles.containerTot}>
@@ -222,7 +246,7 @@ export default function Configuration() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text>Estàs segur que vols eliminar el compte ?</Text>
-            <Button title="Si" onPress={handleLogout} />
+            <Button title="Si" onPress={handleDelete} />
             <Button title="Cancelar" onPress={toggleModalSec} />
           </View>
         </View>
