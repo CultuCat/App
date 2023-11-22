@@ -1,7 +1,6 @@
 import React , { useState } from 'react';
 import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput, Switch} from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-import SelectDropdown from 'react-native-select-dropdown'
 import { Link } from 'expo-router';
 
 
@@ -151,7 +150,7 @@ export default function Page() {
       
     };
 
-    fetch('http://127.0.0.1:8000/users/7/', {
+    fetch('https://cultucat.hemanuelpc.es/users/1', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -5,11 +5,20 @@ import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
-      <Image source={image} style={styles.image} />
+      {image ? (
+      <Image source={{ uri: image.uri }} style={styles.image} />
+    ) : (
+      <Image
+        source={{
+          uri:
+            'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
+        }}
+        style={styles.image}
+      />
+    )}
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.data}>{data}</Text>
@@ -20,15 +29,36 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
-
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const loadMoreData = async () => {
+    if (loading) return;
+  
+    try {
+      setLoading(true);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
+      const newData = await response.json();
+  
+      if (newData.results.length > 0) {
+        setData((prevData) => [...prevData, ...newData.results]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     AsyncStorage.clear();
   }, []);
+  
 
   const navigation = useNavigation();
   const handlePressMap = () => {
     navigation.navigate('map');
   };
+  
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
@@ -41,7 +71,7 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/', {
+    fetch('https://cultucat.hemanuelpc.es/events/', {
       method: "GET"
     })
       .then((response) => {
@@ -85,12 +115,14 @@ export default function Page() {
       </TouchableOpacity>
 
       <FlatList
-        data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} id={item.id} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      data={filteredData}
+      renderItem={({ item }) => (
+        <Item title={item.nom} data={item.dataIni} ubicacion={item.espai.nom} image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null} id={item.id} />
+      )}
+      keyExtractor={(item) => item.id}
+      onEndReached={loadMoreData}
+      onEndReachedThreshold={0.1}
+    />
     </SafeAreaView>
   );
 }
