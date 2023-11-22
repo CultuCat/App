@@ -1,7 +1,8 @@
 import React, { useState, useEffect} from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -9,7 +10,7 @@ export default function Configuration() {
   const [loading, setLoading] = useState(true);
   const [isUserVisible, setIsUserVisible] = useState(null);
   const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
-  
+  const navigation = useNavigation();
 
 
   const styles = StyleSheet.create({
@@ -160,8 +161,6 @@ export default function Configuration() {
     return <Text>Cargando...</Text>; 
   }
   
-
-
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -180,6 +179,69 @@ export default function Configuration() {
   const toggleUserWantsToTalk = () => {
     setUserWantsToTalk(!UserWantsToTalk);
   };
+  const saveconfig = async () => {
+    try {
+      const userId = user.id; 
+      const wantsToTalkUrl = `https://cultucat.hemanuelpc.es/users/${userId}/wants_to_talk_perfil/`;
+      const isVisibleUrl = `https://cultucat.hemanuelpc.es/users/${userId}/is_visible_perfil/`;
+  
+      const wantsToTalkResponse = await fetch(wantsToTalkUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wantsToTalk: UserWantsToTalk, 
+        }),
+      });
+  
+      const isVisibleResponse = await fetch(isVisibleUrl, {
+        method: 'PUT', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isVisible: isUserVisible,
+        }),
+      });
+
+      if (!wantsToTalkResponse.ok || !isVisibleResponse.ok) {
+        const errorWantsToTalk = await wantsToTalkResponse.json();
+        const errorIsVisible = await isVisibleResponse.json();
+        throw new Error(`Error in saveconfig requests: ${JSON.stringify(errorWantsToTalk)}, ${JSON.stringify(errorIsVisible)}`);
+      }
+  
+    Alert.alert('Dades guardades', 'Les teves dades estan guardades correctement');
+    } catch (error) {
+      console.error('Error in saveconfig:', error);
+    }
+  };
+  
+  const handleDelete = async () => {
+    try {
+      const userId = user.id;
+      const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}`;
+      await AsyncStorage.removeItem("@user");
+      toggleModalSec();
+  
+      const response = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(`Error en la solicitud DELETE al backend: ${JSON.stringify(errorResponse)}`);
+      }
+    navigation.navigate('index');
+  
+    } catch (error) {
+      console.error('Error al eliminar el usuario en el backend:', error);
+    }
+  };
+  
 
   return (
     <View style={styles.containerTot}>
@@ -222,7 +284,7 @@ export default function Configuration() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text>Estàs segur que vols eliminar el compte ?</Text>
-            <Button title="Si" onPress={handleLogout} />
+            <Button title="Si" onPress={handleDelete} />
             <Button title="Cancelar" onPress={toggleModalSec} />
           </View>
         </View>
@@ -240,7 +302,7 @@ export default function Configuration() {
           </View>
         </View>
       </Modal>
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={styles.saveButton} onPress={saveconfig}>
         <Text style={styles.sessio}>Desar</Text>
       </TouchableOpacity>
     </View>
