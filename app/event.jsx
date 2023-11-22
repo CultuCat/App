@@ -78,8 +78,8 @@ export default function Page() {
           throw new Error('Error en la solicitud');
         }
       })
-      .then((dataFromServer) => {
-        setEvent(dataFromServer);
+      .then((data) => {
+        setEvent(data);
       })
       .catch((error) => {
         console.error(error);
@@ -131,8 +131,8 @@ export default function Page() {
         <View style={{ marginHorizontal: '7.5%' }}>
           <Text style={styles.title}>{event.nom}</Text>
           <Text style={{ color: '#ff6961' }}>{event.dataIni}</Text>
-          <Text>{event.espai}</Text>
-          <Chip text="Music" color="#d2d0d0"></Chip>
+          <Text>{event.espai?.nom}</Text>
+          <Chip text="Music" color="#d2d0d0"/>
           <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
           <Text>{event.descripcio}</Text>
           <View style={{ marginVertical: 10 }}>
