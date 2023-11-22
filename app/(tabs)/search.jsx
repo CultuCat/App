@@ -8,7 +8,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
-      <Image source={image} style={styles.image} />
+      {image ? (
+      <Image source={{ uri: image.uri }} style={styles.image} />
+    ) : (
+      <Image
+        source={{
+          uri:
+            'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
+        }}
+        style={styles.image}
+      />
+    )}
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.data}>{data}</Text>
@@ -107,7 +117,7 @@ export default function Page() {
       <FlatList
       data={filteredData}
       renderItem={({ item }) => (
-        <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} id={item.id} />
+        <Item title={item.nom} data={item.dataIni} ubicacion={item.espai.nom} image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null} id={item.id} />
       )}
       keyExtractor={(item) => item.id}
       onEndReached={loadMoreData}

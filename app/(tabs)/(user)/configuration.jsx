@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isModalVisibleSec, setModalVisibleSec] = useState(false);
-  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [isUserVisible, setIsUserVisible] = useState(null);
+  const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
+  
 
 
   const styles = StyleSheet.create({
@@ -112,12 +114,53 @@ export default function Configuration() {
     }
       
   });
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  const [user, setUser] = useState(null);
 
-  const route = useRoute();
-  const isUserVisibleParam = route.params?.isUserVisible || false;
-  const UserWantsToTalkParam = route.params?.wantsToTalk|| false;
-  const [isUserVisible, setIsUserVisible] = useState(isUserVisibleParam);
-  const [UserWantsToTalk, setUserWantsToTalk] = useState(UserWantsToTalkParam);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getLocalUser();
+        if (!data) {
+          console.error('User data not found in AsyncStorage');
+          return;
+        }
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`);
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const userData = await response.json();
+        setUser(userData);
+  
+        setIsUserVisible(userData.isVisible || false);
+        setUserWantsToTalk(userData.wantsToTalk || false);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <Text>Cargando...</Text>; 
+  }
+  
+
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);

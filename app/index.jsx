@@ -134,14 +134,16 @@ export default function Page() {
                         style={styles.input}
                         placeholder="Username"
                         value={username}
-                        onChangeText={setUsername}
+                        onChangeText={text => setUsername(text.toLowerCase())} 
+                        autoCapitalize="none"
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Password"
                         value={password}
-                        onChangeText={setPassword}
+                        onChangeText={text => setPassword(text.toLowerCase())}
                         secureTextEntry
+                        autoCapitalize="none" 
                     />
                     <Button title="Login" onPress={onLoginPress} />
                     <Button title="Signup" onPress={() => router.replace('signup')} />
@@ -175,5 +177,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         paddingHorizontal: 10,
+        
     },
 });
