@@ -26,6 +26,7 @@ export default function Page() {
   const [buyButtonEnabled, setBuyButtonEnabled] = useState(true);
   const route = useRoute();
   const eventId = route.params.eventId;
+  const eventNom = event.nom;
   
 
 
@@ -205,7 +206,7 @@ export default function Page() {
         >
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
-        <BuyModal eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled}/>
+        <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled}/>
       </View>
     </View>
   );

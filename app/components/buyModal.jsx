@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
 const BuyModal = ({
+    eventNom,
     eventId,
     price,
     buyVisible,
@@ -39,7 +40,6 @@ const BuyModal = ({
           },
           body: JSON.stringify({
             eventId: eventId,
-            user: userId,
           }),
         });
     
@@ -118,6 +118,9 @@ const BuyModal = ({
         if (price == 'Gratuït') {
           return 'Gratuït';
         }
+        if (price > 100 || price < 1) {
+          return 'No disponible'
+        }
       
         let discountPercentage;
         switch (nivellTrofeu) {
@@ -149,7 +152,7 @@ const BuyModal = ({
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-              Vols comprar una entrada per aquest event?
+              Vols comprar una entrada per {eventNom}?
             </Text>
             {discountCodes.length > 0 && (
               <View style={styles.pickerContainer}>
@@ -172,7 +175,14 @@ const BuyModal = ({
     
             {discountInfo && (
               <View style={styles.discountInfoContainer}>
-                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(price, discountInfo.nivellTrofeu)}€`}</Text>
+                <Text style={styles.discountInfoText}>
+                  {`Preu Final: ${
+                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'No disponible' &&
+                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuit'
+                      ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
+                      : applyDiscount(price, discountInfo.nivellTrofeu)
+                  }`}
+                </Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
@@ -251,7 +261,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 5,
       marginBottom: 30,
-      marginLeft: -140,
+      marginLeft: 0,
     },
     discountInfoText: {
       fontSize: 16,
