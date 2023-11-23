@@ -134,14 +134,14 @@ export default function Page() {
                         style={styles.input}
                         placeholder="Username"
                         value={username}
-                        onChangeText={text => setUsername(text.toLowerCase())} 
+                        onChangeText={setUsername} 
                         autoCapitalize="none"
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Password"
                         value={password}
-                        onChangeText={text => setPassword(text.toLowerCase())}
+                        onChangeText={setPassword}
                         secureTextEntry
                         autoCapitalize="none" 
                     />

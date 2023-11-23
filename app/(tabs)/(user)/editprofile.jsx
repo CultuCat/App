@@ -10,7 +10,6 @@ export default function Page() {
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState(''); 
   const [initialVisibility, setInitialVisibility] = useState(true); 
-  const [visibility, setVisibility] = useState(initialVisibility);
  const [user, setUser] = useState(null);
 
   const styles = StyleSheet.create({
@@ -143,58 +142,104 @@ export default function Page() {
     
   });
 
-  const handleSaveChanges = () => {
-    const updatedProfile = {
-      first_name: first_name,
-      bio: bio, 
-      username:username,
-      visibility: visibility,
-      
-    };
-  }
-
-    const getLocalUser = async () => {
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const dataString = await AsyncStorage.getItem("@user");
-        if (!dataString) return null;
-        const data = JSON.parse(dataString);
-        return data.user.id;
+        const userID = await getLocalUser();
+        if (!userID) {
+          console.error('User ID not found in AsyncStorage');
+          return;
+        }
+  
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+  
+        const userToken = JSON.parse(userTokenString).token;
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const userData = await response.json();
+        setUser(userData);
       } catch (error) {
-        console.error('Error getting local user data:', error);
-        return null;
+        console.error('Error fetching user data:', error);
       }
     };
-    
   
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const data = await getLocalUser();
-          if (!data) {
-            console.error('User data not found in AsyncStorage');
-            return;
-          }
+    fetchData();
+  }, []);
     
-          const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`);
-          if (!response.ok) {
-            throw new Error('Error en la solicitud');
-          }
-    
-          const userData = await response.json();
-          setUser(userData);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      };
-    
-      fetchData();
-    }, []);
     
   
     if (!user) {
       return <Text>Cargando...</Text>;
     }
-
+    const handleSaveChanges = async () => {
+      try {
+        const userID = await getLocalUser();
+        if (!userID) {
+          console.error('User ID not found in AsyncStorage');
+          return;
+        }
+  
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+  
+        const userToken = JSON.parse(userTokenString).token;
+        console.log(userToken);
+  
+        const updatedProfile = {
+          first_name: first_name || user.first_name,
+          bio: bio || user.bio,
+          username: username || user.username,
+        };
+        console.log(first_name);
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/edit`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedProfile),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const updatedUserData = await response.json();
+        setUser(updatedUserData);
+  
+      } catch (error) {
+        console.error('Error updating user data:', error);
+      }
+    };
 
   return (
   <View>
