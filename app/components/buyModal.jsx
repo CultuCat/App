@@ -1,5 +1,5 @@
 import React, { useEffect,useState } from 'react';
-import { StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Modal, View, Text, TouchableOpacity,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
@@ -26,7 +26,7 @@ const BuyModal = ({
       const userTokenString = await AsyncStorage.getItem("@user");
 
       const userToken = JSON.parse(userTokenString).token;
-      const userId = JSON.parse(userTokenString).id;
+
     
       try {
         await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
@@ -39,7 +39,7 @@ const BuyModal = ({
             
           },
           body: JSON.stringify({
-            eventId: eventId,
+            event: eventId,
           }),
         });
     
@@ -48,6 +48,7 @@ const BuyModal = ({
         } else {
           console.error('Error en la solicitud POST:', response.status);
         }
+        Alert.alert('Entrada comprada!', 'Ja tens el teu ticket per aquest event');
       } catch (error) {
         console.error('Error al guardar el estado del botón de compra o al hacer la solicitud POST:', error);
       }
