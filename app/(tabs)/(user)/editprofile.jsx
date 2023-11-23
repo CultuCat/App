@@ -1,6 +1,6 @@
 import React , { useState,useEffect } from 'react';
-import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput, Switch} from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react-native';
+import { MaterialIcons} from "@expo/vector-icons";
 import { Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -9,7 +9,6 @@ export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState(''); 
-  const [initialVisibility, setInitialVisibility] = useState(true); 
  const [user, setUser] = useState(null);
 
   const styles = StyleSheet.create({
