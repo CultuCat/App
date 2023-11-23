@@ -280,7 +280,7 @@ export default function Page() {
     <Text style= {styles.genere}>Bio: </Text>
     <View style={styles.container}>
     </View>
-    <Link href={'(user)/user'} replace asChild>
+    <Link href={'(user)/user'} asChild>
     <TouchableOpacity
         style={styles.cancelButton}
       >
@@ -288,7 +288,7 @@ export default function Page() {
     </TouchableOpacity>
     </Link>
     
-    <Link href={'(user)/user'} replace asChild>
+    <Link href={'(user)/user'} asChild>
     <TouchableOpacity
         style={styles.saveButton } onPress={handleSaveChanges}
       >
