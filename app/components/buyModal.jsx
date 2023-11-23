@@ -52,35 +52,64 @@ const BuyModal = ({
         console.error('Error al guardar el estado del botón de compra o al hacer la solicitud POST:', error);
       }
     };
+    const getLocalUser = async () => {
+      try {
+        const dataString = await AsyncStorage.getItem("@user");
+        if (!dataString) return null;
+        const data = JSON.parse(dataString);
+        return data.user.id;
+      } catch (error) {
+        console.error('Error getting local user data:', error);
+        return null;
+      }
+    };
     
-    const handleDiscountCodeValidation = (discountCodeId) => {
-        console.log("Handling discount validation for:", discountCodeId);
-        
-        if (!discountCodeId) {
-          setDiscountInfo(null);
-          return;
+    const handleDiscountCodeValidation = async (discountCodeId) => {
+      console.log("Handling discount validation for:", discountCodeId);
+  
+      if (!discountCodeId) {
+        setDiscountInfo(null);
+        return;
+      }
+  
+      const selectedDiscount = discountCodes.find(
+        (discount) => discount.codi === discountCodeId
+      );
+  
+      if (selectedDiscount) {
+        setDiscountInfo(selectedDiscount);
+      } else {
+        console.error("Descuento no encontrado en discountCodes");
+      }
+    };
+  
+    useEffect(() => {
+      const fetchDiscountCodes = async () => {
+        try {
+          const userId = await getLocalUser();
+    
+          const response = await fetch(
+            `https://cultucat.hemanuelpc.es/discounts/?userDiscount=${encodeURIComponent(userId)}`
+          );
+    
+          if (!response.ok) {
+            throw new Error('Error en la solicitud de códigos de descuento');
+          }
+    
+          const discountData = await response.json();
+    
+          const filteredDiscounts = discountData.filter((discount) => !discount.usat);
+    
+          setDiscountCodes(filteredDiscounts);
+          console.log('discounts', discountCodes);
+        } catch (error) {
+          console.error('Error al obtener códigos de descuento:', error);
         }
-        
-      
-        const url = `https://cultucat.hemanuelpc.es/discounts/?userDiscount=${encodeURIComponent(discountCodeId)}`;
-     
-        fetch(url)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`Error in the request. Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((discountInfoFromServer) => {
-            console.log('Discount info from server:', discountInfoFromServer);
-            setDiscountInfo(discountInfoFromServer);
-            console.log(discountInfo);
-          })
-          .catch((error) => {
-            console.error('Error fetching discount info:', error.message);
-          });
       };
-      
+    
+      fetchDiscountCodes();
+    }, []);
+    
     
     const applyDiscount = (price, nivellTrofeu) => {
         if (!discountInfo) {
@@ -108,14 +137,7 @@ const BuyModal = ({
         return price - discountPercentage * price; 
       };
     
-    useEffect(() => {
-        fetch('https://cultucat.hemanuelpc.es/discounts/')
-      .then((response) => response.json())
-      .then((discountData) => {
-        setDiscountCodes(discountData);
-      })
-      .catch((error) => console.error('Error al obtener códigos de descuento:', error));
-      }, []);
+    
     
 
     return (
@@ -141,7 +163,7 @@ const BuyModal = ({
                 >
                   <Picker.Item label="Selecciona un codi" value={null} />
                   {discountCodes.map((code) => (
-                    <Picker.Item key={code.codi} label={code.codi} value={code.userDiscount} />
+                    <Picker.Item key={code.codi} label={code.codi} value={code.codi} />
                   ))}
                 </Picker>
 
@@ -150,7 +172,7 @@ const BuyModal = ({
     
             {discountInfo && (
               <View style={styles.discountInfoContainer}>
-                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(price, discountInfo[0].nivellTrofeu)}€`}</Text>
+                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(price, discountInfo.nivellTrofeu)}€`}</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
