@@ -128,46 +128,42 @@ export default function Configuration() {
   };
   const [user, setUser] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      const data = await getLocalUser();
-      const userTokenString = await AsyncStorage.getItem("@user");
-      const userToken = JSON.parse(userTokenString).token;
-
-      if (!data || !userToken) {
-        console.error('User data or token not found in AsyncStorage');
-        return;
-      }
-
-      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`, {
-        headers: {
-          'Authorization': `Token ${userToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-
-      const userData = await response.json();
-      setUser(userData);
-
-      setIsUserVisible(userData.isVisible);
-      setUserWantsToTalk(userData.wantsToTalk);
-      console.log(UserWantsToTalk);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData(); 
+    const fetchData = async () => {
+      try {
+        const data = await getLocalUser();
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+        if (!data) {
+          console.error('User data not found in AsyncStorage');
+          return;
+        }
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`,
+        {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const userData = await response.json();
+        setUser(userData);
+  
+        setIsUserVisible(userData.isVisible || false);
+        setUserWantsToTalk(userData.wantsToTalk || false);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, []);
-  
-  
 
   if (loading) {
     return <Text>Cargando...</Text>; 
@@ -196,14 +192,11 @@ export default function Configuration() {
       const userId = user.id; 
       const wantsToTalkUrl = `https://cultucat.hemanuelpc.es/users/${userId}/wants_to_talk_perfil/`;
       const isVisibleUrl = `https://cultucat.hemanuelpc.es/users/${userId}/is_visible_perfil/`;
-      const userTokenString = await AsyncStorage.getItem("@user");
-      const userToken = JSON.parse(userTokenString).token;
   
       const wantsToTalkResponse = await fetch(wantsToTalkUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${userToken}`,
         },
         body: JSON.stringify({
           wantsToTalk: UserWantsToTalk, 
@@ -214,7 +207,6 @@ export default function Configuration() {
         method: 'PUT', 
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${userToken}`,
         },
         body: JSON.stringify({
           isVisible: isUserVisible,
@@ -236,8 +228,6 @@ export default function Configuration() {
   const handleDelete = async () => {
     try {
       const userId = user.id;
-      const userTokenString = await AsyncStorage.getItem("@user");
-      const userToken = JSON.parse(userTokenString).token;
       const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}`;
       await AsyncStorage.removeItem("@user");
       toggleModalSec();
@@ -246,7 +236,6 @@ export default function Configuration() {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${userToken}`,
         },
       });
   
