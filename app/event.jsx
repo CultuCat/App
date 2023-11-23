@@ -9,8 +9,6 @@ import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
-
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
 
@@ -122,8 +120,11 @@ export default function Page() {
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
   const parsedPrice = (price) => {
-    if (price && price.includes('€'))
+    if (price && price.includes('€') && parsedPriceCalc(price) < 100)
       return price;
+    if(parsedPriceCalc(price) > 100) {
+      return 'No Disponible'
+    }
     else return 'Gratuït'
   };
 
@@ -198,16 +199,20 @@ export default function Page() {
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
-      <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
+        <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
         <TouchableOpacity
-          style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
+          style={[styles.buyButton, 
+            { opacity: buyButtonEnabled ? 1 : 0.5 }
+          ]}
           onPress={handleBuy}
-          disabled={!buyButtonEnabled}
+          disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
+          
         >
           <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
         </TouchableOpacity>
-        <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled}/>
+        <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
       </View>
+
     </View>
   );
 

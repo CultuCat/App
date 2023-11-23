@@ -118,9 +118,6 @@ const BuyModal = ({
         if (price == 'Gratuït') {
           return 'Gratuït';
         }
-        if (price > 100 || price < 1) {
-          return 'No disponible'
-        }
       
         let discountPercentage;
         switch (nivellTrofeu) {
@@ -178,7 +175,7 @@ const BuyModal = ({
                 <Text style={styles.discountInfoText}>
                   {`Preu Final: ${
                     applyDiscount(price, discountInfo.nivellTrofeu) !== 'No disponible' &&
-                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuit'
+                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuït'
                       ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
                       : applyDiscount(price, discountInfo.nivellTrofeu)
                   }`}
