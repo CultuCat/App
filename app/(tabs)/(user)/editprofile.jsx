@@ -220,7 +220,7 @@ export default function Page() {
         };
         console.log(first_name);
   
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/edit`, {
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
           method: 'PUT',
           headers: {
             'Authorization': `Token ${userToken}`,
