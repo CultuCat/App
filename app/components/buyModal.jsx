@@ -1,6 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
 
 const BuyModal = ({
     eventId,
@@ -15,22 +16,51 @@ const BuyModal = ({
     const closeModal = () => {
         setBuyVisible(false);
     };
+    
 
     const handleYesClick = async () => {
-        setBuyVisible(false);
-        setBuyButtonEnabled(false);
-        try {
-            await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
-        } catch (error) {
-            console.error('Error al guardar el estado del botón de compra:', error);
+      setBuyVisible(false);
+      setBuyButtonEnabled(false);
+    
+      const userTokenString = await AsyncStorage.getItem("@user");
+
+      const userToken = JSON.parse(userTokenString).token;
+      const userId = JSON.parse(userTokenString).id;
+    
+      try {
+        await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
+    
+        const response = await fetch('https://cultucat.hemanuelpc.es/tickets/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${userToken}`,
+            
+          },
+          body: JSON.stringify({
+            eventId: eventId,
+            user: userId,
+          }),
+        });
+    
+        if (response.ok) {
+          console.log('Solicitud POST exitosa');
+        } else {
+          console.error('Error en la solicitud POST:', response.status);
         }
+      } catch (error) {
+        console.error('Error al guardar el estado del botón de compra o al hacer la solicitud POST:', error);
+      }
     };
+    
     const handleDiscountCodeValidation = (discountCodeId) => {
         console.log("Handling discount validation for:", discountCodeId);
+        
         if (!discountCodeId) {
           setDiscountInfo(null);
           return;
         }
+        
       
         const url = `https://cultucat.hemanuelpc.es/discounts/?userDiscount=${encodeURIComponent(discountCodeId)}`;
      
@@ -120,7 +150,7 @@ const BuyModal = ({
     
             {discountInfo && (
               <View style={styles.discountInfoContainer}>
-                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(parsedPriceCalc(event.preu), discountInfo[0].nivellTrofeu)}€`}</Text>
+                <Text style={styles.discountInfoText} >{`Preu Final: ${applyDiscount(price, discountInfo[0].nivellTrofeu)}€`}</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
@@ -192,6 +222,19 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'black',
         fontSize: 16,
+    },
+    discountInfoContainer: {
+      marginTop: 10,
+      backgroundColor: '#f0f0f0',
+      padding: 10,
+      borderRadius: 5,
+      marginBottom: 30,
+      marginLeft: -140,
+    },
+    discountInfoText: {
+      fontSize: 16,
+      color: '#ff6961',
+      fontWeight: 'bold',
     },
 });
 

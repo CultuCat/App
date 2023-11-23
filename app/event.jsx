@@ -280,17 +280,5 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 100,
   },
-  discountInfoContainer: {
-    marginTop: 10,
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 30,
-    marginLeft: -140,
-  },
-  discountInfoText: {
-    fontSize: 16,
-    color: '#ff6961',
-    fontWeight: 'bold',
-  },
+  
 });
