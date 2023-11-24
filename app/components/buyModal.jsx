@@ -40,6 +40,7 @@ const BuyModal = ({
           },
           body: JSON.stringify({
             event: eventId,
+            discount: selectedDiscountCode,
           }),
         });
     
@@ -171,18 +172,30 @@ const BuyModal = ({
               </View>
             )}
     
-            {discountInfo && (
-              <View style={styles.discountInfoContainer}>
-                <Text style={styles.discountInfoText}>
-                  {`Preu Final: ${
-                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'No disponible' &&
+        {discountInfo && (
+        <View style={styles.discountInfoContainer}>
+            <Text style={styles.discountInfoText}>
+            {`Preu Final: ${
+                selectedDiscountCode
+                ? applyDiscount(price, discountInfo.nivellTrofeu) !== 'No disponible' &&
                     applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuït'
-                      ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
-                      : applyDiscount(price, discountInfo.nivellTrofeu)
-                  }`}
-                </Text>
-              </View>
-            )}
+                    ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
+                    : applyDiscount(price, discountInfo.nivellTrofeu)
+                : price
+            }`}
+            </Text>
+        </View>
+        )}
+        {!discountInfo && (
+        <View style={styles.discountInfoContainer}>
+            <Text style={styles.discountInfoText}>
+            {`Preu Final: ${
+                price !== 'No disponible' && price !== 'Gratuït' ? price + '€' : price
+            }`}
+            </Text>
+        </View>
+        )}
+
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 onPress={handleYesClick}
