@@ -30,24 +30,28 @@ export default function Page() {
   );
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const loadMoreData = async () => {
-    if (loading) return;
-  
-    try {
-      setLoading(true);
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
-      const newData = await response.json();
-  
-      if (newData.results.length > 0) {
-        setData((prevData) => [...prevData, ...newData.results]);
-        setPage((prevPage) => prevPage + 1);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
+
+const loadMoreData = async () => {
+  if (loading || !hasMoreData) return;
+
+  try {
+    setLoading(true);
+    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
+    const newData = await response.json();
+
+    if (newData.results.length > 0) {
+      setData((prevData) => [...prevData, ...newData.results]);
+      setPage((prevPage) => prevPage + 1);
+    } else {
+      setHasMoreData(false);
     }
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
  
 
   const navigation = useNavigation();
@@ -111,17 +115,24 @@ export default function Page() {
       </TouchableOpacity>
 
       <FlatList
-      data={filteredData}
-      renderItem={({ item }) => (
-        <Item title={item.nom} data={item.dataIni} ubicacion={item.espai.nom} image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null} id={item.id} />
-      )}
-      keyExtractor={(item) => item.id}
-      onEndReached={loadMoreData}
-      onEndReachedThreshold={0.1}
-    />
-    </SafeAreaView>
-  );
-}
+        data={filteredData}
+        renderItem={({ item, index }) => (
+          <Item
+            title={item.nom}
+            data={item.dataIni}
+            ubicacion={item.espai.nom}
+            image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null}
+            id={item.id}
+          />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReached={loadMoreData}
+        onEndReachedThreshold={0.1}
+      />
+
+        </SafeAreaView>
+      );
+    }
 
 const styles = StyleSheet.create({
   container: {
