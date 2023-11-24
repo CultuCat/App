@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
 import { ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Page() {
   const styles = StyleSheet.create({
@@ -182,7 +183,7 @@ export default function Page() {
   });
   const [user, setUser] = useState(null);
   const [chips, setChips] = useState(null);
-  const [trofeus, setTrofeus] = useState(["Trofeu1", "Trofeu2", "Trofeu3"]);
+  const [trofeus, setTrofeus] = useState(["MÉS ESDEVENIMENTS", "REVIEWER", "PARLANER"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   
@@ -210,17 +211,7 @@ export default function Page() {
       ]
     );
   };
-  const handleTrofeuPress = (index) => {
-    setSelectedChipIndex(index);
-    Alert.alert(
-      "Eliminar lloc favorit",
-      "Estàs segur que vols eliminar el lloc favorit ?",
-      [
-        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
-        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
-      ]
-    );
-  };
+  
 
   const handleDeleteChip = async (espaiId) => {
     const index = user.espais_preferits.findIndex((espai) => espai.id === espaiId);
@@ -256,6 +247,51 @@ export default function Page() {
       }
     }
   };
+  const getTrofeuColor = (trofeu) => {
+    switch (trofeu) {
+      case "MÉS ESDEVENIMENTS":
+        return "#ffd700"; 
+      case "REVIEWER":
+        return "#c0c0c0"; 
+      case "PARLANER":
+        return "#cd7f32"; 
+      default:
+        return "#d2d0d0"; 
+    }
+  };
+  
+
+  const getTrofeuIcon = (trofeu) => {
+    const iconSize = 100;
+  
+    switch (trofeu) {
+      case "MÉS ESDEVENIMENTS":
+        return (
+          <Image
+            source={{ uri: "https://cdn-icons-png.flaticon.com/512/5987/5987898.png" }}
+            style={{ width: iconSize, height: iconSize, marginRight: 4 }}
+          />
+        );
+      case "REVIEWER":
+        return (
+          <Image
+            source={{ uri: "https://cdn-icons-png.flaticon.com/512/5987/5987898.png" }}
+            style={{ width: iconSize, height: iconSize, marginRight: 4, tintColor: "#c0c0c0" }}
+          />
+        );
+      case "PARLANER":
+        return (
+          <Image
+            source={{ uri: "https://cdn-icons-png.flaticon.com/512/5987/5987898.png" }}
+            style={{ width: iconSize, height: iconSize, marginRight: 4, tintColor: "#cd7f32" }}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+  
+  
   
   const handleDeleteTag = async (tagId) => {
     const index = user.tags_preferits.findIndex((tag) => tag.id === tagId);
@@ -457,11 +493,18 @@ export default function Page() {
         style={styles.scroll}
       >
         {trofeus.map((trofeu, index) => (
-          <TouchableOpacity key={index} onPress={() => handleTrofeuPress(index)} style={{ marginRight: 5 }}>
-            <Chip text={trofeu} color="#d2d0d0" />
+          <TouchableOpacity key={index} style={{ marginRight: 5 }}>
+            {getTrofeuIcon(trofeu)}
+            <Chip
+              text={trofeu}
+              color={getTrofeuColor(trofeu)}
+              size={20}
+            />
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+
       <TouchableOpacity
           style={styles.fletxaButton}
         >
