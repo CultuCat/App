@@ -40,10 +40,10 @@ const BuyModal = ({
           },
           body: JSON.stringify({
             event: eventId,
-            discount: selectedDiscountCode,
+            discount: discountInfo.codi,
           }),
         });
-    
+        console.log(selectedDiscountCode.codi);
         if (response.ok) {
           console.log('Solicitud POST exitosa');
         } else {
