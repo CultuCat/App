@@ -49,9 +49,7 @@ export default function Page() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    AsyncStorage.clear();
-  }, []);
+  
   
 
   const navigation = useNavigation();
@@ -71,22 +69,31 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('https://cultucat.hemanuelpc.es/events/', {
-      method: "GET"
-    })
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+  
+        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
         if (response.ok) {
-          return response.json();
+          const dataFromServer = await response.json();
+          setData(dataFromServer.results);
         } else {
           throw new Error('Error en la solicitud');
         }
-      })
-      .then((dataFromServer) => {
-        setData(dataFromServer.results);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    };
+  
+    fetchData();
   }, []);
 
   const filteredData = data.filter((item) =>

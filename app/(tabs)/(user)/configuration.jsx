@@ -132,12 +132,20 @@ export default function Configuration() {
     const fetchData = async () => {
       try {
         const data = await getLocalUser();
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
         if (!data) {
           console.error('User data not found in AsyncStorage');
           return;
         }
   
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`);
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`,
+        {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
