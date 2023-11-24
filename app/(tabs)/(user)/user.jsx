@@ -185,6 +185,63 @@ export default function Page() {
   const [trofeus, setTrofeus] = useState(["Trofeu1", "Trofeu2", "Trofeu3"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
+
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userID = await getLocalUser();
+        if (!userID) {
+          console.error('User ID not found in AsyncStorage');
+          return;
+        }
+  
+        
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+  
+        const userToken = JSON.parse(userTokenString).token;
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+  
+  
+
+  if (!user) {
+    return <Text>Cargando...</Text>;
+  }
   
 
 
@@ -232,11 +289,14 @@ export default function Page() {
       try {
         const userId = user.id;
         const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}/espais_preferits/${espaiId}`;
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
   
         const response = await fetch(apiUrl, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Token ${userToken}`,
           },
         });
   
@@ -267,11 +327,15 @@ export default function Page() {
       try {
         const userId = user.id;
         const apiUrl = `https://cultucat.hemanuelpc.es/users/${userId}/tags_preferits/${tagId}`;
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+        
 
         const response = await fetch(apiUrl, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Token ${userToken}`,
           },
 
         });
@@ -293,50 +357,6 @@ export default function Page() {
       }
     }
   };
-  
-  
-
-  const getLocalUser = async () => {
-    try {
-      const dataString = await AsyncStorage.getItem("@user");
-      if (!dataString) return null;
-      const data = JSON.parse(dataString);
-      return data.user.id;
-    } catch (error) {
-      console.error('Error getting local user data:', error);
-      return null;
-    }
-  };
-  
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getLocalUser();
-        if (!data) {
-          console.error('User data not found in AsyncStorage');
-          return;
-        }
-  
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data}`);
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
-        }
-  
-        const userData = await response.json();
-        setUser(userData);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-  
-    fetchData();
-  }, []);
-  
-
-  if (!user) {
-    return <Text>Cargando...</Text>;
-  }
 
 
   return (

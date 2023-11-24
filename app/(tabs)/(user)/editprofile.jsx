@@ -1,15 +1,15 @@
-import React , { useState } from 'react';
-import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput, Switch} from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React , { useState,useEffect } from 'react';
+import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react-native';
+import { MaterialIcons} from "@expo/vector-icons";
 import { Link } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState(''); 
-  const [initialVisibility, setInitialVisibility] = useState(true); 
-  const [visibility, setVisibility] = useState(initialVisibility);
+ const [user, setUser] = useState(null);
 
   const styles = StyleSheet.create({
     fotoProfile: {
@@ -107,10 +107,10 @@ export default function Page() {
       flexDirection: 'row', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      backgroundColor: '#f3f3f3', 
+      backgroundColor: '#f3f3f3',   
       borderRadius: 8, 
       paddingHorizontal: 14, 
-      marginTop: 20,
+      marginTop: 40,
   },
     icon: {
       marginTop: 15,
@@ -141,37 +141,104 @@ export default function Page() {
     
   });
 
-  const handleSaveChanges = () => {
-    const updatedProfile = {
-      first_name: first_name,
-      bio: bio, 
-      username:username,
-      visibility: visibility,
-      
-    };
-
-    fetch('https://cultucat.hemanuelpc.es/users/1', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedProfile),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Cambios guardados con éxito');
-        } else {
-          console.error('Error al guardar cambios en el perfil');
-        }
-      })
-      .then((dataFromServer) => {
-        setData(dataFromServer);
-      })
-      .catch((error) => {
-        console.error('Error en la solicitud:', error);
-      });
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
   };
-
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userID = await getLocalUser();
+        if (!userID) {
+          console.error('User ID not found in AsyncStorage');
+          return;
+        }
+  
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+  
+        const userToken = JSON.parse(userTokenString).token;
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+    
+    
+  
+    if (!user) {
+      return <Text>Cargando...</Text>;
+    }
+    const handleSaveChanges = async () => {
+      try {
+        const userID = await getLocalUser();
+        if (!userID) {
+          console.error('User ID not found in AsyncStorage');
+          return;
+        }
+  
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+  
+        const userToken = JSON.parse(userTokenString).token;
+        console.log(userToken);
+  
+        const updatedProfile = {
+          first_name: first_name || user.first_name,
+          bio: bio || user.bio,
+          username: username || user.username,
+        };
+        console.log(first_name);
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedProfile),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+  
+        const updatedUserData = await response.json();
+        setUser(updatedUserData);
+  
+      } catch (error) {
+        console.error('Error updating user data:', error);
+      }
+    };
 
   return (
   <View>
@@ -180,7 +247,7 @@ export default function Page() {
         style={styles.fotoProfile}
         source={{
           uri:
-            'https://fotografias.antena3.com/clipping/cmsimages02/2018/04/27/15C4A825-FBD2-49FC-B669-AA3AA7C57CB6/98.jpg?crop=1920,1080,x0,y0&width=1900&height=1069&optimize=high&format=webply',
+            user.imatge,
          }}
       />
       <MaterialIcons
@@ -191,7 +258,7 @@ export default function Page() {
     </TouchableOpacity>
     <TextInput
         style={styles.input}
-        placeholder="nou"
+        placeholder={user.username}
         value={username}
         onChangeText={(text) => setUsername(text)} 
        
@@ -199,27 +266,21 @@ export default function Page() {
     <Text style= {styles.username}>Username: </Text>
     <TextInput
         style={styles.input2}
-        placeholder=""
+        placeholder={user.first_name}
         value={first_name}
         onChangeText={text => setName(text)}
     />
     <Text style= {styles.username}>Nom: </Text>
     <TextInput
         style={styles.input3}
-        placeholder=""
+        placeholder={user.bio}
         value={bio}
         onChangeText={text => setBio(text)}
     />
     <Text style= {styles.genere}>Bio: </Text>
     <View style={styles.container}>
-    <Switch
-      style={styles.visibilitatButton}
-      value={visibility}
-      onValueChange={(newValue) => setVisibility(newValue)} 
-    />
-    <Text style={styles.visibilitatText}>Visibilitat: </Text>
     </View>
-    <Link href={'(user)/user'} replace asChild>
+    <Link href={'(user)/user'} asChild>
     <TouchableOpacity
         style={styles.cancelButton}
       >
@@ -227,7 +288,7 @@ export default function Page() {
     </TouchableOpacity>
     </Link>
     
-    <Link href={'(user)/user'} replace asChild>
+    <Link href={'(user)/user'} asChild>
     <TouchableOpacity
         style={styles.saveButton } onPress={handleSaveChanges}
       >
@@ -237,4 +298,4 @@ export default function Page() {
   </View>
   );
    
-}
+        }
