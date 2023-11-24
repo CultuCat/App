@@ -226,7 +226,7 @@ export default function Page() {
   
 
   const getTrofeuIcon = (trofeu) => {
-    const iconSize = 100;
+    const iconSize = 20;
   
     switch (trofeu) {
       case "MÉS ESDEVENIMENTS":
