@@ -23,7 +23,7 @@ const Chip = (props) => {
             {icon &&
             <Ionicons name={icon} size={16} color="black"/>
             }
-            <Text style={styles.text}>{text}</Text>
+            <Text style={icon && styles.text}>{text}</Text>
         </View>
     );
 };

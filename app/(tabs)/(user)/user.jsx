@@ -210,11 +210,12 @@ const User = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ marginTop: 60, marginHorizontal: '5%'}}>
+      <View style={{ marginTop: 60 }}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          marginHorizontal: '5%'
         }}>
           <Text style={styles.title}>Usuari</Text>
           <Link href={'/(tabs)/(user)/configuration'} asChild>
@@ -229,7 +230,7 @@ const User = () => {
             alignItems: 'center',
           }}>
             <Image
-            style={styles.userImage}
+              style={styles.userImage}
               source={{
                 uri:
                   user.imatge,
@@ -243,7 +244,7 @@ const User = () => {
               <Text style={styles.username}>{user.username}</Text>
             </View>
             <Image
-            style={styles.fotoVerificacio}
+              style={styles.fotoVerificacio}
               source={{
                 uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
@@ -263,102 +264,117 @@ const User = () => {
             </Link>
             <Text style={styles.userCardText}>{user.friends.length}</Text>
           </View>
-
         </View>
         <ScrollView>
-          <View style={{flex:1, marginBottom: 250}}>
-        <Text style={styles.titles}>Bio</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
-        <Divider />
-        <Text style={styles.titles}>Tags Favorites</Text>
-        <ScrollView
-          horizontal
-          alwaysBounceHorizontal={true}
-          contentContainerStyle={styles.chipContainer}
-          
-        >
-          {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
-            user.tags_preferits.map((tag) => (
-              <TouchableOpacity key={tag.id} onPress={() => handleTagPress(tag.id)} style={{ marginRight: 5 }}>
-                <Chip text={tag.nom} color="#d2d0d0" />
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text>No hi ha tags</Text>
-          )}
-        </ScrollView>
-        <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
-        <Divider />
-        <Text style={styles.titles}>Llocs Favorits</Text>
-        <ScrollView
-          horizontal
-          alwaysBounceHorizontal={true}
-          contentContainerStyle={styles.chipContainer}
-          
-
-        >
-          {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
-            user.espais_preferits.map((espai) => (
-              <TouchableOpacity key={espai.id} onPress={() => handleChipPress(espai.id)} style={{ marginRight: 5 }}>
-                <Chip text={espai.nom} color="#d2d0d0" />
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text>No hi ha llocs preferits</Text>
-          )}
-        </ScrollView>
-        <Divider />
-        <Text style={styles.titles}>Trofeus</Text>
-        <ScrollView
-          horizontal
-          alwaysBounceHorizontal={true}
-          contentContainerStyle={styles.chipContainer}
-          
-        >
-          {trofeus.map((trofeu, index) => (
-            <TouchableOpacity key={index} style={{ marginRight: 5 }}>
-              <Chip
-                text={trofeu}
-                color={getTrofeuColor(trofeu)}
-                icon="ios-trophy"
-              />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: '10%'
-        }}>
-          <TouchableOpacity
-            style={styles.rankingButton}
-            onPress={() => handleRanking()}
-          >
+          <View style={{ flex: 1, marginBottom: 250 }}>
+            <Text style={styles.titles}>Bio</Text>
+            <Text style={styles.bio}>{user.bio}</Text>
+            <Divider />
+            <Text style={styles.titles}>Tags Favorites</Text>
+            <ScrollView
+              horizontal
+              alwaysBounceHorizontal={true}
+              contentContainerStyle={styles.chipContainer}
+            >
+              {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
+                user.tags_preferits.map((tag, index) => (
+                  <TouchableOpacity
+                    key={tag.id}
+                    onPress={() => handleTagPress(tag.id)}
+                    style={[
+                      { marginHorizontal: 2.5 },
+                      index === 0 && { marginLeft: 15 },
+                      index === user.tags_preferits.length - 1 && { marginRight: 15 },
+                    ]}>
+                    <Chip text={tag.nom} color="#d2d0d0" />
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text>No hi ha tags</Text>
+              )}
+            </ScrollView>
+            <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
+            <Divider />
+            <Text style={styles.titles}>Llocs Favorits</Text>
+            <ScrollView
+              horizontal
+              alwaysBounceHorizontal={true}
+              contentContainerStyle={styles.chipContainer}
+            >
+              {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
+                user.espais_preferits.map((espai, index) => (
+                  <TouchableOpacity
+                    key={espai.id}
+                    onPress={() => handleChipPress(espai.id)}
+                    style={[
+                      { marginHorizontal: 2.5 },
+                      index === 0 && { marginLeft: 15 },
+                      index === user.espais_preferits.length - 1 && { marginRight: 15 },
+                    ]}>
+                    <Chip text={espai.nom} color="#d2d0d0" />
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text>No hi ha llocs preferits</Text>
+              )}
+            </ScrollView>
+            <Divider />
+            <Text style={styles.titles}>Trofeus</Text>
+            <ScrollView
+              horizontal
+              alwaysBounceHorizontal={true}
+              contentContainerStyle={styles.chipContainer}
+            >
+              {trofeus.map((trofeu, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    { marginHorizontal: 2.5 },
+                    index === 0 && { marginLeft: 15 },
+                    index === trofeus.length - 1 && { marginRight: 15 },
+                  ]}>
+                  <Chip
+                    text={trofeu}
+                    color={getTrofeuColor(trofeu)}
+                    icon="ios-trophy"
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '10%'
             }}>
-              <Text style={styles.buttonText}>Veure rànquing</Text>
-              <Ionicons name="ios-star-outline" size={16} color="black" />
+              <TouchableOpacity
+                style={styles.userButton}
+                onPress={() => handleRanking()}
+              >
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                  <Text style={styles.buttonText}>Veure rànquing</Text>
+                  <Ionicons name="ios-star-outline" size={16} color="black" />
+                </View>
+              </TouchableOpacity>
+              <RankingModal userId={user.id} rankingVisible={rankingVisible} setRankingVisible={setRankingVisible} />
+              <Link href={'/(tabs)/(user)/editprofile'} asChild>
+                <TouchableOpacity
+                  style={styles.userButton}
+                >
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                    <Text style={styles.buttonText}>Editar perfil</Text>
+                    <Ionicons name="ios-person-circle-outline" size={16} color="black" />
+                  </View>
+                </TouchableOpacity>
+              </Link>
             </View>
-          </TouchableOpacity>
-          <RankingModal userId={user.id} rankingVisible={rankingVisible} setRankingVisible={setRankingVisible} />
-          <Link href={'/(tabs)/(user)/editprofile'} asChild>
-            <TouchableOpacity
-              style={styles.editButton}
-            >
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-                <Text style={styles.buttonText}>Editar perfil</Text>
-                <Ionicons name="ios-person-circle-outline" size={16} color="black" />
-              </View>
-            </TouchableOpacity>
-          </Link>
-        </View>
-        </View>
+          </View>
         </ScrollView>
       </View>
     </View >
@@ -371,7 +387,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   recuadroRojo: {
-    width: '100%',
+    width: '90%',
     height: 170,
     backgroundColor: '#ff6961',
     borderRadius: 30,
@@ -379,6 +395,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignContent: 'center',
     padding: 15,
+    marginHorizontal: '5%',
   },
   userImage: {
     borderRadius: 100,
@@ -423,18 +440,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     fontWeight: 'bold',
   },
-  rankingButton: {
-    width: 130,
-    height: 40,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    marginHorizontal: '5%'
-  },
-  editButton: {
+  userButton: {
     width: 130,
     height: 40,
     backgroundColor: 'transparent',
@@ -450,48 +456,16 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   bio: {
-    marginLeft: 70,
-  },
-  fotoStar: {
-    width: 15,
-    height: 15,
-    marginLeft: 145,
-    marginBottom: 55,
-    marginTop: -29,
-
-  },
-  fotoProfile: {
-    width: 15,
-    height: 15,
-    marginLeft: 95,
-    marginBottom: -14,
-  },
-  followersButton: {
-    marginTop: -40,
-    marginRight: 80,
-  },
-  botoFletxa: {
-    width: 10,
-    height: 10,
-    marginTop: -40,
+    marginHorizontal: '5%',
   },
   botoFletxaTr: {
     width: 10,
     height: 10,
     marginTop: -5,
   },
-  fletxaButton: {
-    borderColor: 'transparent',
-    marginLeft: 310,
-    marginTop: -10,
-  },
   chipContainer: {
     paddingTop: 10,
-    marginRight: 40,
-    flexDirection: 'row',
-
   },
-  
 });
 
 export default User;
