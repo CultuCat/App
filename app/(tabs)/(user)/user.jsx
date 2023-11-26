@@ -231,7 +231,7 @@ const User = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ marginTop: 60, marginHorizontal: '5%' }}>
+      <View style={{ marginTop: 60, marginHorizontal: '5%'}}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -286,6 +286,8 @@ const User = () => {
           </View>
 
         </View>
+        <ScrollView>
+          <View style={{flex:1, marginBottom: 250}}>
         <Text style={styles.titles}>Bio</Text>
         <Text style={styles.bio}>{user.bio}</Text>
         <Divider />
@@ -378,6 +380,8 @@ const User = () => {
             </TouchableOpacity>
           </Link>
         </View>
+        </View>
+        </ScrollView>
       </View>
     </View >
   );
