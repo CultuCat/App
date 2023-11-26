@@ -148,27 +148,6 @@ const User = () => {
   };
 
 
-  const getTrofeuIcon = (trofeu) => {
-    const iconSize = 20;
-
-    switch (trofeu) {
-      case "MÉS ESDEVENIMENTS":
-        return (
-          <Ionicons name="ios-trophy" size={24} color="#ffd700" />
-        );
-      case "REVIEWER":
-        return (
-          <Ionicons name="ios-trophy" size={24} color="#bebebe" />
-        );
-      case "PARLANER":
-        return (
-          <Ionicons name="ios-trophy" size={24} color="#cd7f32" />
-        );
-      default:
-        return null;
-    }
-  };
-
   const getLocalUser = async () => {
     try {
       const dataString = await AsyncStorage.getItem("@user");
@@ -296,7 +275,7 @@ const User = () => {
           horizontal
           alwaysBounceHorizontal={true}
           contentContainerStyle={styles.chipContainer}
-          style={styles.scroll}
+          
         >
           {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
             user.tags_preferits.map((tag) => (
@@ -315,7 +294,7 @@ const User = () => {
           horizontal
           alwaysBounceHorizontal={true}
           contentContainerStyle={styles.chipContainer}
-          style={styles.scroll}
+          
 
         >
           {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
@@ -334,15 +313,14 @@ const User = () => {
           horizontal
           alwaysBounceHorizontal={true}
           contentContainerStyle={styles.chipContainer}
-          style={styles.scroll}
+          
         >
           {trofeus.map((trofeu, index) => (
             <TouchableOpacity key={index} style={{ marginRight: 5 }}>
-              {getTrofeuIcon(trofeu)}
               <Chip
                 text={trofeu}
                 color={getTrofeuColor(trofeu)}
-                size={20}
+                icon="ios-trophy"
               />
             </TouchableOpacity>
           ))}
@@ -509,14 +487,11 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     paddingTop: 10,
-    marginRight: 50,
+    marginRight: 40,
     flexDirection: 'row',
 
   },
-  scroll: {
-    marginRight: 75,
-    marginLeft: 60,
-  },
+  
 });
 
 export default User;
