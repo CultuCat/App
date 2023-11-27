@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Modal } from 'react-native';
+import { Platform, Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
+import * as Calendar from 'expo-calendar';
 
 
 export default function Page() {
@@ -24,9 +25,8 @@ export default function Page() {
   const [buyButtonEnabled, setBuyButtonEnabled] = useState(true);
   const route = useRoute();
   const eventId = route.params.eventId;
+  const [calendars, setCalendars] = useState([]);
   const eventNom = event.nom;
-  
-
 
   const handleBuy = () => {
     setBuyVisible(true);
@@ -36,38 +36,20 @@ export default function Page() {
     setUsersVisible(true);
   }
 
-
   useEffect(() => {
     checkButtonState();
   }, []);
-  const handleYesClick = async () => {
-  
-    setModalVisible(false);
-    setBuyButtonEnabled(false);
-    
-  
+
+  const checkButtonState = async () => {
     try {
-      await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
+      const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
+      if (value !== null) {
+        setBuyButtonEnabled(value === 'false' ? false : true);
+      }
     } catch (error) {
-      console.error('Error al guardar el estado del botón de compra:', error);
+      console.error('Error al recuperar el estado del botón de compra:', error);
     }
   };
-    const checkButtonState = async () => {
-      try {
-        const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
-        if (value !== null) {
-          setBuyButtonEnabled(value === 'false' ? false : true);
-        }
-      } catch (error) {
-        console.error('Error al recuperar el estado del botón de compra:', error);
-      }
-    };
-    
-    useEffect(() => {
-      checkButtonState();
-    }, []);
-    
-  
 
   const fetchComments = () => {
     fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
@@ -108,7 +90,6 @@ export default function Page() {
 
   }, []);
 
-
   useEffect(() => {
     fetchComments();
   }, []);
@@ -122,10 +103,99 @@ export default function Page() {
   const parsedPrice = (price) => {
     if (price && price.includes('€') && parsedPriceCalc(price) < 100)
       return price;
-    if(parsedPriceCalc(price) > 100) {
+    if (parsedPriceCalc(price) > 100) {
       return 'No Disponible'
     }
     else return 'Gratuït'
+  };
+
+  const transformDate = (date) => {
+    if (date) {
+      const dateObj = new Date(date);
+      const formatOptions = {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      };
+      const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
+      return formatter.format(dateObj);
+    }
+    return null
+  };
+
+  const getCalendarPermission = async () => {
+    const calendarPermission = await Calendar.requestCalendarPermissionsAsync();
+
+    if (calendarPermission.status !== 'granted') {
+      Alert.alert('Se requieren permisos para acceder al calendario.');
+    } else {
+      let remindersPermission = { status: 'granted' };
+
+      if (Platform.OS === 'ios') {
+        remindersPermission = await Calendar.requestRemindersPermissionsAsync();
+      }
+
+      if (remindersPermission.status !== 'granted') {
+        Alert.alert('Se requieren permisos para acceder a los recordatorios.');
+      } else {
+        const calendarList = await Calendar.getCalendarsAsync();
+        setCalendars(calendarList);
+      }
+    }
+  };
+
+  const addEventToCalendar = async () => {
+    try {
+      await getCalendarPermission();
+
+      let selectedCalendar;
+
+      if (Platform.OS === 'ios') {
+        const calendarOptions = calendars.map(calendar => ({
+          text: calendar.title,
+          onPress: () => {
+            selectedCalendar = calendar;
+            createEvent(selectedCalendar);
+          },
+        }));
+
+        Alert.alert('Selecciona un calendario', null, calendarOptions);
+      } else {
+        const calendars = await Calendar.getCalendarsAsync();
+        selectedCalendar = calendars[0];
+
+        createEvent(selectedCalendar);
+      }
+    } catch (error) {
+      console.error('Error al agregar evento al calendario:', error);
+      Alert.alert('Error al agregar evento al calendario.');
+    }
+  };
+
+  const createEvent = async (selectedCalendar) => {
+    if (!selectedCalendar) {
+      Alert.alert('No se ha seleccionado un calendario.');
+      return;
+    }
+
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const eventDetails = {
+      title: event?.nom,
+      startDate: new Date(event?.dataIni),
+      endDate: new Date(new Date(event?.dataIni).getTime() + 60 * 60 * 1000),
+      timeZone: timeZone,
+      location: event?.espai?.nom,
+      alarms: [{ relativeOffset: -60, method: Calendar.AlarmMethod.DEFAULT }],
+    };
+
+    try {
+      const eventId = await Calendar.createEventAsync(selectedCalendar.id, eventDetails);
+      Alert.alert('Esdeveniment afegit al calendari');
+    } catch (error) {
+      console.error('Error al agregar evento al calendario:', error);
+      Alert.alert('Error al agregar evento al calendario.');
+    }
   };
 
   const parsedPriceCalc = (price) => {
@@ -134,88 +204,90 @@ export default function Page() {
       const numericPart = price.replace(/[^0-9.]/g, '');
 
       const numericValue = parseFloat(numericPart);
-  
+
       if (!isNaN(numericValue)) {
         return numericValue;
       }
     }
-  
+
     return 'Gratuït';
   };
-  
+
   if (event == []) {
     return <Text>Cargando...</Text>;
   }
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.imageContainer}>
-          <ImageBackground
-            style={styles.fotoLogo}
-            source={{
-              uri: event?.imatges_list?.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
-            }}
-          >
-            <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
-              <Ionicons name="ios-close-outline" size={36} color="black" />
-            </TouchableOpacity>
-            <View style={[styles.iconContainer, styles.buyIcon]} >
-              <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
-            </View>
-            <TouchableOpacity style={styles.shareIcon}>
-              <ShareMenu enllac={event?.enllacos_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
-            </TouchableOpacity>
-          </ImageBackground>
-        </View>
-        <View style={{ marginHorizontal: '7.5%' }}>
-          <Text style={styles.title}>{event.nom}</Text>
-          <Text style={{ color: '#ff6961' }}>{event.dataIni}</Text>
-          <Text>{event.espai?.nom}</Text>
-          <Chip text="Music" color="#d2d0d0"/>
-          <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
-          <Text>{event.descripcio}</Text>
-          <View style={{ marginVertical: 10 }}>
-            <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
-              <Text style={{ margin: 10 }}>Veure assistents a l'esdeveniment</Text>
-            </TouchableOpacity>
-            <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible}/>
-            <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
-              <Text style={{ margin: 10 }}>Veure ubicació al mapa</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.accionButton}>
-              <Text style={{ margin: 10 }}>Afegir a calendari</Text>
-            </TouchableOpacity>
+    <View style={{
+      flex: 1,
+      backgroundColor: '#ffffff',
+    }}>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.imageContainer}>
+            <ImageBackground
+              style={styles.fotoLogo}
+              source={{
+                uri: event?.imatges_list?.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
+              }}
+            >
+              <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+                <Ionicons name="ios-close-outline" size={36} color="black" />
+              </TouchableOpacity>
+              <View style={[styles.iconContainer, styles.buyIcon]} >
+                <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
+              </View>
+              <TouchableOpacity style={styles.shareIcon}>
+                <ShareMenu enllac={event?.enllacos_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
+              </TouchableOpacity>
+            </ImageBackground>
           </View>
-          <Text style={styles.subtitle}>Comentaris</Text>
-          <CommentForm eventId={event.id} fetchComments={fetchComments} />
-          <FlatList
-            data={commentsEvent.results}
-            renderItem={({ item }) => (
-              <Comment username={item.user} time={item.created_at} text={item.text} />
-            )}
-            keyExtractor={item => item.id}
-          />
-            
-        </View>
-      </ScrollView>
-      <View style={styles.bottomContainer}>
-        <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
-        <TouchableOpacity
-          style={[styles.buyButton, 
+          <View style={{ marginHorizontal: '7.5%' }}>
+            <Text style={styles.title}>{event.nom}</Text>
+            <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
+            <Text>{event.espai?.nom}</Text>
+            <Chip text="Music" color="#d2d0d0" />
+            <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
+            <Text>{event.descripcio}</Text>
+            <View style={{ marginVertical: 10 }}>
+              <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
+                <Text style={{ margin: 10 }}>Veure assistents a l'esdeveniment</Text>
+              </TouchableOpacity>
+              <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
+              <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
+                <Text style={{ margin: 10 }}>Veure ubicació al mapa</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.accionButton} onPress={addEventToCalendar}>
+                <Text style={{ margin: 10 }}>Afegir a calendari</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.subtitle}>Comentaris</Text>
+            <CommentForm eventId={event.id} fetchComments={fetchComments} />
+            <FlatList
+              data={commentsEvent.results}
+              renderItem={({ item }) => (
+                <Comment username={item.user} time={item.created_at} text={item.text} />
+              )}
+              keyExtractor={item => item.id}
+            />
+          </View>
+        </ScrollView>
+        <View style={styles.bottomContainer}>
+          <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
+          <TouchableOpacity
+            style={[styles.buyButton,
             { opacity: buyButtonEnabled ? 1 : 0.5 }
-          ]}
-          onPress={handleBuy}
-          disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
-          
-        >
-          <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
-        </TouchableOpacity>
-        <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
-      </View>
+            ]}
+            onPress={handleBuy}
+            disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
 
+          >
+            <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
+          </TouchableOpacity>
+          <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
+        </View>
+      </View>
     </View>
   );
-
 }
 const styles = StyleSheet.create({
   container: {
@@ -286,5 +358,5 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 100,
   },
-  
+
 });
