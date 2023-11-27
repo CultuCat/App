@@ -92,7 +92,7 @@ export default function Page() {
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    const url = `https://cultucat.hemanuelpc.es//spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
+    const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
     fetch(url)
     .then((response) => response.json())
       .then((data) => {
@@ -120,7 +120,7 @@ export default function Page() {
   const toggleEvents = (marker) => {
     if (marker) {
       setSelectedMarker(marker);
-      const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.title}`;
+      const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.id}`;
       console.log(url)
       fetch(url)
       .then((response) => response.json())
