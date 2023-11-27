@@ -93,22 +93,23 @@ export default function Page() {
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    setNMarkers(Math.max(1000 - (customRegion.longitudeDelta * 60), 20));
+    setNMarkers(Math.floor(Math.max((customRegion.longitudeDelta * 5 * 60), 20)));
+    console.log(nMarkers);
     const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=${nMarkers}`;
     fetch(url)
     .then((response) => response.json())
       .then((data) => {
         setCustomMarkers(
           data.map((item) => ({
-            //key: item.id,
+            key: item.id,
             latlng: { latitude: item.latitud, longitude: item.longitud },
             title: item.nom,
-            //description: item.description,
+            description: item.description,
             events: item.events,
           }))
         );
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error("Error fetching markers"));
   };
 
   const onTouchEnd = () => {
@@ -122,8 +123,7 @@ export default function Page() {
   const toggleEvents = (marker) => {
     if (marker) {
       setSelectedMarker(marker);
-      const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.id}`;
-      console.log(url)
+      const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.key}`;
       fetch(url)
       .then((response) => response.json())
         .then((data) => {
@@ -132,7 +132,7 @@ export default function Page() {
                 id: item.id,
                 title: item.nom,
                 data: item.dataIni,
-                ubicacion: item.espai,
+                //ubicacion: item.espai.nom,
                 image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : require('../assets/teatro.png'),
               }))
             );
