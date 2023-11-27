@@ -84,6 +84,7 @@ export default function Page() {
   const [events, setEvents] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [search, setSearch] = useState('');
+  const [nMarkers, setNMarkers] = useState(15);
 
   useEffect(() => {
     fetchMarkers(customRegion);
@@ -92,7 +93,8 @@ export default function Page() {
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
+    setNMarkers(Math.max(1000 - (customRegion.longitudeDelta * 60), 20));
+    const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=${nMarkers}`;
     fetch(url)
     .then((response) => response.json())
       .then((data) => {
