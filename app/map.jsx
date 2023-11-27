@@ -36,7 +36,7 @@ export default function Page() {
   const [events, setEvents] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [search, setSearch] = useState('');
-  const [nMarkers, setNMarkers] = useState(15);
+  const [nMarkers, setNMarkers] = useState(1300);
 
   useEffect(() => {
     fetchMarkers(customRegion);
