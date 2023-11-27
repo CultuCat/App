@@ -3,12 +3,13 @@ import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpa
 import { Link } from 'expo-router';
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image }) => (
-    <TouchableOpacity style={styles.item}>
+  const Item = ({ title, ubicacion, data, image ,onPress}) => (
+    <TouchableOpacity style={styles.item} onPress={onPress}>
       <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
@@ -24,56 +25,7 @@ export default function Page() {
     </TouchableOpacity>
   );
   const [urldef, setUrldef] = useState('https://cultucat.hemanuelpc.es/');
-  const [customMarkers, setCustomMarkers] = useState([
-    {
-      latlng: { latitude: 41.3894491, longitude: 2.1107903 },
-      title: 'FIB',
-      events: [
-        {
-          id: '1',
-          title: 'Barcelona Tech',
-          data: 'dg, 22 octubre',
-          ubicacion: 'Barcelona',
-          image: require('../assets/teatro.png')
-        },
-
-      ],
-    },
-    {
-      latlng: { latitude: 41.385844, longitude: 2.0346453 },
-      title: 'Sant Feliu de Llobregat',
-      events: [
-        {
-          id: '2',
-          title: 'Rooftop Party',
-          data: 'dg, 22 octubre',
-          ubicacion: 'Barcelona',
-          image: require('../assets/rooftop.png')
-        },
-
-      ],
-    },
-    {
-      latlng: { latitude: 41.1258353, longitude: 1.2179839 },
-      title: 'Tarragona',
-      events: [
-        {
-          id: '3',
-          title: 'Fira Àpat',
-          data: 'dg, 22 octubre',
-          ubicacion: 'Tarragona',
-          image: require('../assets/rooftop.png')
-        },
-        {
-          id: '4',
-          title: 'Obra Romeu i Julieta',
-          data: 'dg, 22 octubre',
-          ubicacion: 'Reus',
-          image: require('../assets/teatro.png')
-        },
-      ],
-    },
-  ]);
+  const [customMarkers, setCustomMarkers] = useState([]);
   const [customRegion, setCustomRegion] = useState({
     latitude: 41.3927672,
     longitude: 2.057617,
@@ -89,11 +41,14 @@ export default function Page() {
   useEffect(() => {
     fetchMarkers(customRegion);
   }, []); // empty dependency array to only run once on mount
-
+  const navigation = useNavigation();
+  const handlePressEvent = (eventId) => {
+    navigation.navigate('event', { eventId });
+  };  
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    setNMarkers(Math.floor(Math.max((customRegion.longitudeDelta * 5 * 60), 20)));
+    setNMarkers(Math.floor(Math.max((customRegion.longitudeDelta * 120), 20)));
     console.log(nMarkers);
     const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=${nMarkers}`;
     fetch(url)
@@ -165,7 +120,7 @@ export default function Page() {
             title={marker.title}
             description={marker.description}
             events={marker.events}
-            onPress={() => toggleEvents(marker)}
+            onPress={()=>toggleEvents(marker)}
           />
         ))}
       </MapView>
@@ -180,7 +135,7 @@ export default function Page() {
       <View style={[styles.buttonEvents, showEvents && { height: '10%' }]}>
   <TouchableOpacity
     title="Esdeveniments"
-    onPress={() => toggleEvents(selectedMarker)}
+    onPress={()=>toggleEvents(selectedMarker)}
     disabled={!selectedMarker}
     style={styles.button}
   >
@@ -194,7 +149,13 @@ export default function Page() {
           <FlatList
             data={events}
             renderItem={({ item }) => (
-              <Item title={item.title} data={item.data} ubicacion={item.ubicacion} image={item.image} />
+              <Item 
+                title={item.title} 
+                data={item.data} 
+                ubicacion={item.ubicacion} 
+                image={item.image} 
+                onPress={()=>handlePressEvent(item.id)}
+              />
             )}
             keyExtractor={item => item.id}
           />
