@@ -26,6 +26,7 @@ export default function Page() {
   const route = useRoute();
   const eventId = route.params.eventId;
   const [calendars, setCalendars] = useState([]);
+  const eventNom = event.nom;
 
   const handleBuy = () => {
     setBuyVisible(true);
@@ -34,6 +35,10 @@ export default function Page() {
   const handleUsers = () => {
     setUsersVisible(true);
   }
+
+  useEffect(() => {
+    checkButtonState();
+  }, []);
 
   const checkButtonState = async () => {
     try {
@@ -45,10 +50,6 @@ export default function Page() {
       console.error('Error al recuperar el estado del botón de compra:', error);
     }
   };
-
-  useEffect(() => {
-    checkButtonState();
-  }, []);
 
   const fetchComments = () => {
     fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
@@ -89,7 +90,6 @@ export default function Page() {
 
   }, []);
 
-
   useEffect(() => {
     fetchComments();
   }, []);
@@ -101,8 +101,11 @@ export default function Page() {
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
   const parsedPrice = (price) => {
-    if (price && price.includes('€'))
+    if (price && price.includes('€') && parsedPriceCalc(price) < 100)
       return price;
+    if (parsedPriceCalc(price) > 100) {
+      return 'No Disponible'
+    }
     else return 'Gratuït'
   };
 
@@ -195,6 +198,21 @@ export default function Page() {
     }
   };
 
+  const parsedPriceCalc = (price) => {
+    if (price && typeof price === 'string') {
+
+      const numericPart = price.replace(/[^0-9.]/g, '');
+
+      const numericValue = parseFloat(numericPart);
+
+      if (!isNaN(numericValue)) {
+        return numericValue;
+      }
+    }
+
+    return 'Gratuït';
+  };
+
   if (event == []) {
     return <Text>Cargando...</Text>;
   }
@@ -254,15 +272,18 @@ export default function Page() {
           </View>
         </ScrollView>
         <View style={styles.bottomContainer}>
-          <Text style={styles.price}>{parsedPrice(event.price)}</Text>
+          <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
           <TouchableOpacity
-            style={[styles.buyButton, { opacity: buyButtonEnabled ? 1 : 0.5 }]}
+            style={[styles.buyButton,
+            { opacity: buyButtonEnabled ? 1 : 0.5 }
+            ]}
             onPress={handleBuy}
-            disabled={!buyButtonEnabled}
+            disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
+
           >
             <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
           </TouchableOpacity>
-          <BuyModal buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
+          <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
         </View>
       </View>
     </View>
@@ -337,4 +358,5 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 100,
   },
+
 });
