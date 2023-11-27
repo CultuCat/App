@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
 import { Link } from 'expo-router';
 import MapView from 'react-native-maps';
-import axios from 'axios';
 import { Marker } from 'react-native-maps';
 import { SearchBar } from 'react-native-elements';
 import { MaterialIcons } from "@expo/vector-icons";
