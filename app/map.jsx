@@ -37,7 +37,7 @@ export default function Page() {
           ubicacion: 'Barcelona',
           image: require('../assets/teatro.png')
         },
-        
+
       ],
     },
     {
@@ -51,7 +51,7 @@ export default function Page() {
           ubicacion: 'Barcelona',
           image: require('../assets/rooftop.png')
         },
-        
+
       ],
     },
     {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const Item = ({ title, image }) => (
@@ -13,30 +14,49 @@ export default function Page() {
   );
 
   const [search, setSearch] = useState('');
+  const [user, setUser] = useState(null);
   const updateSearch = (text) => {
     setSearch(text);
   };
 
   const [data, setData] = useState([]);
 
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+  
+      const data = JSON.parse(dataString);
+      console.log('User', data.user); 
+  
+      return data.user; 
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  
   useEffect(() => {
-    fetch('http://10.0.2.2:8000/users/', {
-      method: "GET"
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Error en la solicitud');
+    const fetchData = async () => {
+      try {
+        const userData = await getLocalUser();
+        if (!userData) {
+          console.error('User data not found in AsyncStorage');
+          return;
         }
-      })
-      .then((dataFromServer) => {
-        setData(dataFromServer);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  
+        setUser(userData); 
+  
+        setData(userData.friends || []);
+        console.log('Friends:', userData.friends);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
 
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())

@@ -3,11 +3,22 @@ import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpa
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image }) => (
-    <TouchableOpacity style={styles.item}>
-      <Image source={image} style={styles.image} />
+  const Item = ({ title, ubicacion, data, image, id}) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
+      {image ? (
+      <Image source={{ uri: image.uri }} style={styles.image} />
+    ) : (
+      <Image
+        source={{
+          uri:
+            'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
+        }}
+        style={styles.image}
+      />
+    )}
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.data}>{data}</Text>
@@ -18,11 +29,39 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
 
+const loadMoreData = async () => {
+  if (loading || !hasMoreData) return;
+
+  try {
+    setLoading(true);
+    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
+    const newData = await response.json();
+
+    if (newData.results.length > 0) {
+      setData((prevData) => [...prevData, ...newData.results]);
+      setPage((prevPage) => prevPage + 1);
+    } else {
+      setHasMoreData(false);
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+ 
 
   const navigation = useNavigation();
-  const handlePress = () => {
+  const handlePressMap = () => {
     navigation.navigate('map');
+  };
+  
+  const handlePressEvent = (eventId) => {
+    navigation.navigate('event', { eventId });
   };
 
   state = {
@@ -33,22 +72,31 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://10.0.2.2:8000/events/', {
-      method: "GET"
-    })
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+  
+        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
         if (response.ok) {
-          return response.json();
+          const dataFromServer = await response.json();
+          setData(dataFromServer.results);
         } else {
           throw new Error('Error en la solicitud');
         }
-      })
-      .then((dataFromServer) => {
-        setData(dataFromServer.results);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    };
+  
+    fetchData();
   }, []);
 
   const filteredData = data.filter((item) =>
@@ -59,7 +107,7 @@ export default function Page() {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder="Cerca..."
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
@@ -71,21 +119,30 @@ export default function Page() {
         <Text style={styles.filtersText}> Filters</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.mapButton} onPress={handlePress}>
+      <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
 
       <FlatList
         data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.nom} data={item.dataIni} ubicacion={item.espai} image={{ uri: item.imatges_list[0] }} />
+        renderItem={({ item, index }) => (
+          <Item
+            title={item.nom}
+            data={item.dataIni}
+            ubicacion={item.espai.nom}
+            image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null}
+            id={item.id}
+          />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReached={loadMoreData}
+        onEndReachedThreshold={0.1}
       />
-    </SafeAreaView>
-  );
-}
+
+        </SafeAreaView>
+      );
+    }
 
 const styles = StyleSheet.create({
   container: {
@@ -194,4 +251,3 @@ const styles = StyleSheet.create({
     },
   
 });
-
