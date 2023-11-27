@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
 import { Link } from 'expo-router';
 import MapView from 'react-native-maps';
+import axios from 'axios';
 import { Marker } from 'react-native-maps';
 import { SearchBar } from 'react-native-elements';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -23,7 +24,7 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
-  const [urldef, setUrldef] = useState('http://nattech.fib.upc.edu:40401/');
+  const [urldef, setUrldef] = useState('https://cultucat.hemanuelpc.es/');
   const [customMarkers, setCustomMarkers] = useState([
     {
       latlng: { latitude: 41.3894491, longitude: 2.1107903 },
@@ -92,7 +93,7 @@ export default function Page() {
   const fetchMarkers = (region) => {
     console.log('fetching markers');
     const { latitude, longitude } = region;
-    const url = `http://10.0.2.2:8000/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
+    const url = `https://cultucat.hemanuelpc.es//spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=15`;
     fetch(url)
     .then((response) => response.json())
       .then((data) => {
@@ -120,7 +121,7 @@ export default function Page() {
   const toggleEvents = (marker) => {
     if (marker) {
       setSelectedMarker(marker);
-      const url = `http://10.0.2.2:8000/events/?espai=${marker.title}`;
+      const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.title}`;
       console.log(url)
       fetch(url)
       .then((response) => response.json())

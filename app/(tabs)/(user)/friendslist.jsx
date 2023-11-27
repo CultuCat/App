@@ -20,7 +20,7 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/users/', {
+    fetch('http://10.0.2.2:8000/users/', {
       method: "GET"
     })
       .then((response) => {

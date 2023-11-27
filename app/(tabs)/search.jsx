@@ -33,7 +33,7 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/events/', {
+    fetch('http://10.0.2.2:8000/events/', {
       method: "GET"
     })
       .then((response) => {

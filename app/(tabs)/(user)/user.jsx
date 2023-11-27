@@ -154,7 +154,7 @@ export default function Page() {
 
   useEffect(() => {
     // Hacer una solicitud GET para obtener el perfil del usuario usando fetch
-    fetch('http://127.0.0.1:8000/users/7/')
+    fetch('http://10.0.2.2:8000/users/7/')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');

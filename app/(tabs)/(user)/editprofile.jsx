@@ -151,7 +151,7 @@ export default function Page() {
       
     };
 
-    fetch('http://127.0.0.1:8000/users/7/', {
+    fetch('http://10.0.2.2:8000/users/7/', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
