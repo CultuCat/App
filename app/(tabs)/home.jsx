@@ -1,19 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    fetch(`https://cultucat.hemanuelpc.es/events/?espai=${2}`)
+    console.log(getLocalUser());
+    fetchEvents();
+  }, []);
+
+  fetchEvents = async () => {
+    fetch(`https://cultucat.hemanuelpc.es/events/?espai=2`)
       .then((response) => response.json())
       .then((data) => {
         setEvents(data.results);
       });
-  }, []);
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item}>
+  }
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  const renderItem = ({ item , onPress}) => (
+    <TouchableOpacity style={styles.item} onPress={() => eventPress(item.id)}>
       <Image source={{ uri: item.imatges_list[0] }} style={styles.image} />
       <View style={styles.itemText}>
         <Text style={styles.title}>{item.nom}</Text>
@@ -22,7 +38,11 @@ export default function Page() {
       </View>
     </TouchableOpacity>
   );
-
+    eventPress = (id) => {
+        console.log("test");
+        console.log(id);
+        console.log(getLocalUser());
+    }
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
