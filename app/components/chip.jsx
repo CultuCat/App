@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 const Chip = (props) => {
     const { text, color,icon } = props;
@@ -21,7 +21,7 @@ const Chip = (props) => {
     return (
         <View style={styles.chip}>
             {icon &&
-            <Ionicons name={icon} size={16} color="black"/>
+            <MaterialCommunityIcons name={icon} size={16} color="black"/>
             }
             <Text style={icon && styles.text}>{text}</Text>
         </View>
