@@ -13,6 +13,7 @@ import RankingModal from '../../components/rankingModal.jsx';
 const User = () => {
   const [user, setUser] = useState(null);
   const [chips, setChips] = useState(null);
+  const [selectedTrofeuIndex, setSelectedTrofeuIndex] = useState(null);
   const [trofeus, setTrofeus] = useState(null);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
@@ -45,13 +46,10 @@ const User = () => {
       ]
     );
   };
-  const handleTrofeuPress = (index) => {
-    setSelectedChipIndex(index);
-
   
-  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+    setSelectedTrofeuIndex(null); 
   };
 
   const handleDeleteChip = async (espaiId) => {
@@ -132,7 +130,10 @@ const User = () => {
       }
     }
   };
-
+  const handleTrofeuPress = (index) => {
+    setSelectedTrofeuIndex(index);
+    setModalVisible(true);
+  };
   const getTrofeuColor = (trofeu) => {
     switch (trofeu.level_achived_user) {
       case 1:
@@ -371,7 +372,8 @@ const User = () => {
               {trofeus && trofeus
               .filter((trofeu) => trofeu.level_achived_user !== -1)
               .map((trofeu, index) => (
-                <TouchableOpacity onPress={toggleModal}
+                <TouchableOpacity
+                  onPress={() => handleTrofeuPress(index)}
                   key={index}
                   style={[
                     { marginHorizontal: 2.5 },
@@ -384,22 +386,26 @@ const User = () => {
                     color={getTrofeuColor(trofeu)}
                     icon={getTrofeuIcon(trofeu)}
                   />
-                  <Modal visible={isModalVisible} transparent animationType="slide">
-                  <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                      
-                      <Text style={styles.trofeunom}> <MaterialCommunityIcons name={getTrofeuIcon(trofeu)}> </MaterialCommunityIcons>{trofeu.nom} <MaterialCommunityIcons name={getTrofeuIcon(trofeu)}> </MaterialCommunityIcons></Text>
-                      <Divider />
-                      <Text>Descripció del trofeu:</Text>
-                      <Text style={styles.descripcio2}>{trofeu.descripcio }</Text>
-                      <Divider />
-                      <Text style={styles.descripcio2}>  Nivell {trofeu.level_achived_user }</Text>
-                      <Button title="Tancar" onPress={toggleModal} />
+                  <Modal visible={selectedTrofeuIndex === index} transparent animationType="slide">
+                    <View style={styles.modalContainer}>
+                      <View style={styles.modalContent}>
+                        <Text style={styles.trofeunom}>
+                          <MaterialCommunityIcons name={getTrofeuIcon(trofeu)} />
+                          {trofeu.nom}
+                          <MaterialCommunityIcons name={getTrofeuIcon(trofeu)} />
+                        </Text>
+                        <Divider />
+                        <Text>Descripció del trofeu:</Text>
+                        <Text style={styles.descripcio2}>{trofeu.descripcio}</Text>
+                        <Divider />
+                        <Text style={styles.descripcio2}>Nivell {trofeu.level_achived_user}</Text>
+                        <Button title="Tancar" onPress={toggleModal} />
+                      </View>
                     </View>
-                  </View>
-                </Modal>
+                  </Modal>
                 </TouchableOpacity>
-              ))}
+              ))
+              } 
             </ScrollView>
             <View style={{
               flexDirection: 'row',
