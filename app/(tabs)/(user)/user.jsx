@@ -137,11 +137,11 @@ const User = () => {
   const getTrofeuColor = (trofeu) => {
     switch (trofeu.level_achived_user) {
       case 1:
-        return "#ffd700";
+        return "#cd7f32";
       case 2:
         return "#bebebe";
       case 3:
-        return "#cd7f32";
+        return "#ffd700";
       default:
         return "#d2d0d0";
     }
