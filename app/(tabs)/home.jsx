@@ -1,50 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import TicketCard from '../components/ticketCard.jsx';
 
 export default function Page() {
   const [events, setEvents] = useState([]);
-
+  const [info, setInfo] = useState(null);
   useEffect(() => {
-    console.log(getLocalUser());
-    fetchEvents();
+    const fetchData = async () => {
+      const userInfo = await getLocalUser();
+      setInfo(userInfo);
+      fetchAllEvents(userInfo.map(item => item.id))
+        .then(allEvents => {
+          setEvents(allEvents.flat())
+        })
+        .catch(error => {
+          console.error('Error fetching events:', error);
+        });
+    };
+    fetchData();
   }, []);
 
-  fetchEvents = async () => {
-    fetch(`https://cultucat.hemanuelpc.es/events/?espai=2`)
-      .then((response) => response.json())
-      .then((data) => {
-        setEvents(data.results);
-      });
+  const fetchEventsById = async (id) => {
+    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?espai=${id}`);
+    const data = await response.json();
+    return data.results;
+  }
+  
+  const fetchAllEvents = async (ids) => {
+    const promises = ids.map(id => fetchEventsById(id));
+    const allEvents = await Promise.all(promises);
+    return allEvents;
   }
   const getLocalUser = async () => {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
       const data = JSON.parse(dataString);
-      return data.user.id;
+      return data.user.espais_preferits;
     } catch (error) {
       console.error('Error getting local user data:', error);
       return null;
     }
   };
-  const renderItem = ({ item , onPress}) => (
-    <TouchableOpacity style={styles.item} onPress={() => eventPress(item.id)}>
-      <Image source={{ uri: item.imatges_list[0] }} style={styles.image} />
-      <View style={styles.itemText}>
-        <Text style={styles.title}>{item.nom}</Text>
-        <Text style={styles.data}>{item.dataIni}</Text>
-        <Text style={styles.ubicacion}>{item.espai.nom}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-    eventPress = (id) => {
-        console.log("test");
-        console.log(id);
-        console.log(getLocalUser());
-    }
+  
+  
+  const renderItem = ({  item }) => <TicketCard 
+    event={item.nom} 
+    data={item.dataIni}
+    imatge={item.imatges_list[0]}
+    espai={item.espai.nom} />;
+  eventPress = (id) => {
+      console.log("test");
+      console.log(id);
+      console.log(info);
+
+  }
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Suggested Events</Text>
       <FlatList
         data={events}
         renderItem={renderItem}
@@ -89,6 +103,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       flexDirection: 'column',
+      alignItems: 'center',
     },
     text: {
       padding: 10,
