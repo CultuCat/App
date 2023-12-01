@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TicketCard from '../components/ticketCard.jsx';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Page() {
   const [events, setEvents] = useState([]);
@@ -20,6 +21,8 @@ export default function Page() {
     };
     fetchData();
   }, []);
+
+  
 
   const fetchEventsById = async (id) => {
     const response = await fetch(`https://cultucat.hemanuelpc.es/events/?espai=${id}`);
@@ -44,18 +47,20 @@ export default function Page() {
     }
   };
   
+  const navigation = useNavigation();
+  const handlePressEvent = (eventId) => {
+    navigation.navigate('event', { eventId });
+  }; 
+  const renderItem = ({ item }) => (
+      <TicketCard 
+        event={item.nom} 
+        data={item.dataIni}
+        imatge={item.imatges_list[0]}
+        espai={item.espai.nom} 
+        onPress= {() => handlePressEvent(item.id)}
+      />
+  );
   
-  const renderItem = ({  item }) => <TicketCard 
-    event={item.nom} 
-    data={item.dataIni}
-    imatge={item.imatges_list[0]}
-    espai={item.espai.nom} />;
-  eventPress = (id) => {
-      console.log("test");
-      console.log(id);
-      console.log(info);
-
-  }
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Suggested Events</Text>
