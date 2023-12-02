@@ -1,4 +1,20 @@
 {
     "HOME": "Inici",
-    "CANVI_IDIOMA": "Canviar idioma"
+    "Config": {
+        "Visibilitat": "Visibilitat Usuari",
+        "User_vis": "Usuari Visible",
+        "User_no_vis": "Usuari no Visible",
+        "Xat": "Xatejar amb usuaris",
+        "User_xat": "Usuari vol xatejar",
+        "User_no_xat": "Usuari no vol xatejar",
+        "Idioma": "Idiomes",
+        "Canvi_idioma": "Canviar idioma",
+        "Eliminar": "Eliminar Compte",
+        "Confirmation": "Estàs segur que vols eliminar el teu compte?",
+        "Desar": "Desar",
+        "Sessio": "Tancar Sessió",
+        "Confirmation_ses": "Estàs segur que vols tancar la sessió?",
+        "Si": "Sí",
+        "No": "No"
+    }
 } 

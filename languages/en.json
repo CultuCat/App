@@ -1,4 +1,20 @@
 {
     "HOME": "Home",
-    "CANVI_IDIOMA": "Change language" 
+    "Config": {
+        "Visibilitat": "User Visibility",
+        "User_vis": "User Visible",
+        "User_no_vis": "User no Visible",
+        "Xat": "Xat with users",
+        "User_xat": "User wants to xat",
+        "User_no_xat": "User don't wants to xat",
+        "Idioma": "Languages",
+        "Canvi_idioma": "Change language",
+        "Eliminar": "Delete Account",
+        "Confirmation": "Are you sure you want to delete your account?",
+        "Desar": "Save",
+        "Sessio": "Log out",
+        "Confirmation_ses": "Are you sure you want to log out?",
+        "Si": "Yes",
+        "No": "No"
+    }
 }

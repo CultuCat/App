@@ -104,11 +104,11 @@ export default function Configuration() {
       fontWeight: 'bold',
     },
     globe: {
-      marginLeft: 130,
+      marginLeft: 230,
       marginTop: -25,
     },
     eye: {
-      marginLeft: 200,
+      marginLeft: 230,
       marginTop: 30,
     },
     chat: {
@@ -286,10 +286,10 @@ export default function Configuration() {
   return (
     <View style={styles.containerTot}>
       <Ionicons style={styles.eye} name="eye" size={25} color="#ff6961" />
-    <Text style={styles.visibilitat}> Visibilitat Usuari </Text>
+    <Text style={styles.visibilitat}>{t('Config.Visibilitat')}</Text>
     <View style={styles.separator2}/>
     <TouchableOpacity onPress={toggleUserVisibility} style={styles.switchContainer}>
-    <Text style={styles.toggleText}>{isUserVisible ? 'Usuari Visible' : 'Usuari Ocult'}</Text>
+    <Text style={styles.toggleText}>{isUserVisible ? t('Config.User_vis') : t('Config.User_no_vis')}</Text>
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
@@ -300,11 +300,11 @@ export default function Configuration() {
       />
       </TouchableOpacity>
       <View style={styles.separator2}/>
-      <Text style={styles.xatejar}> Xatejar amb usuaris</Text>
+      <Text style={styles.xatejar}>{t('Config.Xat')}</Text>
       <Ionicons style={styles.chat} name="person" size={25} color="#ff6961" />
       <View style={styles.separator2}/>
       <TouchableOpacity onPress={toggleUserWantsToTalk } style={styles.switchContainer}>
-    <Text style={styles.toggleText}>{UserWantsToTalk ? 'Usuari vol xatejar' : 'Usuari no vol xatejar'}</Text>
+    <Text style={styles.toggleText}>{UserWantsToTalk ? t('Config.User_xat') : t('Config.User_no_xat')}</Text>
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
@@ -315,7 +315,7 @@ export default function Configuration() {
       />
       </TouchableOpacity>
       <View style={styles.separator2}/>
-      <Text style={styles.xatejar}> Idiomes</Text>
+      <Text style={styles.xatejar}>{t('Config.Idioma')}</Text>
       <Ionicons style={styles.globe} name="globe-sharp" size={25} color="#ff6961" />
       <View style={styles.separator2}/>
       <Modal visible={visible} onRequestClose={() => setVisible(false)}>
@@ -333,38 +333,38 @@ export default function Configuration() {
         </View>
       </Modal>
       <TouchableOpacity style={styles.deleteAcc} onPress={() => {setVisible(true)}}>
-        <Text style={styles.compte}> {t('CANVI_IDIOMA')}</Text>
+        <Text style={styles.compte}> {t('Config.Canvi_idioma')}</Text>
       </TouchableOpacity>
       <View style={styles.separator2}/>
-      <Text style={styles.xatejar}> Eliminar compte</Text>
+      <Text style={styles.xatejar}> {t('Config.Eliminar')}</Text>
       <View style={styles.separator2}/>
       <TouchableOpacity style={styles.deleteAcc} onPress={toggleModalSec}>
-      <Text style={styles.compte}>Eliminar Compte</Text>
+      <Text style={styles.compte}>{t('Config.Eliminar')}</Text>
       </TouchableOpacity>
       <Modal visible={isModalVisibleSec} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text>Estàs segur que vols eliminar el compte ?</Text>
-            <Button title="Si" onPress={handleDelete} />
-            <Button title="Cancelar" onPress={toggleModalSec} />
+            <Text>{t('Config.Confirmation')}</Text>
+            <Button title={t('Config.Si')} onPress={handleDelete} />
+            <Button title={t('Config.No')} onPress={toggleModalSec} />
           </View>
         </View>
       </Modal>
       <View style={styles.separator2}/>
       <TouchableOpacity style={styles.editButton} onPress={toggleModal}>
-        <Text style={styles.sessio}>Tancar sessió</Text>
+        <Text style={styles.sessio}>{t('Config.Sessio')}</Text>
       </TouchableOpacity>
       <Modal visible={isModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text>Estàs segur que vols tancar la sessió?</Text>
-            <Button title="Si" onPress={handleLogout} />
-            <Button title="Cancelar" onPress={toggleModal} />
+            <Text>{t('Config.Confirmation_ses')}</Text>
+            <Button title={t('Config.Si')} onPress={handleLogout} />
+            <Button title={t('Config.No')} onPress={toggleModal} />
           </View>
         </View>
       </Modal>
       <TouchableOpacity style={styles.saveButton} onPress={saveconfig}>
-        <Text style={styles.sessio}>Desar</Text>
+        <Text style={styles.sessio}>{t('Config.Desar')}</Text>
       </TouchableOpacity>
     </View>
   );

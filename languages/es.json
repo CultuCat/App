@@ -1,4 +1,20 @@
 { 
     "HOME": "Inicio",
-    "CANVI_IDIOMA": "Cambiar idioma"
+    "Config": {
+        "Visibilitat": "Visibilidad Usuario",
+        "User_vis": "Usuario Visible",
+        "User_no_vis": "Usuario no Visible",
+        "Xat": "Chatear con usuarios",
+        "User_xat": "Usuario quiere chatear",
+        "User_no_xat": "Usuario no quiere chatear",
+        "Idioma": "Idiomas",
+        "Canvi_idioma": "Cambiar idioma",
+        "Eliminar": "Eliminar Cuenta",
+        "Confirmation": "¿Estás seguro de que quieres eliminar tu cuenta?",
+        "Desar": "Guardar",
+        "Sessio": "Cerrar Sesión",
+        "Confirmation_ses": "¿Estás seguro de que quieres cerrar la sesión?",
+        "Si": "Sí",
+        "No": "No"
+    }
 }
