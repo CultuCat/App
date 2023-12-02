@@ -116,7 +116,7 @@ export default function Configuration() {
       marginTop: -25,
     },
     deleteAcc: {
-      width: 170,
+      width: 170, 
       height: 40,
       backgroundColor: 'transparent',
       color: 'red',

@@ -18,7 +18,7 @@ export default function Page() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         handleSignInWithGoogle();
     }, [response])
 
@@ -33,6 +33,25 @@ export default function Page() {
             setUserInfo(user);
         }
     }
+
+    /*async function handleSignInWithGoogle() {
+        if (response?.type === "success") {
+          const accessToken = response.authentication.accessToken;
+          const response = await fetch('http://localhost:8000/users/sign_in/google-oauth2/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ access_token: accessToken }),
+          });
+      
+          if (response.status === 200) {
+            const data = await response.json();
+
+          }
+        }
+      }*/
+
 
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
