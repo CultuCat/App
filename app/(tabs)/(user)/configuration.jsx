@@ -17,10 +17,12 @@ export default function Configuration() {
   const navigation = useNavigation();
   const {t} =useTranslation();
   const [visible, setVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('ca');
 
   const changeLng = lng => {
     i18next.changeLanguage(lng);
     setVisible(false);
+    setSelectedLanguage(lng);
   };
 
 
@@ -134,8 +136,7 @@ export default function Configuration() {
       paddingTop: 60,
       paddingHorizontal: 10,
       backgroundColor: '#ff6961',
-    },
-  
+    },  
     languageButton: {
       padding: 10,
       borderBottomColor: '#dddddd',
@@ -323,7 +324,8 @@ export default function Configuration() {
           <FlatList
             data={Object.keys(languageResources)}
             renderItem={({item}) => (
-              <TouchableOpacity style={styles.languageButton} onPress={() => changeLng(item)}>
+              <TouchableOpacity style={[styles.languageButton, selectedLanguage === item ? { backgroundColor: 'grey' } : null]} 
+              onPress={() => changeLng(item)}>
                 <Text style={styles.lngName}>
                   {language_list[item].name}
                 </Text>
