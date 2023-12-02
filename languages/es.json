@@ -1,5 +1,6 @@
 { 
-    "HOME": "Inicio",
+    "Carregant": "Cargando...",
+    "Cancel": "Cancelar",
     "Config": {
         "Visibilitat": "Visibilidad Usuario",
         "User_vis": "Usuario Visible",
@@ -16,5 +17,14 @@
         "Confirmation_ses": "¿Estás seguro de que quieres cerrar la sesión?",
         "Si": "Sí",
         "No": "No"
+    },
+    "Edit_User": {
+        "Username": "Nombre de usuario",
+        "Nom": "Nombre",
+        "Bio": "Biografía",
+        "Desar_can": "Guardar cambios"
+    },
+    "Friendlist": {
+        "Busca": "Escribe aquí..."
     }
 }

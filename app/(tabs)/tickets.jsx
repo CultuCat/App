@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
 import TicketCard from '../components/ticketCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 const Tickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
+  const {t} =useTranslation();
+
 
   const today = new Date();
 
@@ -63,7 +67,7 @@ const Tickets = () => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text>Loading...</Text>
+        <Text>{t('Carregant')}</Text>
       ) : tickets.length > 0 ? (
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '10%', marginVertical: 20 }}>
@@ -72,7 +76,7 @@ const Tickets = () => {
               value={showAllTickets}
               onValueChange={(value) => setShowAllTickets(value)}
             />
-            <Text style={{ marginLeft: 10 }}>Veure tots els tickets</Text>
+            <Text style={{ marginLeft: 10 }}>{t('Ticket.Tots')}</Text>
           </View>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             {filteredTickets.length > 0 ? (
@@ -83,12 +87,12 @@ const Tickets = () => {
                 contentContainerStyle={{ alignItems: 'center' }}
               />
             ) : (
-              <Text>No tens entrades per propers esdeveniments</Text>
+              <Text>{t('Ticket.No_tickets_propers')}</Text>
             )}
           </View>
         </View>
       ) : (
-        <Text>No tens entrades a esdeveniments</Text>
+        <Text>{t('Ticket.No_tickets')}</Text>
       )}
     </View>
   );

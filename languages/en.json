@@ -1,5 +1,6 @@
 {
-    "HOME": "Home",
+    "Carregant": "Loading...",
+    "Cancel": "Cancel",
     "Config": {
         "Visibilitat": "User Visibility",
         "User_vis": "User Visible",
@@ -16,5 +17,14 @@
         "Confirmation_ses": "Are you sure you want to log out?",
         "Si": "Yes",
         "No": "No"
+    },
+    "Edit_User": {
+        "Username": "Username",
+        "Nom": "Name",
+        "Bio": "Biography",
+        "Desar_can": "Save changes"
+    },
+    "Friendlist": {
+        "Busca": "Type here..."
     }
 }

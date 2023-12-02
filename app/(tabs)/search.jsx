@@ -4,8 +4,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
+  const {t} =useTranslation();
+
   const Item = ({ title, ubicacion, data, image, id}) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
       {image ? (
@@ -107,7 +111,7 @@ const loadMoreData = async () => {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Cerca..."
+        placeholder={t('Search.Busca')}
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
@@ -116,12 +120,12 @@ const loadMoreData = async () => {
 
       <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons name="filter-list" style={styles.filtersIcon} />
-        <Text style={styles.filtersText}> Filters</Text>
+        <Text style={styles.filtersText}>{t('Search.Filtres')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
-        <Text style={styles.mapText}> Veure mapa</Text>
+        <Text style={styles.mapText}>{t('Search.Mapa')}</Text>
       </TouchableOpacity>
 
       <FlatList

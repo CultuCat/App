@@ -2,8 +2,11 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout() {
+  const {t} =useTranslation();
+
   return (
     <Tabs
     screenOptions={{

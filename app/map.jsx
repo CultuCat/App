@@ -5,8 +5,12 @@ import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { SearchBar } from 'react-native-elements';
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
+  const {t} =useTranslation();
+
   const Item = ({ title, ubicacion, data, image }) => (
     <TouchableOpacity style={styles.item}>
       <Image source={image} style={styles.image} />
@@ -154,7 +158,7 @@ export default function Page() {
       </MapView>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder={t('Friendlist.Busca')}
         onChangeText={updateSearch}
         value={search}
         platform="ios"
@@ -167,7 +171,7 @@ export default function Page() {
     disabled={!selectedMarker}
     style={styles.button}
   >
-    <Text style={styles.eventsText}> Esdevenimets</Text>
+    <Text style={styles.eventsText}>{t('Map.Esdeveniments')}</Text>
   </TouchableOpacity>
 
 </View>

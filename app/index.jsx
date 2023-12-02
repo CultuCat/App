@@ -6,8 +6,12 @@ import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleButton from './components/googleButton';
 import Divider from './components/divider';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
+    const {t} =useTranslation();
+
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
@@ -132,7 +136,7 @@ export default function Page() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                Alert.alert("Error", "Incorrect username or password");
+                Alert.alert("Error", t('Index.Eror_credencials'));
             });
     };
 
@@ -144,21 +148,21 @@ export default function Page() {
                     source={require('../assets/full-logo.png')}
                 />
                 <View style={styles.centeredContent}>
-                    <Text style={styles.title}>Benvingut</Text>
+                    <Text style={styles.title}>{t('Index.Benvingut')}</Text>
                     <GoogleButton onPress={() => {
                         promptAsync();
                     }} />
                     <Divider />
                     <TextInput
                         style={styles.input}
-                        placeholder="Username"
+                        placeholder={t('Index.User')}
                         value={username}
                         onChangeText={setUsername} 
                         autoCapitalize="none"
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Password"
+                        placeholder={t('Index.Password')}
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry

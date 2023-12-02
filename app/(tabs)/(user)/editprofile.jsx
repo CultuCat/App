@@ -3,13 +3,14 @@ import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react
 import { MaterialIcons} from "@expo/vector-icons";
 import { Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState(''); 
- const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
+  const {t} =useTranslation();
 
   const styles = StyleSheet.create({
     fotoProfile: {
@@ -193,7 +194,7 @@ export default function Page() {
     
   
     if (!user) {
-      return <Text>Cargando...</Text>;
+      return <Text>{t('Carregant')}</Text>;
     }
     const handleSaveChanges = async () => {
       try {
@@ -263,28 +264,28 @@ export default function Page() {
         onChangeText={(text) => setUsername(text)} 
        
     />
-    <Text style= {styles.username}>Username: </Text>
+    <Text style= {styles.username}>{t('Edit_User.Username')}: </Text>
     <TextInput
         style={styles.input2}
         placeholder={user.first_name}
         value={first_name}
         onChangeText={text => setName(text)}
     />
-    <Text style= {styles.username}>Nom: </Text>
+    <Text style= {styles.username}>{t('Edit_User.Nom')}: </Text>
     <TextInput
         style={styles.input3}
         placeholder={user.bio}
         value={bio}
         onChangeText={text => setBio(text)}
     />
-    <Text style= {styles.genere}>Bio: </Text>
+    <Text style= {styles.genere}>{t('Edit_User.Bio')}: </Text>
     <View style={styles.container}>
     </View>
     <Link href={'(user)/user'} asChild>
     <TouchableOpacity
         style={styles.cancelButton}
       >
-      <Text style={styles.rankingText}>Cancelar</Text>
+      <Text style={styles.rankingText}>{t('Cancel')}</Text>
     </TouchableOpacity>
     </Link>
     
@@ -292,7 +293,7 @@ export default function Page() {
     <TouchableOpacity
         style={styles.saveButton } onPress={handleSaveChanges}
       >
-      <Text style={styles.rankingText}>Desar canvis</Text>
+      <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
     </TouchableOpacity>
     </Link>  
   </View>
