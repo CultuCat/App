@@ -1,8 +1,12 @@
 import React, { useState, useEffect} from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert} from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert, FlatList} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import i18next, {languageResources} from '../../../languages/i18next';
+import language_list from '../../../languages/language_list.json';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -11,6 +15,13 @@ export default function Configuration() {
   const [isUserVisible, setIsUserVisible] = useState(null);
   const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
   const navigation = useNavigation();
+  const {t} =useTranslation();
+  const [visible, setVisible] = useState(false);
+
+  const changeLng = lng => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+  };
 
 
   const styles = StyleSheet.create({
@@ -82,15 +93,19 @@ export default function Configuration() {
     },
     visibilitat: {
       marginTop: -25,
-      marginLeft: 10,
+      marginLeft: 40,
       fontSize: 20,
       fontWeight: 'bold',
     },
     xatejar: {
       marginTop: 15,
-      marginLeft: 10,
+      marginLeft: 40,
       fontSize: 20,
       fontWeight: 'bold',
+    },
+    globe: {
+      marginLeft: 130,
+      marginTop: -25,
     },
     eye: {
       marginLeft: 200,
@@ -112,6 +127,23 @@ export default function Configuration() {
       borderRadius: 6,
       marginLeft: 100,
       marginTop: 20,
+    },
+    languagesList: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingTop: 60,
+      paddingHorizontal: 10,
+      backgroundColor: '#ff6961',
+    },
+  
+    languageButton: {
+      padding: 10,
+      borderBottomColor: '#dddddd',
+      borderBottomWidth: 1,
+    },
+    lngName: {
+      fontSize: 18,
+      color: 'white',
     }
       
   });
@@ -281,6 +313,27 @@ export default function Configuration() {
       value={UserWantsToTalk}
       onValueChange={toggleUserWantsToTalk}
       />
+      </TouchableOpacity>
+      <View style={styles.separator2}/>
+      <Text style={styles.xatejar}> Idiomes</Text>
+      <Ionicons style={styles.globe} name="globe-sharp" size={25} color="#ff6961" />
+      <View style={styles.separator2}/>
+      <Modal visible={visible} onRequestClose={() => setVisible(false)}>
+        <View style={styles.languagesList}>
+          <FlatList
+            data={Object.keys(languageResources)}
+            renderItem={({item}) => (
+              <TouchableOpacity style={styles.languageButton} onPress={() => changeLng(item)}>
+                <Text style={styles.lngName}>
+                  {language_list[item].name}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
+      <TouchableOpacity style={styles.deleteAcc} onPress={() => {setVisible(true)}}>
+        <Text style={styles.compte}> {t('CANVI_IDIOMA')}</Text>
       </TouchableOpacity>
       <View style={styles.separator2}/>
       <Text style={styles.xatejar}> Eliminar compte</Text>
