@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { Text, View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TicketCard from '../components/ticketCard.jsx';
 import { useNavigation } from '@react-navigation/native';
