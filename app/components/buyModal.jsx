@@ -6,62 +6,58 @@ import { useTranslation } from 'react-i18next';
 
 
 const BuyModal = ({
-  eventNom,
-  eventId,
-  price,
-  buyVisible,
-  setBuyVisible,
-  setBuyButtonEnabled,
+    eventNom,
+    eventId,
+    price,
+    buyVisible,
+    setBuyVisible,
+    setBuyButtonEnabled,
 }) => {
+    const [selectedDiscountCode, setSelectedDiscountCode] = useState(null);
+    const [discountCodes, setDiscountCodes] = useState([]); 
+    const [discountInfo, setDiscountInfo] = useState(null);
+    const closeModal = () => {
+        setBuyVisible(false);
+    };
 
-  const {t} =useTranslation();
-  const [selectedDiscountCode, setSelectedDiscountCode] = useState(null);
-  const [discountCodes, setDiscountCodes] = useState([]); 
-  const [discountInfo, setDiscountInfo] = useState(null);
+    const {t} =useTranslation();
 
-  const closeModal = () => {
+
+    const handleYesClick = async () => {
       setBuyVisible(false);
-  };
+      setBuyButtonEnabled(false);
+    
+      const userTokenString = await AsyncStorage.getItem("@user");
 
-  const handleYesClick = async () => {
-    setBuyVisible(false);
-    setBuyButtonEnabled(false);
+      const userToken = JSON.parse(userTokenString).token;
 
-    const userTokenString = await AsyncStorage.getItem("@user");
-    const userToken = JSON.parse(userTokenString).token;
-
-    try {
+    
+      try {
         await AsyncStorage.setItem(`buyButtonEnabled_${eventId}`, 'false');
-
-        let requestBody = {
-            event: eventId,
-        };
-
-        if (discountInfo !== null) {
-            requestBody.discount = discountInfo.codi;
-        }
-
+    
         const response = await fetch('https://cultucat.hemanuelpc.es/tickets/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${userToken}`,
-            },
-            body: JSON.stringify(requestBody),
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${userToken}`,
+            
+          },
+          body: JSON.stringify({
+            event: eventId,
+            discount: discountInfo.codi,
+          }),
         });
-
+        console.log(selectedDiscountCode.codi);
         if (response.ok) {
-            console.log('Solicitud POST exitosa');
+          console.log('Solicitud POST exitosa');
         } else {
-            console.error('Error en la solicitud POST:', response.status);
+          console.error('Error en la solicitud POST:', response.status);
         }
         Alert.alert(t('Ticket.Comprat'), t('Ticket.Ticket_donat'));
       } catch (error) {
         console.error('Error al guardar el estado del botón de compra o al hacer la solicitud POST:', error);
-    }
-};
-
-
+      }
+    };
     const getLocalUser = async () => {
       try {
         const dataString = await AsyncStorage.getItem("@user");
@@ -75,11 +71,12 @@ const BuyModal = ({
     };
     
     const handleDiscountCodeValidation = async (discountCodeId) => {
+      console.log("Handling discount validation for:", discountCodeId);
   
       if (!discountCodeId) {
         setDiscountInfo(null);
         return;
-      }      
+      }
   
       const selectedDiscount = discountCodes.find(
         (discount) => discount.codi === discountCodeId
@@ -110,6 +107,7 @@ const BuyModal = ({
           const filteredDiscounts = discountData.filter((discount) => !discount.usat);
     
           setDiscountCodes(filteredDiscounts);
+          console.log('discounts', discountCodes);
         } catch (error) {
           console.error('Error al obtener códigos de descuento:', error);
         }
@@ -178,30 +176,29 @@ const BuyModal = ({
               </View>
             )}
     
-          {discountInfo && (
+        {discountInfo && (
         <View style={styles.discountInfoContainer}>
-          <Text style={styles.discountInfoText}>
+            <Text style={styles.discountInfoText}>
             {`Preu Final: ${
-              selectedDiscountCode
+                selectedDiscountCode
                 ? applyDiscount(price, discountInfo.nivellTrofeu) !== 'No disponible' &&
-                  applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuït'
-                  ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
-                  : applyDiscount(price, discountInfo.nivellTrofeu)
+                    applyDiscount(price, discountInfo.nivellTrofeu) !== 'Gratuït'
+                    ? applyDiscount(price, discountInfo.nivellTrofeu) + '€'
+                    : applyDiscount(price, discountInfo.nivellTrofeu)
                 : price
             }`}
-          </Text>
+            </Text>
         </View>
-      )}
-      {!discountInfo && (
+        )}
+        {!discountInfo && (
         <View style={styles.discountInfoContainer}>
-          <Text style={styles.discountInfoText}>
+            <Text style={styles.discountInfoText}>
             {`Preu Final: ${
-              price !== 'No disponible' && price !== 'Gratuït' ? price + '€' : price
+                price !== 'No disponible' && price !== 'Gratuït' ? price + '€' : price
             }`}
-          </Text>
+            </Text>
         </View>
-      )}
-
+        )}
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
@@ -289,4 +286,3 @@ const styles = StyleSheet.create({
 });
 
 export default BuyModal;
-
