@@ -46,6 +46,10 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
           </View>
         </View>
         <View style={styles.divider}></View>
+        <Image
+            source={{ uri:  'https://upload.wikimedia.org/wikipedia/commons/2/2f/Rickrolling_QR_code.png?20200615212723'}}
+            style={styles.qr}
+          />
       </View>
     </Modal>
     
@@ -113,6 +117,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 10,
   },
+  qr: {
+    width: 250,
+    height: 250,
+    alignSelf: 'center',
+    marginTop: 100,
+  }
 });
 
 export default TicketDetails;
