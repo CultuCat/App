@@ -11,12 +11,34 @@ import RankingModal from '../../components/rankingModal.jsx';
 
 const User = () => {
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [chips, setChips] = useState(null);
   const [trofeus, setTrofeus] = useState(["MÉS ESDEVENIMENTS", "REVIEWER", "PARLANER"]);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const [rankingVisible, setRankingVisible] = useState(false);
+  const [iconName, setIconName] = useState('heart-outline');
 
+  const handleIconClick = async () => {
+    setIconName('time-outline');
+  
+    const response = await fetch(`https://cultucat.hemanuelpc.es/${this.currentUser}/send_friend_request/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "to_user": user.id,
+      }),
+    });
+  
+    if (!response.ok) {
+      console.error('Error en la solicitud POST:', response);
+    } else {
+      const data = await response.json();
+      console.log('Respuesta de la solicitud POST:', data);
+    }
+  };
   const handleRanking = () => {
     setRankingVisible(true);
   }
@@ -168,8 +190,7 @@ const User = () => {
           console.error('User ID not found in AsyncStorage');
           return;
         }
-
-
+        setCurrentUser(userID);
         const userTokenString = await AsyncStorage.getItem("@user");
         if (!userTokenString) {
           console.error('User token not found in AsyncStorage');
@@ -218,6 +239,13 @@ const User = () => {
           marginHorizontal: '5%'
         }}>
           <Text style={styles.title}>Usuari</Text>
+          
+          {user.id !== currentUser && (
+            <TouchableOpacity onPress={handleIconClick}>
+              <Ionicons name={iconName} size={24} color="black" />
+            </TouchableOpacity>
+          )}
+
           <Link href={'/(tabs)/(user)/configuration'} asChild>
             <TouchableOpacity>
               <Ionicons name="ios-settings-outline" size={24} color="black" />
