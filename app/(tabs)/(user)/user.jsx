@@ -6,6 +6,7 @@ import Chip from '../../components/chip.jsx';
 import { ScrollView } from 'react-native';
 import Divider from '../../components/divider';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RankingModal from '../../components/rankingModal.jsx';
 
@@ -13,10 +14,12 @@ const User = () => {
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [chips, setChips] = useState(null);
-  const [trofeus, setTrofeus] = useState(["MÉS ESDEVENIMENTS", "REVIEWER", "PARLANER"]);
+  const [selectedTrofeuIndex, setSelectedTrofeuIndex] = useState(null);
+  const [trofeus, setTrofeus] = useState(null);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const [rankingVisible, setRankingVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [iconName, setIconName] = useState('heart-outline');
 
   const handleIconClick = async () => {
@@ -39,6 +42,7 @@ const User = () => {
       console.log('Respuesta de la solicitud POST:', data);
     }
   };
+
   const handleRanking = () => {
     setRankingVisible(true);
   }
@@ -65,16 +69,10 @@ const User = () => {
       ]
     );
   };
-  const handleTrofeuPress = (index) => {
-    setSelectedChipIndex(index);
-    Alert.alert(
-      "Eliminar lloc favorit",
-      "Estàs segur que vols eliminar el lloc favorit ?",
-      [
-        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
-        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
-      ]
-    );
+  
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+    setSelectedTrofeuIndex(null); 
   };
 
   const handleDeleteChip = async (espaiId) => {
@@ -155,17 +153,36 @@ const User = () => {
       }
     }
   };
-
+  const handleTrofeuPress = (index) => {
+    setSelectedTrofeuIndex(index);
+    setModalVisible(true);
+  };
   const getTrofeuColor = (trofeu) => {
-    switch (trofeu) {
-      case "MÉS ESDEVENIMENTS":
-        return "#ffd700";
-      case "REVIEWER":
-        return "#bebebe";
-      case "PARLANER":
+    switch (trofeu.level_achived_user) {
+      case 1:
         return "#cd7f32";
+      case 2:
+        return "#bebebe";
+      case 3:
+        return "#ffd700";
       default:
         return "#d2d0d0";
+    }
+  };
+  const getTrofeuIcon = (trofeu) => {
+    switch (trofeu.nom) {
+      case "Més esdeveniments":
+        return "trophy-award";
+      case "Reviewer":
+        return "trophy-outline";
+      case "Parlaner":
+        return "trophy-variant";
+      case "Coleccionista":
+        return "trophy";
+      case "El més amigable":
+        return "trophy-variant-outline";
+      default:
+        return "trophy-award";
     }
   };
 
@@ -216,6 +233,34 @@ const User = () => {
       }
     };
 
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+  
+        const response = await fetch('https://cultucat.hemanuelpc.es/trophies/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (response.ok) {
+          const dataFromServer = await response.json();
+          setTrofeus(dataFromServer);
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
     fetchData();
   }, []);
 
@@ -353,21 +398,43 @@ const User = () => {
               alwaysBounceHorizontal={true}
               contentContainerStyle={styles.chipContainer}
             >
-              {trofeus.map((trofeu, index) => (
+              {trofeus && trofeus
+              .filter((trofeu) => trofeu.level_achived_user !== -1)
+              .map((trofeu, index) => (
                 <TouchableOpacity
+                  onPress={() => handleTrofeuPress(index)}
                   key={index}
                   style={[
                     { marginHorizontal: 2.5 },
                     index === 0 && { marginLeft: 15 },
                     index === trofeus.length - 1 && { marginRight: 15 },
-                  ]}>
+                  ]}
+                >
                   <Chip
-                    text={trofeu}
+                    text={trofeu.nom}
                     color={getTrofeuColor(trofeu)}
-                    icon="ios-trophy"
+                    icon={getTrofeuIcon(trofeu)}
                   />
+                  <Modal visible={selectedTrofeuIndex === index} transparent animationType="slide">
+                    <View style={styles.modalContainer}>
+                      <View style={styles.modalContent}>
+                        <Text style={styles.trofeunom}>
+                          <MaterialCommunityIcons name={getTrofeuIcon(trofeu)} />
+                          {trofeu.nom}
+                          <MaterialCommunityIcons name={getTrofeuIcon(trofeu)} />
+                        </Text>
+                        <Divider />
+                        <Text>Descripció del trofeu:</Text>
+                        <Text style={styles.descripcio2}>{trofeu.descripcio}</Text>
+                        <Divider />
+                        <Text style={styles.descripcio2}>Nivell {trofeu.level_achived_user}</Text>
+                        <Button title="Tancar" onPress={toggleModal} />
+                      </View>
+                    </View>
+                  </Modal>
                 </TouchableOpacity>
-              ))}
+              ))
+              } 
             </ScrollView>
             <View style={{
               flexDirection: 'row',
@@ -493,6 +560,26 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     paddingTop: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  trofeunom: {
+    fontSize: 20,
+    color: '#ff6961',
+    fontWeight: 'bold',
+  },
+  descripcio2: {
+    fontSize: 15,
+    fontWeight: 'bold',
   },
 });
 
