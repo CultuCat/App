@@ -81,6 +81,7 @@ const RankingModal = ({
                     keyExtractor={(item) => item.id}
                 />
             </View>
+            
         </Modal>
     );
 };

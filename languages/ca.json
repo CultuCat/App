@@ -81,7 +81,8 @@
     "Ticket": {
         "Tots": "Veure tots els tiquets",
         "No_tickets_propers": "No tens entrades per propers esdeveniments",
-        "No_tickets": "No tens entrades a esdeveniments"
+        "No_tickets": "No tens entrades a esdeveniments",
+        "Entrada": "Entrada a"
     },
     "Signup": {
         "Password_not_equal": "Les contrasenyes no són iguals",

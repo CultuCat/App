@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
+import { useTranslation } from 'react-i18next';
 
 
 const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible }) => {
@@ -16,6 +16,8 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
     const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
     return formatter.format(dateObj);
   };
+
+  const {t} =useTranslation();
 
   const closeModal = () => {
     setSelectedTicketVisible(false);
@@ -31,10 +33,20 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
           <Ionicons name="ios-close-outline" size={36} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>Ticket</Text>
-        
+        <Text style={styles.title}>{t('Ticket.Entrada')}</Text>
+        <View style={styles.ticketContainer}>
+          <Image
+            source={{ uri: ticket.imatge }}
+            style={styles.imatge}
+          />
+          <View style={styles.ticketDetails}>
+            <Text style={styles.ticketTextTitle}>{ticket.nomEvent}</Text>
+            <Text style={styles.ticketTextDate}>{transformDate(ticket.data)}</Text>
+            <Text style={styles.ticketText}>{ticket.espai}</Text>
+          </View>
+        </View>
+        <View style={styles.divider}></View>
       </View>
-
     </Modal>
     
   );
@@ -43,7 +55,7 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: 'white',
     marginTop: 60,
     marginVertical: 20,
@@ -58,6 +70,48 @@ const styles = StyleSheet.create({
   closeIcon: {
     top: 10,
     right: 0,
+  },
+  ticketContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: 50,
+    alignSelf: 'flex-start'
+  },
+  imatge: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 20,
+  },
+  ticketDetails: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  ticketText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  ticketTextTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  ticketTextDate: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: colors.secondary,
+  },
+  divider: {
+    borderBottomWidth: 3,
+    borderBottomColor: colors.primary,
+    marginBottom: 20,
+    marginTop: 10,
   },
 });
 

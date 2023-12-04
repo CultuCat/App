@@ -81,7 +81,8 @@
     "Ticket": {
         "Tots": "View all tickets",
         "No_tickets_propers": "You have no tickets for upcoming events",
-        "No_tickets": "You have no tickets for events"
+        "No_tickets": "You have no tickets for events",
+        "Entrada": "Ticket to"
     },
     "Signup": {
         "Password_not_equal": "Passwords do not match",
