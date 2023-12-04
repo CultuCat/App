@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { useTranslation } from 'react-i18next';
 
 
 const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible }) => {
@@ -17,7 +16,6 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
     return formatter.format(dateObj);
   };
 
-  const {t} =useTranslation();
 
   const closeModal = () => {
     setSelectedTicketVisible(false);
@@ -33,7 +31,7 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
           <Ionicons name="ios-close-outline" size={36} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>{t('Ticket.Entrada')}</Text>
+        <Text style={styles.title}>Entrada a</Text>
         <View style={styles.ticketContainer}>
           <Image
             source={{ uri: ticket.imatge }}

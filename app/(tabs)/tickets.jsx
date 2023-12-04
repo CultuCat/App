@@ -10,7 +10,6 @@ const Tickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
-  const {t} =useTranslation();
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [selectedTicketVisible, setSelectedTicketVisible] = useState(false);
 
@@ -76,7 +75,7 @@ const Tickets = () => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text>{t('Carregant')}</Text>
+        <Text>Carregant...</Text>
       ) : tickets.length > 0 ? (
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '10%', marginVertical: 20 }}>
@@ -85,7 +84,7 @@ const Tickets = () => {
               value={showAllTickets}
               onValueChange={(value) => setShowAllTickets(value)}
             />
-            <Text style={{ marginLeft: 10 }}>{t('Ticket.Tots')}</Text>
+            <Text style={{ marginLeft: 10 }}>Veure tots els tiquets</Text>
           </View>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             {filteredTickets.length > 0 ? (

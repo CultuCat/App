@@ -5,7 +5,6 @@ import colors from '../../constants/colors';
 import { useTranslation } from 'react-i18next';
 
 export default function Layout() {
-  const {t} =useTranslation();
 
   return (
     <Tabs
