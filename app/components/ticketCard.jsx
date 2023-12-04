@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const TicketCard = ({ event, data, espai, imatge, onPress}) => {
+
+const TicketCard = ({ event, data, espai, imatge, onPress }) => {
   const transformDate = (date) => {
     const dateObj = new Date(date);
     const formatOptions = {
