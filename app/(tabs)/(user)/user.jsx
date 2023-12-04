@@ -25,7 +25,7 @@ const User = () => {
   const handleIconClick = async () => {
     setIconName('time-outline');
   
-    const response = await fetch(`https://cultucat.hemanuelpc.es/${this.currentUser}/send_friend_request/`, {
+    const response = await fetch(`https://cultucat.hemanuelpc.es/${currentUser}/send_friend_request/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
