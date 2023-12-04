@@ -2,6 +2,8 @@ import React, { useEffect,useState } from 'react';
 import { StyleSheet, Modal, View, Text, TouchableOpacity,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { useTranslation } from 'react-i18next';
+
 
 const BuyModal = ({
     eventNom,
@@ -17,7 +19,9 @@ const BuyModal = ({
     const closeModal = () => {
         setBuyVisible(false);
     };
-    
+
+    const {t} =useTranslation();
+
 
     const handleYesClick = async () => {
       setBuyVisible(false);
@@ -49,7 +53,7 @@ const BuyModal = ({
         } else {
           console.error('Error en la solicitud POST:', response.status);
         }
-        Alert.alert('Entrada comprada!', 'Ja tens el teu ticket per aquest event');
+        Alert.alert(t('Ticket.Comprat'), t('Ticket.Ticket_donat'));
       } catch (error) {
         console.error('Error al guardar el estado del botón de compra o al hacer la solicitud POST:', error);
       }
@@ -151,11 +155,11 @@ const BuyModal = ({
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-              Vols comprar una entrada per {eventNom}?
+              {t('Ticket.Vols_ticket')} {eventNom}?
             </Text>
             {discountCodes.length > 0 && (
               <View style={styles.pickerContainer}>
-                <Text>Validar codi descompte:</Text>
+                <Text>{t('Ticket.Codi_descompte')}</Text>
                 <Picker
                   selectedValue={selectedDiscountCode}
                   onValueChange={(itemValue, itemIndex) => {
@@ -214,7 +218,7 @@ const BuyModal = ({
                   },
                 ]}
               >
-                <Text style={styles.buttonText}>Cancelar</Text>
+                <Text style={styles.buttonText}>{t('Cancel')}</Text>
               </TouchableOpacity>
             </View>
           </View>

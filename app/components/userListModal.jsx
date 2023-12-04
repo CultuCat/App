@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+
 
 const UserListModal = ({
     eventId,
@@ -14,6 +16,8 @@ const UserListModal = ({
             console.log("User id:", id);
         };
     };
+
+    const {t} =useTranslation();
 
     const User = ({ id, avatar, name, nickname }) => (
         <TouchableOpacity style={styles.user} onPress={handleUser(id)}>
@@ -61,7 +65,7 @@ const UserListModal = ({
                 <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
                     <Ionicons name="ios-close-outline" size={36} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Assistents</Text>
+                <Text style={styles.title}>{t('Event.Assistents_list')}</Text>
                 {users.length > 0 ? (
                     <FlatList
                         data={users}
@@ -73,7 +77,7 @@ const UserListModal = ({
                 ) : (
                     <View style={styles.modalContent}>
                         <Text style={styles.modalText}>
-                            No hi ha assistents per aquest esdeveniment
+                            {t('Event.No_assistents')}
                         </Text>
                     </View>
                 )}

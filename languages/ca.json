@@ -46,6 +46,7 @@
         "No_llocs": "No hi ha llocs preferits",
         "Trofeus": "Trofeus",
         "Ranking": "Veure rànquing",
+        "Rank": "Rànquing",
         "Edit": "Editar perfil"
     },
     "Search": {
@@ -66,7 +67,9 @@
         "Assistents": "Veure assistens a l'esdeveniment",
         "Ubicacio": "Veure ubicació al mapa",
         "Afegir_cal": "Afegir al calendari",
-        "Comentaris": "Comentaris"
+        "Comentaris": "Comentaris",
+        "Assistents_list": "Assistents",
+        "No_assistents": "No hi ha assistents per aquest esdeveniment"
     },
     "Index": {
         "Eror_credencials": "Usuari o contrasenya incorrecte",
@@ -80,7 +83,11 @@
     "Ticket": {
         "Tots": "Veure tots els tiquets",
         "No_tickets_propers": "No tens entrades per propers esdeveniments",
-        "No_tickets": "No tens entrades a esdeveniments"
+        "No_tickets": "No tens entrades a esdeveniments",
+        "Comprat": "Entrada comprada!",
+        "Ticket_donat": "Ja tens el teu ticket per aquest event",
+        "Vols_ticket": "Vols comprar una entrada per",
+        "Codi_descompte": "Validar codi descompte:"
     },
     "Signup": {
         "Password_not_equal": "Les contrasenyes no són iguals",
@@ -89,5 +96,10 @@
         "Registrat": "Registra't",
         "Email": "Email",
         "Repetir_password": "Repeteix la contrasenya"
+    },
+    "Comments": {
+        "Comment": "Escribe tu comentario aquí",
+        "Enviar": "Enviar Comentari"
     }
+
 } 

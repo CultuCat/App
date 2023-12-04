@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const CommentForm = ({ eventId }) => {
     const [comment, setComment] = useState('');
+    const {t} =useTranslation();
+
 
     const handleSubmit = () => {
         const data = {
@@ -37,12 +40,12 @@ const CommentForm = ({ eventId }) => {
         <View>
             <TextInput
                 style={styles.input}
-                placeholder="Escribe tu comentario aquí"
+                placeholder={t('Comments.Comment')}
                 value={comment}
                 onChangeText={text => setComment(text)}
             />
             <Button
-                title="Enviar Comentari"
+                title={t('Comments.Enviar')}
                 onPress={handleSubmit}
             />
         </View>
