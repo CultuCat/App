@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+
 
 const RankingModal = ({
     userId,
@@ -31,6 +33,8 @@ const RankingModal = ({
             </View>
         );
     };
+    const {t} =useTranslation();
+
 
 
     const [users, setUsers] = useState([]);
@@ -68,7 +72,7 @@ const RankingModal = ({
                 <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
                     <Ionicons name="ios-close-outline" size={36} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Rànquing</Text>
+                <Text style={styles.title}>{t('User.Rank')}</Text>
                 <FlatList
                     data={users}
                     renderItem={({ item, index }) => (

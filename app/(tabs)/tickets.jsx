@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
+import { FlatList, StyleSheet, View, Text, Switch, TouchableOpacity } from 'react-native';
 import TicketCard from '../components/ticketCard';
+import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +11,8 @@ const Tickets = () => {
   const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
   const {t} =useTranslation();
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicketVisible, setSelectedTicketVisible] = useState(false);
 
 
   const today = new Date();
@@ -18,12 +21,18 @@ const Tickets = () => {
     ? tickets
     : tickets.filter((ticket) => new Date(ticket.data) >= today);
 
+  const handleTicketClick = (ticket) => {
+    setSelectedTicket(ticket);
+    setSelectedTicketVisible(true);
+  }
+
   const renderTicketCard = ({ item }) => (
     <TicketCard
       event={item.nomEvent}
       data={item.data}
       espai={item.espai}
       imatge={item.imatge}
+      onPress={() => handleTicketClick(item)}
       style={{ margin: 5 }}
     />
   );
@@ -90,6 +99,13 @@ const Tickets = () => {
               <Text>{t('Ticket.No_tickets_propers')}</Text>
             )}
           </View>
+          {selectedTicket && (
+            <TicketDetails
+              ticket={selectedTicket}
+              selectedTicketVisible={selectedTicketVisible}
+              setSelectedTicketVisible={setSelectedTicketVisible}
+            />
+          )}
         </View>
       ) : (
         <Text>{t('Ticket.No_tickets')}</Text>
@@ -102,6 +118,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  selectedTicketContainer: {
+    
   },
 });
 
