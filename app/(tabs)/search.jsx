@@ -3,7 +3,9 @@ import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpa
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
+import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id}) => (
@@ -32,6 +34,16 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
+  const [selectedOption, setSelectedOption] = useState('Esdeveniments'); 
+  const options = [
+    'Ascendent',
+    'Descendent',
+  ];
+
+  const handleOptionSelect = (index, value) => {
+    setSelectedOption(value);
+  };
+  
 
 const loadMoreData = async () => {
   if (loading || !hasMoreData) return;
@@ -116,13 +128,57 @@ const loadMoreData = async () => {
 
       <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons name="filter-list" style={styles.filtersIcon} />
-        <Text style={styles.filtersText}> Filters</Text>
+        <Text style={styles.filtersText}> Filter by Tags</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
         <Text style={styles.mapText}> Veure mapa</Text>
       </TouchableOpacity>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+      <ModalDropdown
+        style={{
+          backgroundColor: "#d2d0d0",
+          marginTop: 0,
+          alignSelf: 'flex-start',
+          borderRadius: 100,
+          flexDirection: 'row',
+          paddingVertical: 5,
+          width: 90,
+          height: 28,
+          fontSize:50,
+          paddingHorizontal: 10,
+          marginLeft:20,
+          fontSize:10,
+        }}
+        options={options}
+        defaultValue="Escdeveniment"
+        onSelect={handleOptionSelect}
+        dropdownStyle={styles.dropdownOptions} 
+        textStyle= {styles.dropdownText2}  
+        dropdownTextStyle={styles.dropdownText}   
+        dropdownTextHighlightStyle={styles.dropdownTextHighlight} 
+        saveScrollPosition={false}   
+        
+    />
+
+        <TouchableOpacity style={styles.botoOrder2}>
+          <Chip text='Data' color="#d2d0d0" />
+          <Text style={styles.filtersText}> Filter by Tags</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.botoOrder2}>
+          <Chip text='Espai' color="#d2d0d0" />
+          <Text style={styles.filtersText}> Filter by Tags</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.botoOrder2}>
+          <Chip text='Preu' color="#d2d0d0" />
+          <Text style={styles.filtersText}> Filter by Tags</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={filteredData}
@@ -211,7 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff6961',
     padding: 10,
     borderRadius: 15,
-    width: 90,
+    width: 150,
     marginLeft: 20,
     },
     filtersIcon: {
@@ -229,7 +285,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 15,
       width: 120,
-      marginLeft: 120,
+      marginLeft: 185,
       borderColor: 'black',
       borderWidth: 1, 
       marginTop: -39,
@@ -248,6 +304,28 @@ const styles = StyleSheet.create({
     },
     searchBarContainer: {
       backgroundColor: 'transparent', 
+    },
+    botoOrder: {
+      marginLeft:20,
+    },
+    botoOrder2: {
+      marginLeft:6,
+      marginRight: -40,
+    },
+    
+    dropdownOptions: {
+      width: 120,
+    },
+    dropdownText: {
+      fontSize: 16,
+      padding: 10,
+    },
+    dropdownTextHighlight: {
+      color: 'white',
+      backgroundColor: 'gray',
+    },
+    dropdownText2: {
+      fontSize: 14, 
     },
   
 });
