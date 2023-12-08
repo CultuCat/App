@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
 import TicketCard from '../components/ticketCard';
+import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Tickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicketVisible, setSelectedTicketVisible] = useState(false);
+
 
   const today = new Date();
 
@@ -14,12 +19,18 @@ const Tickets = () => {
     ? tickets
     : tickets.filter((ticket) => new Date(ticket.data) >= today);
 
+  const handleTicketClick = (ticket) => {
+    setSelectedTicket(ticket);
+    setSelectedTicketVisible(true);
+  }
+
   const renderTicketCard = ({ item }) => (
     <TicketCard
       event={item.nomEvent}
       data={item.data}
       espai={item.espai}
       imatge={item.imatge}
+      onPress={() => handleTicketClick(item)}
       style={{ margin: 5 }}
     />
   );
@@ -63,7 +74,7 @@ const Tickets = () => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text>Loading...</Text>
+        <Text>Carregant...</Text>
       ) : tickets.length > 0 ? (
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '10%', marginVertical: 20 }}>
@@ -72,7 +83,7 @@ const Tickets = () => {
               value={showAllTickets}
               onValueChange={(value) => setShowAllTickets(value)}
             />
-            <Text style={{ marginLeft: 10 }}>Veure tots els tickets</Text>
+            <Text style={{ marginLeft: 10 }}>Veure tots els tiquets</Text>
           </View>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             {filteredTickets.length > 0 ? (
@@ -86,6 +97,13 @@ const Tickets = () => {
               <Text>No tens entrades per propers esdeveniments</Text>
             )}
           </View>
+          {selectedTicket && (
+            <TicketDetails
+              ticket={selectedTicket}
+              selectedTicketVisible={selectedTicketVisible}
+              setSelectedTicketVisible={setSelectedTicketVisible}
+            />
+          )}
         </View>
       ) : (
         <Text>No tens entrades a esdeveniments</Text>
