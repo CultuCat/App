@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, Switch, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
 import TicketCard from '../components/ticketCard';
 import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -116,9 +116,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-  },
-  selectedTicketContainer: {
-    
   },
 });
 
