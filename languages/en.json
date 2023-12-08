@@ -46,7 +46,8 @@
         "No_llocs": "No favorite places",
         "Trofeus": "Trophies",
         "Ranking": "View ranking",
-        "Edit": "Edit profile"
+        "Edit": "Edit profile",
+        "User": "User"
     },
     "Search": {
         "Busca": "Search...",
