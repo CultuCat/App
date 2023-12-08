@@ -6,12 +6,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleButton from './components/googleButton';
 import Divider from './components/divider';
-import { useTranslation } from 'react-i18next';
-
 
 export default function Page() {
-    const {t} =useTranslation();
-
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
@@ -22,7 +18,7 @@ export default function Page() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
         handleSignInWithGoogle();
     }, [response])
 
@@ -37,25 +33,6 @@ export default function Page() {
             setUserInfo(user);
         }
     }
-
-    /*async function handleSignInWithGoogle() {
-        if (response?.type === "success") {
-          const accessToken = response.authentication.accessToken;
-          const response = await fetch('http://localhost:8000/users/sign_in/google-oauth2/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ access_token: accessToken }),
-          });
-      
-          if (response.status === 200) {
-            const data = await response.json();
-
-          }
-        }
-      }*/
-
 
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
@@ -136,7 +113,7 @@ export default function Page() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                Alert.alert("Error", t('Index.Eror_credencials'));
+                Alert.alert("Error", "Incorrect username or password");
             });
     };
 
@@ -148,21 +125,21 @@ export default function Page() {
                     source={require('../assets/full-logo.png')}
                 />
                 <View style={styles.centeredContent}>
-                    <Text style={styles.title}>{t('Index.Benvingut')}</Text>
+                    <Text style={styles.title}>Benvingut</Text>
                     <GoogleButton onPress={() => {
                         promptAsync();
                     }} />
                     <Divider />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Index.User')}
+                        placeholder="Username"
                         value={username}
                         onChangeText={setUsername} 
                         autoCapitalize="none"
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Index.Password')}
+                        placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry

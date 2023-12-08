@@ -1,12 +1,8 @@
 import React, { useState, useEffect} from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert, FlatList} from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import i18next, {languageResources} from '../../../languages/i18next';
-import language_list from '../../../languages/language_list.json';
-import { useTranslation } from 'react-i18next';
-
 
 export default function Configuration() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -15,15 +11,6 @@ export default function Configuration() {
   const [isUserVisible, setIsUserVisible] = useState(null);
   const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
   const navigation = useNavigation();
-  const {t} =useTranslation();
-  const [visible, setVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ca');
-
-  const changeLng = lng => {
-    i18next.changeLanguage(lng);
-    setVisible(false);
-    setSelectedLanguage(lng);
-  };
 
 
   const styles = StyleSheet.create({
@@ -95,22 +82,18 @@ export default function Configuration() {
     },
     visibilitat: {
       marginTop: -25,
-      marginLeft: 40,
+      marginLeft: 10,
       fontSize: 20,
       fontWeight: 'bold',
     },
     xatejar: {
       marginTop: 15,
-      marginLeft: 40,
+      marginLeft: 10,
       fontSize: 20,
       fontWeight: 'bold',
     },
-    globe: {
-      marginLeft: 230,
-      marginTop: -25,
-    },
     eye: {
-      marginLeft: 230,
+      marginLeft: 200,
       marginTop: 30,
     },
     chat: {
@@ -118,7 +101,7 @@ export default function Configuration() {
       marginTop: -25,
     },
     deleteAcc: {
-      width: 170, 
+      width: 170,
       height: 40,
       backgroundColor: 'transparent',
       color: 'red',
@@ -129,22 +112,6 @@ export default function Configuration() {
       borderRadius: 6,
       marginLeft: 100,
       marginTop: 20,
-    },
-    languagesList: {
-      flex: 1,
-      justifyContent: 'center',
-      paddingTop: 60,
-      paddingHorizontal: 10,
-      backgroundColor: '#ff6961',
-    },  
-    languageButton: {
-      padding: 10,
-      borderBottomColor: '#dddddd',
-      borderBottomWidth: 1,
-    },
-    lngName: {
-      fontSize: 18,
-      color: 'white',
     }
       
   });
@@ -287,10 +254,10 @@ export default function Configuration() {
   return (
     <View style={styles.containerTot}>
       <Ionicons style={styles.eye} name="eye" size={25} color="#ff6961" />
-    <Text style={styles.visibilitat}>{t('Config.Visibilitat')}</Text>
+    <Text style={styles.visibilitat}> Visibilitat Usuari </Text>
     <View style={styles.separator2}/>
     <TouchableOpacity onPress={toggleUserVisibility} style={styles.switchContainer}>
-    <Text style={styles.toggleText}>{isUserVisible ? t('Config.User_vis') : t('Config.User_no_vis')}</Text>
+    <Text style={styles.toggleText}>{isUserVisible ? 'Usuari Visible' : 'Usuari Ocult'}</Text>
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
@@ -301,11 +268,11 @@ export default function Configuration() {
       />
       </TouchableOpacity>
       <View style={styles.separator2}/>
-      <Text style={styles.xatejar}>{t('Config.Xat')}</Text>
+      <Text style={styles.xatejar}> Xatejar amb usuaris</Text>
       <Ionicons style={styles.chat} name="person" size={25} color="#ff6961" />
       <View style={styles.separator2}/>
       <TouchableOpacity onPress={toggleUserWantsToTalk } style={styles.switchContainer}>
-    <Text style={styles.toggleText}>{UserWantsToTalk ? t('Config.User_xat') : t('Config.User_no_xat')}</Text>
+    <Text style={styles.toggleText}>{UserWantsToTalk ? 'Usuari vol xatejar' : 'Usuari no vol xatejar'}</Text>
       <Switch
       style = {styles.switchStyle}
       trackColor={{ false: "#767577", true: "#ff6961" }}
@@ -316,57 +283,35 @@ export default function Configuration() {
       />
       </TouchableOpacity>
       <View style={styles.separator2}/>
-      <Text style={styles.xatejar}>{t('Config.Idioma')}</Text>
-      <Ionicons style={styles.globe} name="globe-sharp" size={25} color="#ff6961" />
-      <View style={styles.separator2}/>
-      <Modal visible={visible} onRequestClose={() => setVisible(false)}>
-        <View style={styles.languagesList}>
-          <FlatList
-            data={Object.keys(languageResources)}
-            renderItem={({item}) => (
-              <TouchableOpacity style={[styles.languageButton, selectedLanguage === item ? { backgroundColor: 'grey' } : null]} 
-              onPress={() => changeLng(item)}>
-                <Text style={styles.lngName}>
-                  {language_list[item].name}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </Modal>
-      <TouchableOpacity style={styles.deleteAcc} onPress={() => {setVisible(true)}}>
-        <Text style={styles.compte}> {t('Config.Canvi_idioma')}</Text>
-      </TouchableOpacity>
-      <View style={styles.separator2}/>
-      <Text style={styles.xatejar}> {t('Config.Eliminar')}</Text>
+      <Text style={styles.xatejar}> Eliminar compte</Text>
       <View style={styles.separator2}/>
       <TouchableOpacity style={styles.deleteAcc} onPress={toggleModalSec}>
-      <Text style={styles.compte}>{t('Config.Eliminar')}</Text>
+      <Text style={styles.compte}>Eliminar Compte</Text>
       </TouchableOpacity>
       <Modal visible={isModalVisibleSec} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text>{t('Config.Confirmation')}</Text>
-            <Button title={t('Config.Si')} onPress={handleDelete} />
-            <Button title={t('Config.No')} onPress={toggleModalSec} />
+            <Text>Estàs segur que vols eliminar el compte ?</Text>
+            <Button title="Si" onPress={handleDelete} />
+            <Button title="Cancelar" onPress={toggleModalSec} />
           </View>
         </View>
       </Modal>
       <View style={styles.separator2}/>
       <TouchableOpacity style={styles.editButton} onPress={toggleModal}>
-        <Text style={styles.sessio}>{t('Config.Sessio')}</Text>
+        <Text style={styles.sessio}>Tancar sessió</Text>
       </TouchableOpacity>
       <Modal visible={isModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text>{t('Config.Confirmation_ses')}</Text>
-            <Button title={t('Config.Si')} onPress={handleLogout} />
-            <Button title={t('Config.No')} onPress={toggleModal} />
+            <Text>Estàs segur que vols tancar la sessió?</Text>
+            <Button title="Si" onPress={handleLogout} />
+            <Button title="Cancelar" onPress={toggleModal} />
           </View>
         </View>
       </Modal>
       <TouchableOpacity style={styles.saveButton} onPress={saveconfig}>
-        <Text style={styles.sessio}>{t('Config.Desar')}</Text>
+        <Text style={styles.sessio}>Desar</Text>
       </TouchableOpacity>
     </View>
   );

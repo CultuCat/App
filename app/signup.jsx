@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import colors from '../constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
 
 export default function Page() {
     const navigation = useNavigation();
@@ -13,11 +12,10 @@ export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const {t} =useTranslation();
 
     const onSignupPress = () => {
         if (password !== password2) {
-            Alert.alert("Error", t('Signup.Password_not_equal'));
+            Alert.alert("Error", "Les contrasenyes no són iguals");
         } else {
             fetch('https://cultucat.hemanuelpc.es/users/signup', {
                 method: 'POST',
@@ -37,9 +35,9 @@ export default function Page() {
                         AsyncStorage.setItem("@user", JSON.stringify(data));
                         router.replace('/(tabs)/home');
                     } else if (data.username) {
-                        Alert.alert("Error", t('Signup.Username_existeix'));
+                        Alert.alert("Error", "Ja existeix una usuari amb aquest username");
                     } else {
-                        Alert.alert("Error", t('Signup.Email_existeix'));
+                        Alert.alert("Error", "Ja existeix una usuari amb aquest email");
                     }
                 })
                 .catch((error) => {
@@ -56,35 +54,35 @@ export default function Page() {
                     source={require('../assets/full-logo.png')}
                 />
                 <View style={styles.centeredContent}>
-                    <Text style={styles.title}>{t('Signup.Registrat')}</Text>
+                    <Text style={styles.title}>Registra't</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Edit_User.Nom')}
+                        placeholder="Name"
                         value={name}
                         onChangeText={setName}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Edit_User.Username')}
+                        placeholder="Username"
                         value={username}
                         onChangeText={setUsername}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Signup.Email')}
+                        placeholder="Email"
                         value={email}
                         onChangeText={setEmail}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Index.Password')}
+                        placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={t('Signup.Repetir_password')}
+                        placeholder="Repite Password"
                         value={password2}
                         onChangeText={setPassword2}
                         secureTextEntry

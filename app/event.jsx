@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
@@ -12,7 +12,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
 import * as Calendar from 'expo-calendar';
-import { useTranslation } from 'react-i18next';
 
 
 export default function Page() {
@@ -28,7 +27,6 @@ export default function Page() {
   const eventId = route.params.eventId;
   const [calendars, setCalendars] = useState([]);
   const eventNom = event.nom;
-  const {t} =useTranslation();
 
   const handleBuy = () => {
     setBuyVisible(true);
@@ -106,9 +104,9 @@ export default function Page() {
     if (price && price.includes('€') && parsedPriceCalc(price) < 100)
       return price;
     if (parsedPriceCalc(price) > 100) {
-      return t('Event.No_disp')
+      return 'No Disponible'
     }
-    else return t('Event.Gratis')
+    else return 'Gratuït'
   };
 
   const transformDate = (date) => {
@@ -129,7 +127,7 @@ export default function Page() {
     const calendarPermission = await Calendar.requestCalendarPermissionsAsync();
 
     if (calendarPermission.status !== 'granted') {
-      Alert.alert(t('Event.Perm_calendar'));
+      Alert.alert('Se requieren permisos para acceder al calendario.');
     } else {
       let remindersPermission = { status: 'granted' };
 
@@ -138,7 +136,7 @@ export default function Page() {
       }
 
       if (remindersPermission.status !== 'granted') {
-        Alert.alert(t('Event.Perm_recordatoris'));
+        Alert.alert('Se requieren permisos para acceder a los recordatorios.');
       } else {
         const calendarList = await Calendar.getCalendarsAsync();
         setCalendars(calendarList);
@@ -161,7 +159,7 @@ export default function Page() {
           },
         }));
 
-        Alert.alert(t('Event.Calendar'), null, calendarOptions);
+        Alert.alert('Selecciona un calendario', null, calendarOptions);
       } else {
         const calendars = await Calendar.getCalendarsAsync();
         selectedCalendar = calendars[0];
@@ -170,13 +168,13 @@ export default function Page() {
       }
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
-      Alert.alert(t('Event.Error_agregar'));
+      Alert.alert('Error al agregar evento al calendario.');
     }
   };
 
   const createEvent = async (selectedCalendar) => {
     if (!selectedCalendar) {
-      Alert.alert(t('Event.Seleccio_calendar'));
+      Alert.alert('No se ha seleccionado un calendario.');
       return;
     }
 
@@ -193,10 +191,10 @@ export default function Page() {
 
     try {
       const eventId = await Calendar.createEventAsync(selectedCalendar.id, eventDetails);
-      Alert.alert(t('Event.Afegit_calendar'));
+      Alert.alert('Esdeveniment afegit al calendari');
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
-      Alert.alert(t('Event.Error_agregar'));
+      Alert.alert('Error al agregar evento al calendario.');
     }
   };
 
@@ -212,11 +210,11 @@ export default function Page() {
       }
     }
 
-    return t('Event.Gratis');
+    return 'Gratuït';
   };
 
   if (event == []) {
-    return <Text>{t('Carregant')}</Text>;
+    return <Text>Cargando...</Text>;
   }
   return (
     <View style={{
@@ -248,21 +246,21 @@ export default function Page() {
             <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
             <Text>{event.espai?.nom}</Text>
             <Chip text="Music" color="#d2d0d0" />
-            <Text style={styles.subtitle}>{t('Event.Descripcio')}</Text>
+            <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
             <Text>{event.descripcio}</Text>
             <View style={{ marginVertical: 10 }}>
               <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
-                <Text style={{ margin: 10 }}>{t('Event.Assistents')}</Text>
+                <Text style={{ margin: 10 }}>Veure assistents a l'esdeveniment</Text>
               </TouchableOpacity>
               <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
               <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
-                <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
+                <Text style={{ margin: 10 }}>Veure ubicació al mapa</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.accionButton} onPress={addEventToCalendar}>
-                <Text style={{ margin: 10 }}>{t('Event.Afegir_cal')}</Text>
+                <Text style={{ margin: 10 }}>Afegir a calendari</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.subtitle}>{t('Event.Comentaris')}</Text>
+            <Text style={styles.subtitle}>Comentaris</Text>
             <CommentForm eventId={event.id} fetchComments={fetchComments} />
             <FlatList
               data={commentsEvent.results}
@@ -280,7 +278,7 @@ export default function Page() {
             { opacity: buyButtonEnabled ? 1 : 0.5 }
             ]}
             onPress={handleBuy}
-            disabled={!buyButtonEnabled || parsedPrice(event.preu) === t('Event.No_disp')}
+            disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
 
           >
             <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>

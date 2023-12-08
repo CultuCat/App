@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
-
 
 export default function Page() {
-  const {t} =useTranslation();
-
   const Item = ({ title, image }) => (
     <TouchableOpacity style={styles.item}>
       <Image source={image} style={styles.image} />
@@ -70,7 +66,7 @@ export default function Page() {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder={t('Friendlist.Busca')}
+        placeholder="Type Here..."
         onChangeText={updateSearch}
         value={search}
         platform="ios"

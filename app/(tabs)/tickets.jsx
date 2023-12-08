@@ -3,7 +3,6 @@ import { FlatList, StyleSheet, View, Text, Switch, TouchableOpacity } from 'reac
 import TicketCard from '../components/ticketCard';
 import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
 
 
 const Tickets = () => {
@@ -95,7 +94,7 @@ const Tickets = () => {
                 contentContainerStyle={{ alignItems: 'center' }}
               />
             ) : (
-              <Text>{t('Ticket.No_tickets_propers')}</Text>
+              <Text>No tens entrades per propers esdeveniments</Text>
             )}
           </View>
           {selectedTicket && (
@@ -107,7 +106,7 @@ const Tickets = () => {
           )}
         </View>
       ) : (
-        <Text>{t('Ticket.No_tickets')}</Text>
+        <Text>No tens entrades a esdeveniments</Text>
       )}
     </View>
   );
