@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
+  const { t } = useTranslation();
+
   const Item = ({ title, image }) => (
     <TouchableOpacity style={styles.item}>
       <Image source={image} style={styles.image} />
@@ -25,17 +29,14 @@ export default function Page() {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
-  
       const data = JSON.parse(dataString);
-      console.log('User', data.user); 
-  
-      return data.user; 
+      return data.user;
     } catch (error) {
       console.error('Error getting local user data:', error);
       return null;
     }
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,39 +45,35 @@ export default function Page() {
           console.error('User data not found in AsyncStorage');
           return;
         }
-  
-        setUser(userData); 
-  
+        setUser(userData);
         setData(userData.friends || []);
-        console.log('Friends:', userData.friends);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
 
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())
   );
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder={t('Friendlist.Busca')}
         onChangeText={updateSearch}
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
       />
-
       <FlatList
         data={filteredData}
         renderItem={({ item }) => (
-          <Item title={item.username} image={{ uri: item.imatge}} />
+          <Item title={item.username} image={{ uri: item.imatge }} />
         )}
         keyExtractor={(item) => item.id}
       />
@@ -111,18 +108,18 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginLeft: 10,
   },
-
-  searchBarInputContainer: {
-    width: 290,
-    height: 30,
-    borderWidth: 0,
-    marginBottom: 10,
-    padding: 10,
-    marginTop: 5,
-    marginLeft: 20,
-    borderRadius: 15,
-  },
   searchBarContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
     backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
+  },
+  searchBarInputContainer: {
+    backgroundColor: '#fff',
+    height: 40,
   },
 });

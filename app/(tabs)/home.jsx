@@ -3,8 +3,10 @@ import { Text, View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TicketCard from '../components/ticketCard.jsx';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
@@ -66,19 +68,17 @@ export default function Page() {
 
   return (
     <SafeAreaView style={styles.container}>
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : (
-          <View style={{flex: 1}}>
-            <Text style={styles.title}>Benvingut, {name}</Text>
-            <FlatList
-              data={events}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={{ alignItems: 'center' }}
-            />
-          </View>
-        )}
+      <Text style={styles.title}>{t('Index.Benvingut')}, {name}</Text>
+      {loading ? (
+        <Text>{t('Carregant')}</Text>
+      ) : (
+        <FlatList
+          data={events}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ alignItems: 'center' }}
+        />
+      )}
     </SafeAreaView>
   );
 }

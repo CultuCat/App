@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
+import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput } from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image, id}) => (
+  const { t } = useTranslation();
+
+  const Item = ({ title, ubicacion, data, image, id }) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
       {image ? (
-      <Image source={{ uri: image.uri }} style={styles.image} />
-    ) : (
-      <Image
-        source={{
-          uri:
-            'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
-        }}
-        style={styles.image}
-      />
-    )}
+        <Image source={{ uri: image.uri }} style={styles.image} />
+      ) : (
+        <Image
+          source={{
+            uri:
+              'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
+          }}
+          style={styles.image}
+        />
+      )}
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.data}>{data}</Text>
@@ -33,33 +37,33 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-const loadMoreData = async () => {
-  if (loading || !hasMoreData) return;
+  const loadMoreData = async () => {
+    if (loading || !hasMoreData) return;
 
-  try {
-    setLoading(true);
-    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
-    const newData = await response.json();
+    try {
+      setLoading(true);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
+      const newData = await response.json();
 
-    if (newData.results.length > 0) {
-      setData((prevData) => [...prevData, ...newData.results]);
-      setPage((prevPage) => prevPage + 1);
-    } else {
-      setHasMoreData(false);
+      if (newData.results.length > 0) {
+        setData((prevData) => [...prevData, ...newData.results]);
+        setPage((prevPage) => prevPage + 1);
+      } else {
+        setHasMoreData(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
- 
+  };
+
 
   const navigation = useNavigation();
   const handlePressMap = () => {
     navigation.navigate('map');
   };
-  
+
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
@@ -76,7 +80,7 @@ const loadMoreData = async () => {
       try {
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-  
+
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -84,7 +88,7 @@ const loadMoreData = async () => {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (response.ok) {
           const dataFromServer = await response.json();
           setData(dataFromServer.results);
@@ -95,7 +99,7 @@ const loadMoreData = async () => {
         console.error(error);
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -107,7 +111,7 @@ const loadMoreData = async () => {
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Cerca..."
+        placeholder={t('Search.Busca')}
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
@@ -116,12 +120,12 @@ const loadMoreData = async () => {
 
       <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons name="filter-list" style={styles.filtersIcon} />
-        <Text style={styles.filtersText}> Filters</Text>
+        <Text style={styles.filtersText}>{t('Search.Filtres')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
-        <Text style={styles.mapText}> Veure mapa</Text>
+        <Text style={styles.mapText}>{t('Search.Mapa')}</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -140,9 +144,9 @@ const loadMoreData = async () => {
         onEndReachedThreshold={0.1}
       />
 
-        </SafeAreaView>
-      );
-    }
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -195,13 +199,13 @@ const styles = StyleSheet.create({
   },
   camera: {
     fontSize: 20,
-    color:'#f07b75',
+    color: '#f07b75',
     marginLeft: 330,
     marginTop: 30,
   },
   ticket: {
     fontSize: 19,
-    color:'#f07b75',
+    color: '#f07b75',
     marginLeft: 190,
     marginTop: 5,
   },
@@ -213,41 +217,41 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: 90,
     marginLeft: 20,
-    },
-    filtersIcon: {
-      fontSize: 20,
-      color: 'white',
-    },
-    filtersText: {
-      color: 'white',
-      marginLeft: 2.5,
-    },
-    mapButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'transparent',
-      padding: 10,
-      borderRadius: 15,
-      width: 120,
-      marginLeft: 120,
-      borderColor: 'black',
-      borderWidth: 1, 
-      marginTop: -39,
-      marginBottom: 8,
-    },
-    searchBarInputContainer: {
-      width: 290,
-      height: 30,
-      borderWidth: 0,
-      marginBottom: 10,
-      padding: 10,
-      marginTop: 5,
-      marginLeft: 20,
-      borderRadius: 15,
-      default: 'ios',
-    },
-    searchBarContainer: {
-      backgroundColor: 'transparent', 
-    },
-  
+  },
+  filtersIcon: {
+    fontSize: 20,
+    color: 'white',
+  },
+  filtersText: {
+    color: 'white',
+    marginLeft: 2.5,
+  },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    padding: 10,
+    borderRadius: 15,
+    width: 120,
+    marginLeft: 120,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginTop: -39,
+    marginBottom: 8,
+  },
+  searchBarInputContainer: {
+    width: 290,
+    height: 30,
+    borderWidth: 0,
+    marginBottom: 10,
+    padding: 10,
+    marginTop: 5,
+    marginLeft: 20,
+    borderRadius: 15,
+    default: 'ios',
+  },
+  searchBarContainer: {
+    backgroundColor: 'transparent',
+  },
+
 });
