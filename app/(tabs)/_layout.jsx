@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 
 export default function Layout() {
-
   return (
     <Tabs
     screenOptions={{

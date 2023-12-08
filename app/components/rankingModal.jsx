@@ -3,7 +3,6 @@ import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const RankingModal = ({
     userId,
     rankingVisible,
@@ -78,7 +77,6 @@ const RankingModal = ({
                     keyExtractor={(item) => item.id}
                 />
             </View>
-            
         </Modal>
     );
 };
