@@ -1,0 +1,105 @@
+{
+  "Carregant": "Cargando...",
+  "Cancel": "Cancelar",
+  "Delete": "Eliminar",
+  "Config": {
+    "Visibilitat": "Visibilidad",
+    "User_vis": "Usuario Visible",
+    "User_no_vis": "Usuario no Visible",
+    "Xat": "Chatear con usuarios",
+    "User_xat": "Usuario quiere chatear",
+    "User_no_xat": "Usuario no quiere chatear",
+    "Idioma": "Idiomas",
+    "Canvi_idioma": "Cambiar idioma",
+    "Eliminar": "Eliminar cuenta",
+    "Confirmation": "¿Estás seguro de que quieres eliminar tu cuenta?",
+    "Desar": "Guardar",
+    "Sessio": "Cerrar Sesión",
+    "Confirmation_ses": "¿Estás seguro de que quieres cerrar la sesión?",
+    "Si": "Sí",
+    "No": "No"
+  },
+  "Edit_User": {
+    "Username": "Nombre de usuario",
+    "Nom": "Nombre",
+    "Bio": "Biografía",
+    "Desar_can": "Guardar cambios"
+  },
+  "Friendlist": {
+    "Busca": "Escribe aquí..."
+  },
+  "User": {
+    "Eliminar_lloc_fav": "Eliminar lugar favorito",
+    "Conf_lloc_fav": "¿Estás seguro de que quieres eliminar el lugar favorito?",
+    "Delete_tag": "Eliminar etiqueta",
+    "Conf_delete_tag": "¿Estás seguro de que quieres eliminar esta etiqueta?",
+    "Espai_delete": "Espacio Eliminado",
+    "Espai_delete_text": "El lugar favorito ha sido eliminado correctamente",
+    "Tag_delete": "Etiqueta Eliminada",
+    "Tag_delete_text": "La etiqueta ha sido eliminada correctamente",
+    "Punts": "Puntos",
+    "Amics": "Amigos",
+    "Bio": "Biografía",
+    "Tags_favs": "Etiquetas Favoritas",
+    "Llocs_favs": "Lugares Favoritos",
+    "No_tags": "No hay etiquetas",
+    "No_llocs": "No hay lugares favoritos",
+    "Trofeus": "Trofeos",
+    "Ranking": "Ver ranking",
+    "Rank": "Ranking",
+    "Edit": "Editar perfil",
+    "User": "Usuario"
+  },
+  "Search": {
+    "Busca": "Buscar...",
+    "Filtres": "Filtros",
+    "Mapa": "Ver mapa"
+  },
+  "Event": {
+    "No_disp": "No disponible",
+    "Gratis": "Gratis",
+    "Perm_calendar": "Se requieren permisos para acceder al calendario",
+    "Perm_recordatoris": "Se requieren permisos para acceder a los recordatorios",
+    "Calendar": "Selecciona un calendario",
+    "Error_agregar": "Error al agregar el evento al calendario",
+    "Seleccio_calendar": "No se ha seleccionado un calendario",
+    "Afegit_calendar": "Evento agregado al calendario",
+    "Descripcio": "Descripción del evento",
+    "Assistents": "Ver asistentes al evento",
+    "Ubicacio": "Ver ubicación en el mapa",
+    "Afegir_cal": "Agregar al calendario",
+    "Comentaris": "Comentarios",
+    "Assistents_list": "Asistentes",
+    "No_assistents": "No hay asistentes para este evento"
+  },
+  "Index": {
+    "Eror_credencials": "Usuario o contraseña incorrecta",
+    "Benvingut": "Bienvenido",
+    "User": "Nombre de usuario",
+    "Password": "Contraseña"
+  },
+  "Map": {
+    "Esdeveniments": "Eventos"
+  },
+  "Ticket": {
+    "Tots": "Ver todos los tickets",
+    "No_tickets_propers": "No tienes entradas para próximos eventos",
+    "No_tickets": "No tienes entradas a eventos",
+    "Comprat": "Entrada comprada!",
+    "Ticket_donat": "Ya tienes tu ticket para este evento",
+    "Vols_ticket": "Quieres comprar la entrada para",
+    "Codi_descompte": "Validar codigo de descuento:"
+  },
+  "Signup": {
+    "Password_not_equal": "Las contraseñas no son iguales",
+    "Username_existeix": "Ya existe un usuario con este nombre de usuario",
+    "Email_existeix": "Ya existe un usuario con este email",
+    "Registrat": "Regístrate",
+    "Email": "Email",
+    "Repetir_password": "Repite la contraseña"
+  },
+  "Comments": {
+    "Comment": "Escribe tu comentario aquí",
+    "Enviar": "Enviar Comentario"
+  }
+}
