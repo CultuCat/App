@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text, Switch, SafeAreaView } from 'react-native';
 import TicketCard from '../components/ticketCard';
 import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -73,12 +73,13 @@ const Tickets = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>{t('Ticket.Ticket')}</Text>
       {loading ? (
-        <Text>{t('Carregant')}</Text>
+        <ActivityIndicator />
       ) : tickets.length > 0 ? (
         <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '10%', marginVertical: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '5%', marginVertical: 15 }}>
             <Switch
               style={{ zIndex: 1 }}
               value={showAllTickets}
@@ -109,7 +110,7 @@ const Tickets = () => {
       ) : (
         <Text>{t('Ticket.No_tickets')}</Text>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -117,6 +118,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    marginHorizontal: '5%',
   },
 });
 

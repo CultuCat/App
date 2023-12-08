@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TicketCard from '../components/ticketCard.jsx';
 import { useNavigation } from '@react-navigation/native';
@@ -70,7 +70,7 @@ export default function Page() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>{t('Index.Benvingut')}, {name}</Text>
       {loading ? (
-        <Text>{t('Carregant')}</Text>
+        <ActivityIndicator />
       ) : (
         <FlatList
           data={events}

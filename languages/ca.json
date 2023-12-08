@@ -88,7 +88,8 @@
     "Comprat": "Entrada comprada!",
     "Ticket_donat": "Ja tens el teu tiquet per aquest esdeveniment",
     "Vols_ticket": "Vols comprar una entrada per",
-    "Codi_descompte": "Validar codi descompte:"
+    "Codi_descompte": "Validar codi descompte:",
+    "Ticket": "Tiquets"
   },
   "Signup": {
     "Password_not_equal": "Les contrasenyes no són iguals",
