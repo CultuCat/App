@@ -14,7 +14,8 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       const userInfo = await getLocalUser();
-      fetchAllEvents(userInfo.map(item => item.id))
+      if (userInfo) {
+        fetchAllEvents(userInfo.map(item => item.id))
         .then(allEvents => {
           setEvents(allEvents.flat());
           setLoading(false);
@@ -22,7 +23,8 @@ export default function Page() {
         .catch(error => {
           console.error('Error fetching events:', error);
         });
-    };
+      };
+    }
     fetchData();
   }, []);
 
