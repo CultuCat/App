@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View, Text, Switch, SafeAreaView } from 'react-native';
-import TicketCard from '../components/ticketCard';
+import EventCard from '../components/eventCard';
 import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
@@ -26,13 +26,12 @@ const Tickets = () => {
   }
 
   const renderTicketCard = ({ item }) => (
-    <TicketCard
+    <EventCard
       event={item.nomEvent}
       data={item.data}
       espai={item.espai}
       imatge={item.imatge}
       onPress={() => handleTicketClick(item)}
-      style={{ margin: 5 }}
     />
   );
 
@@ -93,7 +92,6 @@ const Tickets = () => {
                 data={filteredTickets}
                 renderItem={renderTicketCard}
                 keyExtractor={(item) => item.nomEvent}
-                contentContainerStyle={{ alignItems: 'center' }}
               />
             ) : (
               <Text>{t('Ticket.No_tickets_propers')}</Text>

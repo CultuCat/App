@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TicketCard from '../components/ticketCard.jsx';
+import EventCard from '../components/eventCard.jsx';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -57,7 +57,7 @@ export default function Page() {
   };
 
   const renderItem = ({ item }) => (
-    <TicketCard
+    <EventCard
       event={item.nom}
       data={item.dataIni}
       imatge={item.imatges_list[0]}
@@ -76,7 +76,6 @@ export default function Page() {
           data={events}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ alignItems: 'center' }}
         />
       )}
     </SafeAreaView>

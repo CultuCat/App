@@ -89,7 +89,8 @@
     "Ticket_donat": "You already have your ticket for this event",
     "Vols_ticket": "Do you want to buy a ticket for",
     "Codi_descompte": "Validate discount code:",
-    "Ticket": "Tickets"
+    "Ticket": "Tickets",
+    "Entrada_a": "Ticket to"
   },
   "Signup": {
     "Password_not_equal": "Passwords do not match",
@@ -102,5 +103,8 @@
   "Comments": {
     "Comment": "Write your comment here",
     "Enviar": "Submit Comment"
+  },
+  "Chat": {
+    "Chat": "Chat"
   }
 }

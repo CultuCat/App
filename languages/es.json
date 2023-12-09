@@ -89,7 +89,8 @@
     "Ticket_donat": "Ya tienes tu ticket para este evento",
     "Vols_ticket": "Quieres comprar la entrada para",
     "Codi_descompte": "Validar codigo de descuento:",
-    "Ticket": "Tickets"
+    "Ticket": "Tickets",
+    "Entrada_a": "Entrada a"
   },
   "Signup": {
     "Password_not_equal": "Las contraseñas no son iguales",
@@ -102,5 +103,8 @@
   "Comments": {
     "Comment": "Escribe tu comentario aquí",
     "Enviar": "Enviar Comentario"
+  },
+  "Chat": {
+    "Chat": "Chats"
   }
 }
