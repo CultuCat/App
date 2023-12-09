@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TicketCard from '../components/ticketCard.jsx';
+import EventCard from '../components/eventCard.jsx';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
@@ -12,7 +14,8 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       const userInfo = await getLocalUser();
-      fetchAllEvents(userInfo.map(item => item.id))
+      if (userInfo) {
+        fetchAllEvents(userInfo.map(item => item.id))
         .then(allEvents => {
           setEvents(allEvents.flat());
           setLoading(false);
@@ -20,7 +23,8 @@ export default function Page() {
         .catch(error => {
           console.error('Error fetching events:', error);
         });
-    };
+      };
+    }
     fetchData();
   }, []);
 
@@ -55,7 +59,7 @@ export default function Page() {
   };
 
   const renderItem = ({ item }) => (
-    <TicketCard
+    <EventCard
       event={item.nom}
       data={item.dataIni}
       imatge={item.imatges_list[0]}
@@ -66,19 +70,16 @@ export default function Page() {
 
   return (
     <SafeAreaView style={styles.container}>
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : (
-          <View style={{flex: 1}}>
-            <Text style={styles.title}>Benvingut, {name}</Text>
-            <FlatList
-              data={events}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={{ alignItems: 'center' }}
-            />
-          </View>
-        )}
+      <Text style={styles.title}>{t('Index.Benvingut')}, {name}</Text>
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={events}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      )}
     </SafeAreaView>
   );
 }

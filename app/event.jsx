@@ -12,6 +12,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
 import * as Calendar from 'expo-calendar';
+import { useTranslation } from 'react-i18next';
 
 
 export default function Page() {
@@ -27,6 +28,7 @@ export default function Page() {
   const eventId = route.params.eventId;
   const [calendars, setCalendars] = useState([]);
   const eventNom = event.nom;
+  const { t } = useTranslation();
 
   const handleBuy = () => {
     setBuyVisible(true);
@@ -104,9 +106,9 @@ export default function Page() {
     if (price && price.includes('€') && parsedPriceCalc(price) < 100)
       return price;
     if (parsedPriceCalc(price) > 100) {
-      return 'No Disponible'
+      return t('Event.No_disp')
     }
-    else return 'Gratuït'
+    else return t('Event.Gratis')
   };
 
   const transformDate = (date) => {
@@ -127,7 +129,7 @@ export default function Page() {
     const calendarPermission = await Calendar.requestCalendarPermissionsAsync();
 
     if (calendarPermission.status !== 'granted') {
-      Alert.alert('Se requieren permisos para acceder al calendario.');
+      Alert.alert(t('Event.Perm_calendar'));
     } else {
       let remindersPermission = { status: 'granted' };
 
@@ -136,7 +138,7 @@ export default function Page() {
       }
 
       if (remindersPermission.status !== 'granted') {
-        Alert.alert('Se requieren permisos para acceder a los recordatorios.');
+        Alert.alert(t('Event.Perm_recordatoris'));
       } else {
         const calendarList = await Calendar.getCalendarsAsync();
         setCalendars(calendarList);
@@ -159,7 +161,7 @@ export default function Page() {
           },
         }));
 
-        Alert.alert('Selecciona un calendario', null, calendarOptions);
+        Alert.alert(t('Event.Calendar'), null, calendarOptions);
       } else {
         const calendars = await Calendar.getCalendarsAsync();
         selectedCalendar = calendars[0];
@@ -168,13 +170,13 @@ export default function Page() {
       }
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
-      Alert.alert('Error al agregar evento al calendario.');
+      Alert.alert(t('Event.Error_agregar'));
     }
   };
 
   const createEvent = async (selectedCalendar) => {
     if (!selectedCalendar) {
-      Alert.alert('No se ha seleccionado un calendario.');
+      Alert.alert(t('Event.Seleccio_calendar'));
       return;
     }
 
@@ -191,10 +193,10 @@ export default function Page() {
 
     try {
       const eventId = await Calendar.createEventAsync(selectedCalendar.id, eventDetails);
-      Alert.alert('Esdeveniment afegit al calendari');
+      Alert.alert(t('Event.Afegit_calendar'));
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
-      Alert.alert('Error al agregar evento al calendario.');
+      Alert.alert(t('Event.Error_agregar'));
     }
   };
 
@@ -210,11 +212,11 @@ export default function Page() {
       }
     }
 
-    return 'Gratuït';
+    return t('Event.Gratis');
   };
 
   if (event == []) {
-    return <Text>Cargando...</Text>;
+    return <Text>{t('Carregant')}</Text>;
   }
   return (
     <View style={{
@@ -246,21 +248,21 @@ export default function Page() {
             <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
             <Text>{event.espai?.nom}</Text>
             <Chip text="Music" color="#d2d0d0" />
-            <Text style={styles.subtitle}>Descripció de l'esdeveniment</Text>
+            <Text style={styles.subtitle}>{t('Event.Descripcio')}</Text>
             <Text>{event.descripcio}</Text>
             <View style={{ marginVertical: 10 }}>
               <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
-                <Text style={{ margin: 10 }}>Veure assistents a l'esdeveniment</Text>
+                <Text style={{ margin: 10 }}>{t('Event.Assistents')}</Text>
               </TouchableOpacity>
               <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
               <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
-                <Text style={{ margin: 10 }}>Veure ubicació al mapa</Text>
+                <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.accionButton} onPress={addEventToCalendar}>
-                <Text style={{ margin: 10 }}>Afegir a calendari</Text>
+                <Text style={{ margin: 10 }}>{t('Event.Afegir_cal')}</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.subtitle}>Comentaris</Text>
+            <Text style={styles.subtitle}>{t('Event.Comentaris')}</Text>
             <CommentForm eventId={event.id} fetchComments={fetchComments} />
             <FlatList
               data={commentsEvent.results}
@@ -278,7 +280,7 @@ export default function Page() {
             { opacity: buyButtonEnabled ? 1 : 0.5 }
             ]}
             onPress={handleBuy}
-            disabled={!buyButtonEnabled || parsedPrice(event.preu) === 'No Disponible'}
+            disabled={!buyButtonEnabled || parsedPrice(event.preu) === t('Event.No_disp')}
 
           >
             <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import colors from '../constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
     const navigation = useNavigation();
@@ -12,10 +13,11 @@ export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
+    const { t } = useTranslation();
 
     const onSignupPress = () => {
         if (password !== password2) {
-            Alert.alert("Error", "Les contrasenyes no són iguals");
+            Alert.alert("Error", t('Signup.Password_not_equal'));
         } else {
             fetch('https://cultucat.hemanuelpc.es/users/signup', {
                 method: 'POST',
@@ -35,9 +37,9 @@ export default function Page() {
                         AsyncStorage.setItem("@user", JSON.stringify(data));
                         router.replace('/(tabs)/home');
                     } else if (data.username) {
-                        Alert.alert("Error", "Ja existeix una usuari amb aquest username");
+                        Alert.alert("Error", t('Signup.Username_existeix'));
                     } else {
-                        Alert.alert("Error", "Ja existeix una usuari amb aquest email");
+                        Alert.alert("Error", t('Signup.Email_existeix'));
                     }
                 })
                 .catch((error) => {
@@ -47,51 +49,49 @@ export default function Page() {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={{marginTop: 60}}>
-                <Image
-                    style={{ margin: 15, width: 270, height: 75 }}
-                    source={require('../assets/full-logo.png')}
+        <SafeAreaView style={styles.container}>
+            <Image
+                style={{ margin: 15, width: 270, height: 75 }}
+                source={require('../assets/full-logo.png')}
+            />
+            <View style={styles.centeredContent}>
+                <Text style={styles.title}>{t('Signup.Registrat')}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Edit_User.Nom')}
+                    value={name}
+                    onChangeText={setName}
                 />
-                <View style={styles.centeredContent}>
-                    <Text style={styles.title}>Registra't</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Name"
-                        value={name}
-                        onChangeText={setName}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Username"
-                        value={username}
-                        onChangeText={setUsername}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Repite Password"
-                        value={password2}
-                        onChangeText={setPassword2}
-                        secureTextEntry
-                    />
-                    <Button title="Signup" onPress={onSignupPress} />
-                    <Button title="Login" onPress={() => navigation.replace('index')} />
-                </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Edit_User.Username')}
+                    value={username}
+                    onChangeText={setUsername}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Signup.Email')}
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Index.Password')}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Signup.Repetir_password')}
+                    value={password2}
+                    onChangeText={setPassword2}
+                    secureTextEntry
+                />
+                <Button title="Signup" onPress={onSignupPress} />
+                <Button title="Login" onPress={() => navigation.replace('index')} />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -99,13 +99,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
+        alignItems: 'center'
     },
     centeredContent: {
         flex: 1,
         justifyContent: 'center',
         marginBottom: 100,
+        width: '80%'
     },
     title: {
         fontSize: 30,
