@@ -75,7 +75,7 @@ export default function Page() {
         <FlatList
           data={events}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id}
         />
       )}
     </SafeAreaView>
