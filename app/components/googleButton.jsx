@@ -1,24 +1,21 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
 
 const GoogleButton = ({ onPress }) => {
   return (
-    <Link href={'/(tabs)/home'} replace asChild>
-      <TouchableOpacity
-        style={styles.container}
-        onPress={onPress}
-      >
-        <View style={styles.content}>
-          <Image
-            source={require('../../assets/google_icon.png')}
-            style={{ width: 22, height: 22 }}
-            resizeMode="contain"
-          />
-          <Text style={styles.text}>Continue with Google</Text>
-        </View>
-      </TouchableOpacity>
-    </Link>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+    >
+      <View style={styles.content}>
+        <Image
+          source={require('../../assets/google_icon.png')}
+          style={{ width: 22, height: 22 }}
+          resizeMode="contain"
+        />
+        <Text style={styles.text}>Continue with Google</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 

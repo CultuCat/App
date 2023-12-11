@@ -11,8 +11,6 @@ import { useTranslation } from 'react-i18next';
 
 export default function Page() {
     const { t } = useTranslation();
-
-    const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
         iosClientId: '852693017999-3bur3t29c1stjg1ft95njoagkjfao394.apps.googleusercontent.com',
@@ -22,45 +20,21 @@ export default function Page() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
+        getLocalUser();
         handleSignInWithGoogle();
     }, [response])
-
-    async function handleSignInWithGoogle() {
-        const user = await getLocalUser();
-        if (!user) {
-            if (response?.type === "success") {
-                getUserInfo(response.authentication.accessToken);
-            }
-        }
-        else {
-            setUserInfo(user);
-        }
-    }
-
-    /*async function handleSignInWithGoogle() {
-        if (response?.type === "success") {
-          const accessToken = response.authentication.accessToken;
-          const response = await fetch('http://localhost:8000/users/sign_in/google-oauth2/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ access_token: accessToken }),
-          });
-      
-          if (response.status === 200) {
-            const data = await response.json();
-
-          }
-        }
-      }*/
-
 
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
         if (!data) return null;
         router.replace('/(tabs)/home');
+    }
+
+    async function handleSignInWithGoogle() {
+        if (response?.type === "success") {
+            getUserInfo(response.authentication.accessToken);
+        }
     }
 
     const getUserInfo = async (token) => {
@@ -72,39 +46,14 @@ export default function Page() {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-
             if (response.ok) {
                 const user = await response.json();
-                await AsyncStorage.setItem("@user", JSON.stringify(user));
-                setUserInfo(user);
-
-                await postUserData(token);
+                console.log(user);
+                setUsername(user.username);
+                setPassword(token);
+                onLoginPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const postUserData = async (token) => {
-        try {
-            const postResponse = await fetch(
-                "http://localhost:8000/users",
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({}),
-                }
-            );
-
-            if (postResponse.ok) {
-                console.log("Información del usuario enviada con éxito.");
-            } else {
-                console.error(`Error al enviar la información del usuario: ${postResponse.status}`);
             }
         } catch (e) {
             console.error(e);
