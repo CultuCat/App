@@ -34,7 +34,6 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [data, setData] = useState([]);
-  const [filteredData,setFilteredData ] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -53,7 +52,8 @@ export default function Page() {
 
     try {
       setLoading(true);
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
+      const filtersQueryString = selectedFilters.map((filter) => `filter=${filter}`).join('&');
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}&query=${search}&${filtersQueryString}`);
       const newData = await response.json();
 
       if (newData.results.length > 0) {
@@ -166,18 +166,6 @@ export default function Page() {
 
     setModalVisible(false);
   };
- 
-  
-  useEffect(() => {
-    const filtered = data.filter((item) =>
-      item.nom.toLowerCase().includes(search.toLowerCase()) || 
-      item.espai.nom.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredData(filtered);
-  }, [data, search]);
-  
-  
-
   const handleOpenModal = () => {
     setModalVisible(true);
   };
@@ -193,8 +181,35 @@ export default function Page() {
         : [...prevTags, tag]
     );
   };
+  const handleSearch = async () => {
+    try {
+      const userTokenString = await AsyncStorage.getItem("@user");
+      const userToken = JSON.parse(userTokenString).token;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${userToken}`, 
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const newData = await response.json();
+        setData(newData.results);
+        if (newData.results.length > 0) {
+          setHasMoreData(true); 
+        } else {
+          setHasMoreData(false);
+        }
+        setPage(1)
+      } else {
+        console.error('Error en la solicitud GET:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error en la solicitud GET:', error);
+    }
+  };
   
-    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -207,6 +222,9 @@ export default function Page() {
         containerStyle={styles.searchBarContainer}
 
       />
+      <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+        <MaterialIcons name="search" size={24} color="black" />
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons name="reorder" style={styles.filtersIcon} />
@@ -281,7 +299,7 @@ export default function Page() {
    
 
       <FlatList
-        data={filteredData}
+        data={data}
         renderItem={({ item, index }) => (
           <Item
             title={item.nom}
