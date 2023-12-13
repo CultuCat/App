@@ -8,7 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image, id}) => (
+  const Item = ({ title, ubicacion, data, image, id }) => (
+
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
       {image ? (
       <Image source={{ uri: image.uri }} style={styles.image} />
@@ -32,12 +33,15 @@ export default function Page() {
     </TouchableOpacity>
   );
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [selectedOption, setSelectedOption] = useState('Esdeveniments'); 
   const options = [
     'Ascendent',
     'Descendent',
+    'Esdeveniments'
   ];
 
   const handleOptionSelect = (index, value) => {
@@ -47,17 +51,34 @@ export default function Page() {
 
 const loadMoreData = async () => {
   if (loading || !hasMoreData) return;
+};
+
+const fetchData = async () => {
+  if (loading || !hasMoreData) return;
 
   try {
+    const userTokenString = await AsyncStorage.getItem("@user");
+    const userToken = JSON.parse(userTokenString).token;
     setLoading(true);
-    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
-    const newData = await response.json();
+    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${userToken}`, // Asegúrate de tener userToken definido
+        'Content-Type': 'application/json',
+      },
+    });
 
-    if (newData.results.length > 0) {
-      setData((prevData) => [...prevData, ...newData.results]);
-      setPage((prevPage) => prevPage + 1);
+    if (response.ok) {
+      const newData = await response.json();
+
+      if (newData.results.length > 0) {
+        setData((prevData) => [...prevData, ...newData.results]);
+        setPage((prevPage) => prevPage + 1);
+      } else {
+        setHasMoreData(false);
+      }
     } else {
-      setHasMoreData(false);
+      throw new Error('Error en la solicitud');
     }
   } catch (error) {
     console.error(error);
@@ -76,43 +97,13 @@ const loadMoreData = async () => {
     navigation.navigate('event', { eventId });
   };
 
-  state = {
-    search: '',
-  };
-
-  const [search, setSearch] = useState('');
-  const [data, setData] = useState([]);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userTokenString = await AsyncStorage.getItem("@user");
-        const userToken = JSON.parse(userTokenString).token;
-  
-        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${userToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          const dataFromServer = await response.json();
-          setData(dataFromServer.results);
-        } else {
-          throw new Error('Error en la solicitud');
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
     fetchData();
-  }, []);
+  }, [search, page]);
 
   const filteredData = data.filter((item) =>
-    item.nom.toLowerCase().includes(search.toLowerCase())
+    item.nom.toLowerCase().includes(search.toLowerCase()) || 
+    item.espai.nom.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -146,7 +137,7 @@ const loadMoreData = async () => {
           borderRadius: 100,
           flexDirection: 'row',
           paddingVertical: 5,
-          width: 90,
+          width: 120,
           height: 28,
           fontSize:50,
           paddingHorizontal: 10,
@@ -154,7 +145,7 @@ const loadMoreData = async () => {
           fontSize:10,
         }}
         options={options}
-        defaultValue="Escdeveniment"
+        defaultValue="Esdeveniments"
         onSelect={handleOptionSelect}
         dropdownStyle={styles.dropdownOptions} 
         textStyle= {styles.dropdownText2}  
