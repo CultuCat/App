@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
+import { Text, View, FlatList, StyleSheet, ScrollView,StatusBar, SafeAreaView, TouchableOpacity, Image, Modal} from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
@@ -35,20 +35,20 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [data, setData] = useState([]);
+  const [filteredData,setFilteredData ] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [selectedOption, setSelectedOption] = useState('Esdeveniments'); 
-  const options = [
-    'Ascendent',
-    'Descendent',
-    'Esdeveniments'
-  ];
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  
 
   const handleOptionSelect = (index, value) => {
     setSelectedOption(value);
   };
   
-
+  
 const loadMoreData = async () => {
   if (loading || !hasMoreData) return;
 };
@@ -97,14 +97,101 @@ const fetchData = async () => {
     navigation.navigate('event', { eventId });
   };
 
+  const handlePressFilters = () => {
+
+  };
+
   useEffect(() => {
     fetchData();
   }, [search, page]);
 
-  const filteredData = data.filter((item) =>
-    item.nom.toLowerCase().includes(search.toLowerCase()) || 
-    item.espai.nom.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+        const response = await fetch('https://cultucat.hemanuelpc.es/tags', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const tagsFromServer = await response.json();
+          setTags(tagsFromServer);
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+
+  const handleAccept = async () => {
+    try {
+      const userTokenString = await AsyncStorage.getItem("@user");
+      const userToken = JSON.parse(userTokenString).token;
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      console.log(tagsQueryString);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?${tagsQueryString}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${userToken}`, 
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const filteredEvents = await response.json();
+        setFilteredData(filteredEvents);
+        console.log("aquesta es la data de tags",data);
+      } else {
+        console.error('Error en la solicitud GET:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error en la solicitud GET:', error);
+    }
+
+    setModalVisible(false);
+  };
+  useEffect(() => {
+    fetchData();
+  }, [search, page, selectedTags]);
+  
+  useEffect(() => {
+    console.log(filteredData);
+    const filtered = data.filter((item) =>
+      item.nom.toLowerCase().includes(search.toLowerCase()) || 
+      item.espai.nom.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [data, search]);
+  
+  
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+  
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+  
+  const handleTagPress = (tag) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((selectedTag) => selectedTag !== tag)
+        : [...prevTags, tag]
+    );
+  };
+  
+    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -117,9 +204,9 @@ const fetchData = async () => {
         containerStyle={styles.searchBarContainer}
       />
 
-      <TouchableOpacity style={styles.filtersButton}>
-        <MaterialIcons name="filter-list" style={styles.filtersIcon} />
-        <Text style={styles.filtersText}> Filter by Tags</Text>
+      <TouchableOpacity style={styles.filtersButton}onPress={handlePressFilters}>
+        <MaterialIcons name="reorder" style={styles.filtersIcon} />
+        <Text style={styles.filtersText}> Ordenar per ..</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
@@ -128,48 +215,66 @@ const fetchData = async () => {
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      
-      <ModalDropdown
-        style={{
-          backgroundColor: "#d2d0d0",
-          marginTop: 0,
-          alignSelf: 'flex-start',
-          borderRadius: 100,
-          flexDirection: 'row',
-          paddingVertical: 5,
-          width: 120,
-          height: 28,
-          fontSize:50,
-          paddingHorizontal: 10,
-          marginLeft:20,
-          fontSize:10,
-        }}
-        options={options}
-        defaultValue="Esdeveniments"
-        onSelect={handleOptionSelect}
-        dropdownStyle={styles.dropdownOptions} 
-        textStyle= {styles.dropdownText2}  
-        dropdownTextStyle={styles.dropdownText}   
-        dropdownTextHighlightStyle={styles.dropdownTextHighlight} 
-        saveScrollPosition={false}   
-        
-    />
 
-        <TouchableOpacity style={styles.botoOrder2}>
-          <Chip text='Data' color="#d2d0d0" />
+      <TouchableOpacity style={styles.botoOrder} onPress={handleOpenModal}>
+          <Chip text='Tags' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
+        <Modal
+        visible={modalVisible}
+        onBackdropPress={handleCloseModal}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+      >
+        <View style={styles.viewStyle}>
+        <Text style={styles.titleText}>Escull els tags pels que vols filtrar</Text>
+          <ScrollView style={styles.scrollStyle}>
+            {tags.map((tag) => (
+              <TouchableOpacity
+                key={tag.id}
+                onPress={() => handleTagPress(tag)}
+                style={{
+                  padding: 10,
+                  borderBottomWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 5,
+                  backgroundColor: selectedTags.includes(tag) ? '#ff6961' : 'white',
+                }}
+              >
+                <Text>{tag.nom}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#87ceec' }]}
+              onPress={handleAccept}
+            >
+              <Text style={{ color: 'black' }}>Acceptar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: 'transparent' }]}
+              onPress={handleCloseModal}
+            >
+              <Text style={{ color: 'black' }}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+      </Modal>
+
+
 
         <TouchableOpacity style={styles.botoOrder2}>
-          <Chip text='Espai' color="#d2d0d0" />
+          <Chip text='Preu' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.botoOrder2}>
-          <Chip text='Preu' color="#d2d0d0" />
+          <Chip text='Data' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
       </View>
+      
+   
 
       <FlatList
         data={filteredData}
@@ -298,25 +403,45 @@ const styles = StyleSheet.create({
     },
     botoOrder: {
       marginLeft:20,
+      marginRight: -40,
     },
     botoOrder2: {
       marginLeft:6,
       marginRight: -40,
     },
     
-    dropdownOptions: {
-      width: 120,
+    viewStyle: {
+      marginTop:70,
+    } ,
+    scrollStyle: {
+      marginBottom: 100,
+    } ,
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginTop: -100,
+      backgroundColor: 'white', 
+      padding: 15, 
+      borderTopWidth: 1, 
+      borderTopColor: 'white', 
     },
-    dropdownText: {
-      fontSize: 16,
+    
+    button: {
       padding: 10,
+      borderRadius: 5,
+      borderWidth: 1,
+      width: '45%',
+      alignItems: 'center',
+      borderRadius: 10,
+      borderColor: 'black'
     },
-    dropdownTextHighlight: {
-      color: 'white',
-      backgroundColor: 'gray',
+    titleText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      color: '#333',
+      marginLeft:10,
     },
-    dropdownText2: {
-      fontSize: 14, 
-    },
+    
   
 });
