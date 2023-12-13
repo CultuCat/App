@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ModalDropdown from 'react-native-modal-dropdown';
 
 export default function Page() {
   const Item = ({ title, ubicacion, data, image, id }) => (
@@ -148,7 +147,8 @@ const fetchData = async () => {
 
       if (response.ok) {
         const filteredEvents = await response.json();
-        setData(filteredEvents.results);        
+        setData(filteredEvents.results);  
+              
       } else {
         console.error('Error en la solicitud GET:', response.status, response.statusText);
       }
@@ -163,7 +163,6 @@ const fetchData = async () => {
   }, [search, page, selectedTags]);
   
   useEffect(() => {
-    console.log(data);
     const filtered = data.filter((item) =>
       item.nom.toLowerCase().includes(search.toLowerCase()) || 
       item.espai.nom.toLowerCase().includes(search.toLowerCase())
