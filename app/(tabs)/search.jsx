@@ -48,26 +48,12 @@ export default function Page() {
   };
   
   
-const loadMoreData = async () => {
-  if (loading || !hasMoreData) return;
-};
+  const loadMoreData = async () => {
+    if (loading || !hasMoreData) return;
 
-const fetchData = async () => {
-  if (loading || !hasMoreData) return;
-
-  try {
-    const userTokenString = await AsyncStorage.getItem("@user");
-    const userToken = JSON.parse(userTokenString).token;
-    setLoading(true);
-    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Token ${userToken}`, 
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}`);
       const newData = await response.json();
 
       if (newData.results.length > 0) {
@@ -76,16 +62,16 @@ const fetchData = async () => {
       } else {
         setHasMoreData(false);
       }
-    } else {
-      throw new Error('Error en la solicitud');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
- 
+  };
+
+  state = {
+    search: '',
+  };
 
   const navigation = useNavigation();
   const handlePressMap = () => {
@@ -96,13 +82,35 @@ const fetchData = async () => {
     navigation.navigate('event', { eventId });
   };
 
-  const handlePressFilters = () => {
-
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+
+        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const dataFromServer = await response.json();
+          setData(dataFromServer.results);
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
     fetchData();
-  }, [search, page]);
+  }, []);
+
+
+
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -158,9 +166,7 @@ const fetchData = async () => {
 
     setModalVisible(false);
   };
-  useEffect(() => {
-    fetchData();
-  }, [search, page, selectedTags]);
+ 
   
   useEffect(() => {
     const filtered = data.filter((item) =>
@@ -199,9 +205,10 @@ const fetchData = async () => {
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
+
       />
 
-      <TouchableOpacity style={styles.filtersButton}onPress={handlePressFilters}>
+      <TouchableOpacity style={styles.filtersButton}>
         <MaterialIcons name="reorder" style={styles.filtersIcon} />
         <Text style={styles.filtersText}> Ordenar per ..</Text>
       </TouchableOpacity>
