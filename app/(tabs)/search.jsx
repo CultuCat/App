@@ -63,7 +63,7 @@ const fetchData = async () => {
     const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Token ${userToken}`, // Asegúrate de tener userToken definido
+        'Authorization': `Token ${userToken}`, 
         'Content-Type': 'application/json',
       },
     });
@@ -138,7 +138,6 @@ const fetchData = async () => {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      console.log(tagsQueryString);
       const response = await fetch(`https://cultucat.hemanuelpc.es/events/?${tagsQueryString}`, {
         method: 'GET',
         headers: {
@@ -149,8 +148,7 @@ const fetchData = async () => {
 
       if (response.ok) {
         const filteredEvents = await response.json();
-        setFilteredData(filteredEvents);
-        console.log("aquesta es la data de tags",data);
+        setData(filteredEvents.results);        
       } else {
         console.error('Error en la solicitud GET:', response.status, response.statusText);
       }
@@ -165,7 +163,7 @@ const fetchData = async () => {
   }, [search, page, selectedTags]);
   
   useEffect(() => {
-    console.log(filteredData);
+    console.log(data);
     const filtered = data.filter((item) =>
       item.nom.toLowerCase().includes(search.toLowerCase()) || 
       item.espai.nom.toLowerCase().includes(search.toLowerCase())
