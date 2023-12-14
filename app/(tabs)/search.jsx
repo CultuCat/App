@@ -49,16 +49,19 @@ export default function Page() {
   
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
-
+  
     try {
       setLoading(true);
-      const filtersQueryString = selectedFilters.map((filter) => `filter=${filter}`).join('&');
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page + 1}&query=${search}&${filtersQueryString}`);
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      const nextPage = page + 1; 
+      const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}`;
+      console.log('URL de la solicitud:', url);
+      const response = await fetch(url);
       const newData = await response.json();
-
-      if (newData.results.length > 0) {
+  
+      if (newData && newData.results && newData.results.length > 0) {
         setData((prevData) => [...prevData, ...newData.results]);
-        setPage((prevPage) => prevPage + 1);
+        setPage(nextPage); 
       } else {
         setHasMoreData(false);
       }
@@ -67,10 +70,6 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
-
-  state = {
-    search: '',
   };
 
   const navigation = useNavigation();
@@ -144,28 +143,30 @@ export default function Page() {
     try {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
+  
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?${tagsQueryString}`, {
+      
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`, 
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const filteredEvents = await response.json();
-        setData(filteredEvents.results);  
-              
+        setData(filteredEvents.results);
       } else {
         console.error('Error en la solicitud GET:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error en la solicitud GET:', error);
     }
-
+  
     setModalVisible(false);
   };
+  
   const handleOpenModal = () => {
     setModalVisible(true);
   };
@@ -179,13 +180,16 @@ export default function Page() {
       prevTags.includes(tag)
         ? prevTags.filter((selectedTag) => selectedTag !== tag)
         : [...prevTags, tag]
+        
     );
-  };
+  };  
+
   const handleSearch = async () => {
     try {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}`, {
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`, 
@@ -213,6 +217,7 @@ export default function Page() {
 
   return (
     <SafeAreaView style={styles.container}>
+
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
         placeholder="Cerca..."
@@ -220,9 +225,9 @@ export default function Page() {
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
-
+        searchIcon={false}
       />
-      <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+  <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
         <MaterialIcons name="search" size={24} color="black" />
       </TouchableOpacity>
 
@@ -415,7 +420,7 @@ const styles = StyleSheet.create({
       borderWidth: 0,
       marginBottom: 10,
       padding: 10,
-      marginTop: 5,
+      marginTop: 20,
       marginLeft: 20,
       borderRadius: 15,
       default: 'ios',
@@ -464,6 +469,11 @@ const styles = StyleSheet.create({
       color: '#333',
       marginLeft:10,
     },
+    searchButton: {
+      marginLeft: 270,
+      marginTop:-50,
+      marginBottom: 15
+    }
     
   
 });
