@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     searchButton: {
       marginLeft: 270,
       marginTop:-50,
-      marginBottom: 15,
+      marginBottom: 18,
       width: 20
     }
     
