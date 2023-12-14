@@ -44,12 +44,6 @@ export default function Page() {
   const [selectedTags, setSelectedTags] = useState([]);
 
   
-
-  const handleOptionSelect = (index, value) => {
-    setSelectedOption(value);
-  };
-  
-  
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
   
@@ -465,7 +459,6 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       width: '45%',
       alignItems: 'center',
-      borderRadius: 10,
       borderColor: 'black'
     },
     titleText: {
