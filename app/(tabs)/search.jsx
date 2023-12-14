@@ -226,6 +226,8 @@ export default function Page() {
         platform="ios"
         containerStyle={styles.searchBarContainer}
         searchIcon={false}
+        clearIcon={null}
+        cancelIcon={true}
       />
   <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
         <MaterialIcons name="search" size={24} color="black" />
@@ -472,7 +474,8 @@ const styles = StyleSheet.create({
     searchButton: {
       marginLeft: 270,
       marginTop:-50,
-      marginBottom: 15
+      marginBottom: 15,
+      width: 20
     }
     
   
