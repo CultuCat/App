@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView } from 'react-native';
+import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
 import { router } from 'expo-router';
 import colors from '../constants/colors';
 import * as Google from 'expo-auth-session/providers/google';
@@ -48,8 +48,8 @@ export default function Page() {
             );
             if (response.ok) {
                 const user = await response.json();
-                console.log(user);
-                setUsername(user.username);
+                const username = user.email.split('@')[0]
+                setUsername(username);
                 setPassword(token);
                 onLoginPress();
             } else {
@@ -90,50 +90,69 @@ export default function Page() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Image
-                style={{ margin: 15, width: 270, height: 75 }}
-                source={require('../assets/full-logo.png')}
-            />
-            <View style={styles.centeredContent}>
-                <Text style={styles.title}>{t('Index.Benvingut')}</Text>
-                <GoogleButton onPress={() => {
-                    promptAsync();
-                }} />
-                <Divider />
-                <TextInput
-                    style={styles.input}
-                    placeholder={t('Index.User')}
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder={t('Index.Password')}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    autoCapitalize="none"
-                />
-                <Button title="Login" onPress={onLoginPress} />
-                <Button title="Signup" onPress={() => router.replace('signup')} />
-            </View>
-        </SafeAreaView>
+        <View style={[{flex: 1}, Platform.OS === 'android' && styles.androidView]}>
+            <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
+                <View style={styles.imageContainer}>
+                    <Image
+                        style={{ flex: 1, resizeMode: 'contain' }}
+                        source={require('../assets/full-logo.png')}
+                    />
+                </View>
+                <View style={styles.centeredContent}>
+                    <Text style={styles.title}>{t('Index.Benvingut')}</Text>
+                    <GoogleButton onPress={() => {
+                        promptAsync();
+                    }} />
+                    <Divider />
+                    <TextInput
+                        style={styles.input}
+                        placeholder={t('Index.User')}
+                        value={username}
+                        onChangeText={setUsername}
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder={t('Index.Password')}
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        autoCapitalize="none"
+                    />
+                    <TouchableOpacity style={styles.login} onPress={onLoginPress}>
+                        <Text style={styles.loginText}>LOGIN</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => router.replace('signup')}>
+                        <Text style={styles.signup}>Signup</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    androidView: {
+        backgroundColor: '#ffffff',
+    },
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+    },
+    androidMarginTop: {
+        marginTop: 40,
+    },
+    imageContainer: {
+        margin: 15,
+        width: '70%',
+        aspectRatio: 3.6,
+        alignItems: 'center'
     },
     centeredContent: {
         flex: 1,
         justifyContent: 'center',
-        marginBottom: 100,
+        marginBottom: '25%',
         width: '80%',
     },
     title: {
@@ -144,10 +163,27 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 5,
+        borderColor: colors.primary,
         marginVertical: 10,
         paddingHorizontal: 10,
 
+    },
+    login: {
+        backgroundColor: colors.primary,
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    loginText: {
+        fontSize: 18,
+        color: 'white',
+    },
+    signup: {
+        color: colors.primary,
+        marginVertical: 10,
+        textDecorationLine: 'underline',
     },
 });
