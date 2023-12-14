@@ -55,7 +55,6 @@ export default function Page() {
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const nextPage = page + 1; 
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}`;
-      console.log('URL de la solicitud:', url);
       const response = await fetch(url);
       const newData = await response.json();
   
