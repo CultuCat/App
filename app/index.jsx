@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
 import colors from '../constants/colors';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleButton from './components/googleButton';
 import Divider from './components/divider';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
+    const { t } = useTranslation();
+
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
@@ -18,7 +22,7 @@ export default function Page() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         handleSignInWithGoogle();
     }, [response])
 
@@ -33,6 +37,25 @@ export default function Page() {
             setUserInfo(user);
         }
     }
+
+    /*async function handleSignInWithGoogle() {
+        if (response?.type === "success") {
+          const accessToken = response.authentication.accessToken;
+          const response = await fetch('http://localhost:8000/users/sign_in/google-oauth2/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ access_token: accessToken }),
+          });
+      
+          if (response.status === 200) {
+            const data = await response.json();
+
+          }
+        }
+      }*/
+
 
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
@@ -113,43 +136,41 @@ export default function Page() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                Alert.alert("Error", "Incorrect username or password");
+                Alert.alert("Error", t('Index.Eror_credencials'));
             });
     };
 
     return (
-        <View style={styles.container}>
-            <View style={{ marginTop: 60 }}>
-                <Image
-                    style={{ margin: 15, width: 270, height: 75 }}
-                    source={require('../assets/full-logo.png')}
+        <SafeAreaView style={styles.container}>
+            <Image
+                style={{ margin: 15, width: 270, height: 75 }}
+                source={require('../assets/full-logo.png')}
+            />
+            <View style={styles.centeredContent}>
+                <Text style={styles.title}>{t('Index.Benvingut')}</Text>
+                <GoogleButton onPress={() => {
+                    promptAsync();
+                }} />
+                <Divider />
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Index.User')}
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="none"
                 />
-                <View style={styles.centeredContent}>
-                    <Text style={styles.title}>Benvingut</Text>
-                    <GoogleButton onPress={() => {
-                        promptAsync();
-                    }} />
-                    <Divider />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Username"
-                        value={username}
-                        onChangeText={setUsername} 
-                        autoCapitalize="none"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        autoCapitalize="none" 
-                    />
-                    <Button title="Login" onPress={onLoginPress} />
-                    <Button title="Signup" onPress={() => router.replace('signup')} />
-                </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder={t('Index.Password')}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                />
+                <Button title="Login" onPress={onLoginPress} />
+                <Button title="Signup" onPress={() => router.replace('signup')} />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -164,6 +185,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         marginBottom: 100,
+        width: '80%',
     },
     title: {
         fontSize: 30,
@@ -177,6 +199,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         paddingHorizontal: 10,
-        
+
     },
 });

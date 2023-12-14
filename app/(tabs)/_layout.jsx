@@ -28,6 +28,7 @@ export default function Layout() {
       <Tabs.Screen
         name="tickets"
         options={{
+          headerShown: false,
           tabBarIcon: ({ size, color }) => <Ionicons name="ios-bookmark" size={size} color={color} />,
         }} />
       <Tabs.Screen

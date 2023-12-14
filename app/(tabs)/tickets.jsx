@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, Switch } from 'react-native';
-import TicketCard from '../components/ticketCard';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text, Switch, SafeAreaView } from 'react-native';
+import EventCard from '../components/eventCard';
+import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 const Tickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicketVisible, setSelectedTicketVisible] = useState(false);
+  const { t } = useTranslation();
 
   const today = new Date();
 
@@ -14,13 +20,18 @@ const Tickets = () => {
     ? tickets
     : tickets.filter((ticket) => new Date(ticket.data) >= today);
 
+  const handleTicketClick = (ticket) => {
+    setSelectedTicket(ticket);
+    setSelectedTicketVisible(true);
+  }
+
   const renderTicketCard = ({ item }) => (
-    <TicketCard
+    <EventCard
       event={item.nomEvent}
       data={item.data}
       espai={item.espai}
       imatge={item.imatge}
-      style={{ margin: 5 }}
+      onPress={() => handleTicketClick(item)}
     />
   );
 
@@ -61,18 +72,19 @@ const Tickets = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>{t('Ticket.Ticket')}</Text>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator />
       ) : tickets.length > 0 ? (
         <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '10%', marginVertical: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '5%', marginVertical: 15 }}>
             <Switch
               style={{ zIndex: 1 }}
               value={showAllTickets}
               onValueChange={(value) => setShowAllTickets(value)}
             />
-            <Text style={{ marginLeft: 10 }}>Veure tots els tickets</Text>
+            <Text style={{ marginLeft: 10 }}>{t('Ticket.Tots')}</Text>
           </View>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             {filteredTickets.length > 0 ? (
@@ -80,17 +92,23 @@ const Tickets = () => {
                 data={filteredTickets}
                 renderItem={renderTicketCard}
                 keyExtractor={(item) => item.nomEvent}
-                contentContainerStyle={{ alignItems: 'center' }}
               />
             ) : (
-              <Text>No tens entrades per propers esdeveniments</Text>
+              <Text>{t('Ticket.No_tickets_propers')}</Text>
             )}
           </View>
+          {selectedTicket && (
+            <TicketDetails
+              ticket={selectedTicket}
+              selectedTicketVisible={selectedTicketVisible}
+              setSelectedTicketVisible={setSelectedTicketVisible}
+            />
+          )}
         </View>
       ) : (
-        <Text>No tens entrades a esdeveniments</Text>
+        <Text>{t('Ticket.No_tickets')}</Text>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -98,6 +116,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    marginHorizontal: '5%',
   },
 });
 

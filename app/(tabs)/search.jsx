@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, ScrollView,StatusBar, SafeAreaView, TouchableOpacity, Image, Modal} from 'react-native';
+import { Text, View, FlatList, StyleSheet, ScrollView,StatusBar, SafeAreaView, TouchableOpacity, Image, Modal } from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image, id }) => (
+  const { t } = useTranslation();
 
+  const Item = ({ title, ubicacion, data, image, id }) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
       {image ? (
-      <Image source={{ uri: image.uri }} style={styles.image} />
-    ) : (
-      <Image
-        source={{
-          uri:
-            'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
-        }}
-        style={styles.image}
-      />
-    )}
+        <Image source={{ uri: image.uri }} style={styles.image} />
+      ) : (
+        <Image
+          source={{
+            uri:
+              'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
+          }}
+          style={styles.image}
+        />
+      )}
       <View style={styles.itemText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.data}>{data}</Text>
@@ -75,7 +78,7 @@ export default function Page() {
   const handlePressMap = () => {
     navigation.navigate('map');
   };
-  
+
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
@@ -86,6 +89,7 @@ export default function Page() {
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
 
+
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -93,6 +97,7 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
         });
+
 
         if (response.ok) {
           const dataFromServer = await response.json();
@@ -219,7 +224,7 @@ export default function Page() {
 
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Cerca..."
+        placeholder={t('Search.Busca')}
         onChangeText={(text) => setSearch(text)}
         value={search}
         platform="ios"
@@ -239,7 +244,7 @@ export default function Page() {
 
       <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
         <MaterialIcons name="location-on" style={styles.location} />
-        <Text style={styles.mapText}> Veure mapa</Text>
+        <Text style={styles.mapText}>{t('Search.Mapa')}</Text>
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -320,9 +325,9 @@ export default function Page() {
         onEndReachedThreshold={0.1}
       />
 
-        </SafeAreaView>
-      );
-    }
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -375,13 +380,13 @@ const styles = StyleSheet.create({
   },
   camera: {
     fontSize: 20,
-    color:'#f07b75',
+    color: '#f07b75',
     marginLeft: 330,
     marginTop: 30,
   },
   ticket: {
     fontSize: 19,
-    color:'#f07b75',
+    color: '#f07b75',
     marginLeft: 190,
     marginTop: 5,
   },

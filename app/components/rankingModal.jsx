@@ -2,37 +2,38 @@ import React, { useEffect, useState } from 'react';
 import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+
+
+const User = ({ position, me, imatge, name, username, points }) => {
+    const userStyles = [
+        styles.user,
+        me && styles.myUser,
+        position == 1 && styles.user1,
+        position == 2 && styles.user2,
+        position == 3 && styles.user3,
+
+    ];
+
+    return (
+        <View style={userStyles}>
+            <Text style={styles.position}>{position}.</Text>
+            <Image source={{ uri: imatge }} style={styles.image} />
+            <View style={styles.itemText}>
+                <Text style={styles.name}>{name}</Text>
+                <Text>{username}</Text>
+            </View>
+            <Text style={styles.name}>{points}</Text>
+        </View>
+    );
+};
 
 const RankingModal = ({
     userId,
     rankingVisible,
     setRankingVisible,
 }) => {
-
-    const User = ({ position, id, imatge, name, username, points }) => {
-        const userStyles = [
-            styles.user,
-            userId == id && styles.myUser,
-            position == 1 && styles.user1,
-            position == 2 && styles.user2,
-            position == 3 && styles.user3,
-            
-        ];
-
-        return (
-            <View style={userStyles}>
-                <Text style={styles.position}>{position}.</Text>
-                <Image source={{ uri: imatge }} style={styles.image} onError={(error) => console.log("Error cargando la imagen:", error)} />
-                <View style={styles.itemText}>
-                    <Text style={styles.name}>{name}</Text>
-                    <Text>{username}</Text>
-                </View>
-                <Text style={styles.name}>{points}</Text>
-            </View>
-        );
-    };
-
-
+    const { t } = useTranslation();
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -68,11 +69,11 @@ const RankingModal = ({
                 <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
                     <Ionicons name="ios-close-outline" size={36} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Rànquing</Text>
+                <Text style={styles.title}>{t('User.Rank')}</Text>
                 <FlatList
                     data={users}
                     renderItem={({ item, index }) => (
-                        <User position={index + 1} id={item.id} imatge={item.imatge} name={item.first_name} username={item.username} points={item.puntuacio} />
+                        <User position={index + 1} me={item.id === userId} imatge={item.imatge} name={item.first_name} username={item.username} points={item.puntuacio} />
                     )}
                     keyExtractor={(item) => item.id}
                 />
