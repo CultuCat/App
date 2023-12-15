@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, ScrollView,StatusBar, SafeAreaView, TouchableOpacity, Image, Modal } from 'react-native';
+import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image} from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-
+import TagModal from '../components/tagModal.jsx';
 
 export default function Page() {
   const { t } = useTranslation();
@@ -247,49 +247,14 @@ export default function Page() {
           <Chip text='Tags' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
-        <Modal
-        visible={modalVisible}
-        onBackdropPress={handleCloseModal}
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-      >
-        <View style={styles.viewStyle}>
-        <Text style={styles.titleText}>Escull els tags pels que vols filtrar</Text>
-          <ScrollView style={styles.scrollStyle}>
-            {tags.map((tag) => (
-              <TouchableOpacity
-                key={tag.id}
-                onPress={() => handleTagPress(tag)}
-                style={{
-                  padding: 10,
-                  borderBottomWidth: 1,
-                  borderColor: '#ccc',
-                  borderRadius: 5,
-                  backgroundColor: selectedTags.includes(tag) ? '#ff6961' : 'white',
-                }}
-              >
-                <Text>{tag.nom}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: '#87ceec' }]}
-              onPress={handleAccept}
-            >
-              <Text style={{ color: 'black' }}>Acceptar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: 'transparent' }]}
-              onPress={handleCloseModal}
-            >
-              <Text style={{ color: 'black' }}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-      </Modal>
-
-
+        <TagModal
+        modalVisible={modalVisible}
+        onCloseModal={handleCloseModal}
+        onTagPress={handleTagPress}
+        onAccept={handleAccept}
+        tags={tags}
+        selectedTags={selectedTags}
+      />
 
         <TouchableOpacity style={styles.botoOrder2}>
           <Chip text='Preu' color="#87ceec" />
