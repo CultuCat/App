@@ -46,14 +46,14 @@ const TagModal = ({
           }}
         >
           <TouchableOpacity
-            style={{ padding: 10, borderRadius: 5, borderWidth: 1, width: '45%', alignItems: 'center', borderColor: 'black', backgroundColor: '#87ceec' }}
+            style={{ padding: 10, borderRadius: 10, borderWidth: 1, width: '35%', alignItems: 'center', borderColor: 'black', backgroundColor: '#87ceec' }}
             onPress={onAccept}
           >
             <Text style={{ color: 'black' }}>Acceptar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ padding: 10, borderRadius: 5, borderWidth: 1, width: '45%', alignItems: 'center', borderColor: 'black', backgroundColor: 'transparent' }}
+            style={{ padding: 10, borderRadius: 10,marginLeft: 50, borderWidth: 1, width: '35%', alignItems: 'center', borderColor: 'black', backgroundColor: 'transparent' }}
             onPress={onCloseModal}
           >
             <Text style={{ color: 'black' }}>Cancelar</Text>
