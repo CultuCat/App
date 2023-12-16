@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal,StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const TagModal = ({
   modalVisible,
@@ -50,18 +51,30 @@ const TagModal = ({
             onPress={onAccept}
           >
             <Text style={{ color: 'black' }}>Acceptar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{ padding: 10, borderRadius: 10,marginLeft: 50, borderWidth: 1, width: '35%', alignItems: 'center', borderColor: 'black', backgroundColor: 'transparent' }}
+        </TouchableOpacity>
+        <TouchableOpacity
+            style={[styles.iconContainer, styles.closeIcon]}
             onPress={onCloseModal}
           >
-            <Text style={{ color: 'black' }}>Cancelar</Text>
+          <Ionicons name="ios-close-outline" size={36} color="black" />
+       
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
 };
+const styles = StyleSheet.create({
+  iconContainer: {
+      backgroundColor: colors.terciary,
+      borderRadius: 100,
+      aspectRatio: 1,
+      position: 'absolute',
+  },
+  closeIcon: {
+      top: 10,
+      right: 0,
+  },
+});
 
 export default TagModal;
