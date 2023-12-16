@@ -1,34 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
 import ChatScreen from '../components/chatScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export default function Page() {
+const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [visibleUser, setVisibleUser] = useState(false);
+  const [uId, setUId] = useState(''); // Local user id
+  const [friends, setFriends] = useState([]);
+  const [uIdR, setUIdR] = useState(''); // Remote user id
+  const [url, setUrl] = useState('https://cultucat.hemanuelpc.es');
 
-  const contacts = [
-    {
-      uid: 1,
-      name: 'Hitesh Choudhary',
-      imageUrl: 'https://avatars.githubusercontent.com/u/11613311?v=4',
-    },
-    {
-      uid: 2,
-      name: 'Anurag Tiwari',
-      imageUrl: 'https://avatars.githubusercontent.com/u/94738352?v=4',
-    },
-    {
-      uid: 3,
-      name: 'Sanket Singh',
-      imageUrl: 'https://avatars.githubusercontent.com/u/29747452?v=4',
-    },
-    {
-      uid: 4,
-      name: 'Anirudh Jwala',
-      imageUrl: 'https://avatars.githubusercontent.com/u/25549847?v=4',
-    },
-  ];
+  useEffect(() => {
+    const getLocalUser = async () => {
+      try {
+        const dataString = await AsyncStorage.getItem("@user");
+        if (!dataString) return null;
+        const data = JSON.parse(dataString);
+        setUId(data.user.id)
+      } catch (error) {
+        console.error('Error getting local user data:', error);
+        return null;
+      }
+    };
+    getLocalUser();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const response = await fetch(`${url}/users/${uId}/`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setFriends(data.friends);
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+      }
+    };
+
+    fetchFriends();
+  }, [uId, url]);
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
@@ -37,7 +52,7 @@ export default function Page() {
 
   const handleBackToUsers = () => {
     setSelectedUser(null);
-    setVisibleUser(false)
+    setVisibleUser(false);
   };
 
 
@@ -45,8 +60,8 @@ export default function Page() {
     <TouchableOpacity onPress={() => handleUserClick(item)}>
       <View style={styles.userContainer}>
         <View style={styles.userCard}>
-          <Image source={{ uri: item.imageUrl }} style={styles.userImage} />
-          <Text style={styles.userName}>{item.name}</Text>
+          <Image source={{ uri: item.imatge }} style={styles.userImage} />
+          <Text style={styles.userName}>{item.first_name}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -55,12 +70,12 @@ export default function Page() {
   return (
     <>
       {visibleUser ? (
-        <ChatScreen user={selectedUser} onBack={handleBackToUsers} />
+        <ChatScreen user={selectedUser} userLId={uId} onBack={handleBackToUsers} />
       ) : (
         <FlatList
-          data={contacts}
+          data={friends}
           renderItem={renderUserItem}
-          keyExtractor={(item) => item.uid.toString()}
+          keyExtractor={(item) => item.id.toString()}
         />
       )}
     </>
@@ -93,6 +108,7 @@ const styles = StyleSheet.create({
 });
 
 
+export default Chat;
 
 
 
