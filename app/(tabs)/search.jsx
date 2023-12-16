@@ -53,7 +53,7 @@ export default function Page() {
       const response = await fetch(url);
       const newData = await response.json();
 
-      if (newData && newData.results && newData.results.length > 0) {
+      if (newData?.results && newData.results.length > 0) {
         setData((prevData) => [...prevData, ...newData.results]);
         setPage(nextPage);
       } else {
