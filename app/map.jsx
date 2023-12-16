@@ -87,7 +87,7 @@ export default function Page() {
               title: item.nom,
               data: item.dataIni,
               //ubicacion: item.espai.nom,
-              image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : require('../assets/teatro.png'),
+              image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
             }))
           );
         })
