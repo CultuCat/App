@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal,StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal,StyleSheet} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const TagModal = ({
@@ -13,8 +13,14 @@ const TagModal = ({
   return (
     <Modal visible={modalVisible} onBackdropPress={onCloseModal}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <TouchableOpacity
+            style={[styles.iconContainer, styles.closeIcon]}
+            onPress={onCloseModal}
+          >
+            <Ionicons name="ios-close-outline" size={26} color="black" />
+      </TouchableOpacity>
         <View style={{ marginTop: 70 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#333', marginLeft: 10 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#333', marginLeft: 6 }}>
             Escull els tags pels que vols filtrar
           </Text>
           <ScrollView style={{ marginBottom: 100 }}>
@@ -47,18 +53,12 @@ const TagModal = ({
           }}
         >
           <TouchableOpacity
-            style={{ padding: 10, borderRadius: 10, borderWidth: 1, width: '35%', alignItems: 'center', borderColor: 'black', backgroundColor: '#87ceec' }}
+            style={{ padding: 10, borderRadius: 30, borderWidth: 1, width: '55%', alignItems: 'center', borderColor: 'black', backgroundColor: '#87ceec' }}
             onPress={onAccept}
           >
-            <Text style={{ color: 'black' }}>Acceptar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.iconContainer, styles.closeIcon]}
-            onPress={onCloseModal}
-          >
-          <Ionicons name="ios-close-outline" size={36} color="black" />
-       
+            <Text style={{ color: 'black' }}>Filtrar</Text>
           </TouchableOpacity>
+
         </View>
       </View>
     </Modal>
@@ -66,15 +66,16 @@ const TagModal = ({
 };
 const styles = StyleSheet.create({
   iconContainer: {
-      backgroundColor: colors.terciary,
-      borderRadius: 100,
+      backgroundColor: '#ccc',
+      borderRadius: 120,
       aspectRatio: 1,
       position: 'absolute',
   },
   closeIcon: {
-      top: 10,
-      right: 0,
+      top: 50,
+      right: 25,
   },
 });
+
 
 export default TagModal;
