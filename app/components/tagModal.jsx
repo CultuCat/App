@@ -1,81 +1,127 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal,StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import colors from '../../constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 const TagModal = ({
-  modalVisible,
-  onCloseModal,
-  onTagPress,
+  tagVisible,
+  setTagVisible,
   onAccept,
-  tags,
   selectedTags,
+  setSelectedTags,
 }) => {
-  return (
-    <Modal visible={modalVisible} onBackdropPress={onCloseModal}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <TouchableOpacity
-            style={[styles.iconContainer, styles.closeIcon]}
-            onPress={onCloseModal}
-          >
-            <Ionicons name="ios-close-outline" size={26} color="black" />
-      </TouchableOpacity>
-        <View style={{ marginTop: 70 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#333', marginLeft: 6 }}>
-            Escull els tags pels que vols filtrar
-          </Text>
-          <ScrollView style={{ marginBottom: 100 }}>
-            {tags.map((tag) => (
-              <TouchableOpacity
-                key={tag.id}
-                onPress={() => onTagPress(tag)}
-                style={{
-                  padding: 10,
-                  borderBottomWidth: 1,
-                  borderColor: '#ccc',
-                  borderRadius: 5,
-                  backgroundColor: selectedTags.includes(tag) ? '#ff6961' : 'white',
-                }}
-              >
-                <Text>{tag.nom}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop: -100,
-            backgroundColor: 'white',
-            padding: 15,
-            borderTopWidth: 1,
-            borderTopColor: 'white',
-          }}
-        >
-          <TouchableOpacity
-            style={{ padding: 10, borderRadius: 30, borderWidth: 1, width: '55%', alignItems: 'center', borderColor: 'black', backgroundColor: '#87ceec' }}
-            onPress={onAccept}
-          >
-            <Text style={{ color: 'black' }}>Filtrar</Text>
-          </TouchableOpacity>
+  const { t } = useTranslation();
+  const [tags, setTags] = useState([]);
 
-        </View>
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  const fetchTags = async () => {
+    try {
+      const userTokenString = await AsyncStorage.getItem("@user");
+      const userToken = JSON.parse(userTokenString).token;
+      const response = await fetch('https://cultucat.hemanuelpc.es/tags', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const tagsFromServer = await response.json();
+        setTags(tagsFromServer);
+      } else {
+        throw new Error('Error en la solicitud');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleTagPress = (tag) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((selectedTag) => selectedTag !== tag)
+        : [...prevTags, tag]
+    );
+  };
+
+  const closeTags = () => {
+    setTagVisible(false);
+  };
+
+  return (
+    <Modal animationType="slide" visible={tagVisible} onBackdropPress={closeTags}>
+      <View style={styles.modalContainer}>
+        <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeTags}>
+          <Ionicons name="ios-close-outline" size={36} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{t('Filters.Tags')}</Text>
+        <ScrollView style={{ marginBottom: 20 }}>
+          {tags.map((tag) => (
+            <TouchableOpacity
+              key={tag.id}
+              onPress={() => handleTagPress(tag)}
+              style={{
+                padding: 10,
+                borderBottomWidth: 0.5,
+                borderColor: '#ccc',
+                borderRadius: 5,
+                backgroundColor: selectedTags.includes(tag) ? colors.primary : 'white',
+              }}
+            >
+              <Text>{tag.nom}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <TouchableOpacity
+          style={styles.filter}
+          onPress={onAccept}
+        >
+          <Text style={{ fontSize: 18, color: 'black' }}>{t('Filters.Filter')}</Text>
+        </TouchableOpacity>
       </View>
     </Modal>
   );
 };
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    marginTop: 60,
+    marginVertical: 20,
+    marginHorizontal: 20,
+  },
   iconContainer: {
-      backgroundColor: '#ccc',
-      borderRadius: 120,
-      aspectRatio: 1,
-      position: 'absolute',
+    backgroundColor: colors.terciary,
+    borderRadius: 100,
+    aspectRatio: 1,
+    position: 'absolute',
   },
   closeIcon: {
-      top: 50,
-      right: 25,
+    top: 10,
+    right: 0,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    marginRight: 50,
+  },
+  filter: {
+    width: '100%',
+    backgroundColor: colors.secondary,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
   },
 });
-
 
 export default TagModal;

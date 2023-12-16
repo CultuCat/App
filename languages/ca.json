@@ -106,5 +106,9 @@
   },
   "Chat": {
     "Chat": "Xats"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escull els tags pels que vols filtrar"
   }
 }

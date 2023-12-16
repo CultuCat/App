@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image} from 'react-native';
+import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
@@ -39,25 +39,23 @@ export default function Page() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [tags, setTags] = useState([]);
+  const [tagVisible, setTagVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
 
-  
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
-  
+
     try {
       setLoading(true);
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      const nextPage = page + 1; 
+      const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}`;
       const response = await fetch(url);
       const newData = await response.json();
-  
+
       if (newData && newData.results && newData.results.length > 0) {
         setData((prevData) => [...prevData, ...newData.results]);
-        setPage(nextPage); 
+        setPage(nextPage);
       } else {
         setHasMoreData(false);
       }
@@ -83,7 +81,6 @@ export default function Page() {
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
 
-
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -91,7 +88,6 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
         });
-
 
         if (response.ok) {
           const dataFromServer = await response.json();
@@ -107,51 +103,21 @@ export default function Page() {
   }, []);
 
 
-
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const userTokenString = await AsyncStorage.getItem("@user");
-        const userToken = JSON.parse(userTokenString).token;
-        const response = await fetch('https://cultucat.hemanuelpc.es/tags', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${userToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const tagsFromServer = await response.json();
-          setTags(tagsFromServer);
-        } else {
-          throw new Error('Error en la solicitud');
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchTags();
-  }, []);
-
-
   const handleAccept = async () => {
     try {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
-  
+
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      
+
       const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${userToken}`, 
+          'Authorization': `Token ${userToken}`,
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const filteredEvents = await response.json();
         setData(filteredEvents.results);
@@ -161,26 +127,13 @@ export default function Page() {
     } catch (error) {
       console.error('Error en la solicitud GET:', error);
     }
-  
-    setModalVisible(false);
+
+    setTagVisible(false);
   };
-  
-  const handleOpenModal = () => {
-    setModalVisible(true);
+
+  const handleOpenTags = () => {
+    setTagVisible(true);
   };
-  
-  const handleCloseModal = () => {
-    setModalVisible(false);
-  };
-  
-  const handleTagPress = (tag) => {
-    setSelectedTags((prevTags) =>
-      prevTags.includes(tag)
-        ? prevTags.filter((selectedTag) => selectedTag !== tag)
-        : [...prevTags, tag]
-        
-    );
-  };  
 
   const handleSearch = async () => {
     try {
@@ -190,7 +143,7 @@ export default function Page() {
       const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${userToken}`, 
+          'Authorization': `Token ${userToken}`,
           'Content-Type': 'application/json',
         },
       });
@@ -199,7 +152,7 @@ export default function Page() {
         const newData = await response.json();
         setData(newData.results);
         if (newData.results.length > 0) {
-          setHasMoreData(true); 
+          setHasMoreData(true);
         } else {
           setHasMoreData(false);
         }
@@ -211,7 +164,7 @@ export default function Page() {
       console.error('Error en la solicitud GET:', error);
     }
   };
-  
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -227,7 +180,7 @@ export default function Page() {
         clearIcon={null}
         cancelIcon={true}
       />
-  <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+      <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
         <MaterialIcons name="search" size={24} color="black" />
       </TouchableOpacity>
 
@@ -243,19 +196,17 @@ export default function Page() {
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-      <TouchableOpacity style={styles.botoOrder} onPress={handleOpenModal}>
+        <TouchableOpacity style={styles.botoOrder} onPress={handleOpenTags}>
           <Chip text='Tags' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
         <TagModal
-        modalVisible={modalVisible}
-        onCloseModal={handleCloseModal}
-        onTagPress={handleTagPress}
-        onAccept={handleAccept}
-        tags={tags}
-        selectedTags={selectedTags}
-      />
-
+          tagVisible={tagVisible}
+          setTagVisible={setTagVisible}
+          onAccept={handleAccept}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+        />
         <TouchableOpacity style={styles.botoOrder2}>
           <Chip text='Preu' color="#87ceec" />
           <Text style={styles.filtersText}> Filter by Tags</Text>
@@ -265,9 +216,6 @@ export default function Page() {
           <Text style={styles.filtersText}> Filter by Tags</Text>
         </TouchableOpacity>
       </View>
-      
-   
-
       <FlatList
         data={data}
         renderItem={({ item, index }) => (
@@ -283,7 +231,6 @@ export default function Page() {
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.1}
       />
-
     </SafeAreaView>
   );
 }
@@ -357,88 +304,88 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: 150,
     marginLeft: 20,
-    },
-    filtersIcon: {
-      fontSize: 20,
-      color: 'white',
-    },
-    filtersText: {
-      color: 'white',
-      marginLeft: 2.5,
-    },
-    mapButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'transparent',
-      padding: 10,
-      borderRadius: 15,
-      width: 120,
-      marginLeft: 185,
-      borderColor: 'black',
-      borderWidth: 1, 
-      marginTop: -39,
-      marginBottom: 8,
-    },
-    searchBarInputContainer: {
-      width: 290,
-      height: 30,
-      borderWidth: 0,
-      marginBottom: 10,
-      padding: 10,
-      marginTop: 20,
-      marginLeft: 20,
-      borderRadius: 15,
-      default: 'ios',
-    },
-    searchBarContainer: {
-      backgroundColor: 'transparent', 
-    },
-    botoOrder: {
-      marginLeft:20,
-      marginRight: -40,
-    },
-    botoOrder2: {
-      marginLeft:6,
-      marginRight: -40,
-    },
-    
-    viewStyle: {
-      marginTop:70,
-    } ,
-    scrollStyle: {
-      marginBottom: 100,
-    } ,
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginTop: -100,
-      backgroundColor: 'white', 
-      padding: 15, 
-      borderTopWidth: 1, 
-      borderTopColor: 'white', 
-    },
-    
-    button: {
-      padding: 10,
-      borderRadius: 5,
-      borderWidth: 1,
-      width: '45%',
-      alignItems: 'center',
-      borderColor: 'black'
-    },
-    titleText: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 10,
-      color: '#333',
-      marginLeft:10,
-    },
-    searchButton: {
-      marginLeft: 270,
-      marginTop:-50,
-      marginBottom: 18,
-      width: 20
-    }
-    
-  
+  },
+  filtersIcon: {
+    fontSize: 20,
+    color: 'white',
+  },
+  filtersText: {
+    color: 'white',
+    marginLeft: 2.5,
+  },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    padding: 10,
+    borderRadius: 15,
+    width: 120,
+    marginLeft: 185,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginTop: -39,
+    marginBottom: 8,
+  },
+  searchBarInputContainer: {
+    width: 290,
+    height: 30,
+    borderWidth: 0,
+    marginBottom: 10,
+    padding: 10,
+    marginTop: 20,
+    marginLeft: 20,
+    borderRadius: 15,
+    default: 'ios',
+  },
+  searchBarContainer: {
+    backgroundColor: 'transparent',
+  },
+  botoOrder: {
+    marginLeft: 20,
+    marginRight: -40,
+  },
+  botoOrder2: {
+    marginLeft: 6,
+    marginRight: -40,
+  },
+
+  viewStyle: {
+    marginTop: 70,
+  },
+  scrollStyle: {
+    marginBottom: 100,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: -100,
+    backgroundColor: 'white',
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'white',
+  },
+
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    width: '45%',
+    alignItems: 'center',
+    borderColor: 'black'
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+    marginLeft: 10,
+  },
+  searchButton: {
+    marginLeft: 270,
+    marginTop: -50,
+    marginBottom: 18,
+    width: 20
+  }
+
+
 });
