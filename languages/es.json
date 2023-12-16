@@ -51,8 +51,9 @@
     "User": "Usuario"
   },
   "Search": {
+    "Search": "Buscar",
     "Busca": "Buscar...",
-    "Filtres": "Filtros",
+    "Order": "Ordenar",
     "Mapa": "Ver mapa"
   },
   "Event": {
