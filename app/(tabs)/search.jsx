@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
   searchBarInputContainer: {
     height: 30,
     borderWidth: 0,
-    padding: 10,
     borderRadius: 10,
     default: 'ios',
   },
