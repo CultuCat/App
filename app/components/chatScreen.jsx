@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text,StyleSheet, Image, TouchableOpacity, Modal, TextInput, Keyboard, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 
 const ChatScreen = ({ user, userLId, onBack}) => {
@@ -9,6 +10,7 @@ const ChatScreen = ({ user, userLId, onBack}) => {
   const uId = userLId; //Local user id
   const uIdR = user.id; //Remote user id
   const [url, setUrl] = useState('https://cultucat.hemanuelpc.es');
+  const { t } = useTranslation();
 
 
   const fetchMessages = async () => {
@@ -47,7 +49,6 @@ const ChatScreen = ({ user, userLId, onBack}) => {
       }
       setNewMessage('');
       fetchMessages(uId,uIdR,url);
-
     } catch (error) {
       console.error('Error submitting message:', error);
     }
@@ -96,7 +97,7 @@ const ChatScreen = ({ user, userLId, onBack}) => {
       <View style={styles.chatbox}>
         <TextInput
             multiline
-            placeholder={"Type something..."}
+            placeholder={t('Chat.Type_here')}
             style={styles.input}
             value={newMessage}
             onChangeText={(text) => setNewMessage(text)}
@@ -140,19 +141,21 @@ const styles = StyleSheet.create({
 		  justifyContent: "space-between",
 		  alignItems: "center",
 		  flexDirection: "row",
-		  paddingVertical: 10,
+		  paddingVertical: 20,
       paddingBottom: 30,
       backgroundColor: "#ff6961",
     },
     input: {
       backgroundColor: "white",
-      paddingLeft: 20,
+      padding: 20,
+      paddingTop: 10,
+      paddingBottom: 10,
       marginRight: 20,
       marginLeft: 20,
       color: "grey",
       flex: 3,
       fontSize: 15,
-      height: 30,
+      height: 40,
       alignSelf: "center",
       borderRadius: 20,
     },

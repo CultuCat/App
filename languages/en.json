@@ -105,6 +105,7 @@
     "Enviar": "Submit Comment"
   },
   "Chat": {
-    "Chat": "Chat"
+    "Chat": "Chat",
+    "Type_here": "Type here..."
   }
 }

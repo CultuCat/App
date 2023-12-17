@@ -105,6 +105,7 @@
     "Enviar": "Enviar Comentario"
   },
   "Chat": {
-    "Chat": "Chats"
+    "Chat": "Chats",
+    "Type_here": "Escribe aquí..."
   }
 }
