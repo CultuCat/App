@@ -51,8 +51,9 @@
     "User": "Usuario"
   },
   "Search": {
+    "Search": "Buscar",
     "Busca": "Buscar...",
-    "Filtres": "Filtros",
+    "Order": "Ordenar",
     "Mapa": "Ver mapa"
   },
   "Event": {
@@ -106,5 +107,9 @@
   },
   "Chat": {
     "Chat": "Chats"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escoge los tags por los que quieres filtrar"
   }
 }

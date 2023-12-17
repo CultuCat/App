@@ -51,8 +51,9 @@
     "User": "User"
   },
   "Search": {
+    "Search": "Search",
     "Busca": "Search...",
-    "Filtres": "Filters",
+    "Order": "Order",
     "Mapa": "View map"
   },
   "Event": {
@@ -106,5 +107,9 @@
   },
   "Chat": {
     "Chat": "Chat"
+  },
+  "Filters": {
+    "Filter": "Filter",
+    "Tags": "Choose the tags you want to filter by"
   }
 }
