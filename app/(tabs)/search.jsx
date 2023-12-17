@@ -7,33 +7,10 @@ import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import TagModal from '../components/tagModal.jsx';
+import EventPreview from '../components/eventPreview.jsx';
 
 export default function Page() {
   const { t } = useTranslation();
-
-  const Item = ({ title, ubicacion, data, image, id }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePressEvent(id)}>
-      {image ? (
-        <Image source={{ uri: image.uri }} style={styles.image} />
-      ) : (
-        <Image
-          source={{
-            uri:
-              'https://th.bing.com/th/id/R.78f9298564b10c30b16684861515c670?rik=zpQaqTcSRIc4jA&pid=ImgRaw&r=0',
-          }}
-          style={styles.image}
-        />
-      )}
-      <View style={styles.itemText}>
-        <Text style={styles.titleItem}>{title}</Text>
-        <Text style={styles.data}>{data}</Text>
-        <Text style={styles.ubicacion}>{ubicacion}</Text>
-        <TouchableOpacity>
-          <MaterialIcons style={styles.ticket} name="local-activity" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [data, setData] = useState([]);
@@ -230,16 +207,17 @@ export default function Page() {
         ) : (
           <FlatList
             data={data}
-            renderItem={({ item, index }) => (
-              <Item
-                title={item.nom}
+            renderItem={({ item }) => (
+              <EventPreview
+                event={item.nom}
                 data={item.dataIni}
-                ubicacion={item.espai.nom}
-                image={item.imatges_list && item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : null}
-                id={item.id}
+                espai={item.espai.nom}
+                imatge={item.imatges_list[0]}
+                onPress={() => handlePressEvent(item.id)}
               />
             )}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingHorizontal: '5%' }}
             onEndReached={loadMoreData}
             onEndReachedThreshold={0.99}
           />
