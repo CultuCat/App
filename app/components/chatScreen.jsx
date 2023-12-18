@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text,StyleSheet, Image, TouchableOpacity, Modal, TextInput, Keyboard, FlatList } from 'react-native';
+import { View, Text,StyleSheet, Image, TouchableOpacity, Modal, TextInput, Keyboard, FlatList, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -54,6 +54,8 @@ const ChatScreen = ({ user, userLId, onBack}) => {
     }
   };;
 
+
+
   const renderMessageItem = ({ item }) => {
     const isSentByUser = item.user_from === uId;
 
@@ -73,39 +75,44 @@ const ChatScreen = ({ user, userLId, onBack}) => {
       animationType="none"
       onRequestClose={onBack}
     >
-      <View style={styles.userInfo}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={20} color="white" />
-        </TouchableOpacity>
-        <View style={styles.userDetails}>
-            <Image source={{ uri: user.imatge }} style={styles.userImage} />
-            <Text style={styles.userName}>{user.first_name} </Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} 
+      >
+        <View style={styles.userInfo}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <Ionicons name="chevron-back" size={20} color="white" />
+          </TouchableOpacity>
+          <View style={styles.userDetails}>
+              <Image source={{ uri: user.imatge }} style={styles.userImage} />
+              <Text style={styles.userName}>{user.first_name} </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.messagesBox}>
-        <FlatList
-          data={messages}
-          renderItem={renderMessageItem}
-          keyExtractor={(item) => item.id.toString()}
-        />
-        <TouchableOpacity
-          onPress={handleScreenTap}
-        >
-        </TouchableOpacity>
-      </View>
-      
-      <View style={styles.chatbox}>
-        <TextInput
-            multiline
-            placeholder={t('Chat.Type_here')}
-            style={styles.input}
-            value={newMessage}
-            onChangeText={(text) => setNewMessage(text)}
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Ionicons name="send" size={20} color='white'/>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.messagesBox}>
+          <FlatList
+            data={messages}
+            renderItem={renderMessageItem}
+            keyExtractor={(item) => item.id.toString()}
+          />
+          <TouchableOpacity
+            onPress={handleScreenTap}
+          >
+          </TouchableOpacity>
+        </View>
+        <View style={styles.chatbox}>
+          <TextInput
+              multiline
+              placeholder={t('Chat.Type_here')}
+              style={styles.input}
+              value={newMessage}
+              onChangeText={(text) => setNewMessage(text)}
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+            <Ionicons name="send" size={20} color='white'/>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
     },
     sendButton: {
-      backgroundColor: "blue",
+      backgroundColor: "#c0c2c2",
       borderRadius: 50,
       height: 40,
       width: 40,
