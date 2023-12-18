@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import TagModal from '../components/tagModal.jsx';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function Page() {
   const { t } = useTranslation();
@@ -42,6 +43,69 @@ export default function Page() {
   const [hasMoreData, setHasMoreData] = useState(true);
   const [tagVisible, setTagVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [orderOption, setOrderOption] = useState('dataIni');
+  const [items, setItems] = useState([
+    { label: 'Data asc', value: 'dataIni',  icon: () => (
+      <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="black" />
+   )
+    },
+    { label: 'Data desc',  value: 'dataFi', icon: () => (
+      <MaterialCommunityIcons name="order-numeric-descending" size={24} color="black" />
+   )
+    },
+    { label: 'Nom asc' ,value: 'nomasc', icon: () => (
+    <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
+    )
+  },
+    { label: 'Nom desc' ,value: 'nomdesc',icon: () => (
+      <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
+      )
+    },
+  ]);
+
+  const [orderDirection, setOrderDirection] = useState('asc');
+
+  const handleOrderChange = (option) => {
+    setOrderOption(option);
+    setOrderDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+
+        const orderingParam = `ordering=${orderDirection === 'desc' ? '-' : ''}${orderOption}`;
+        const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+
+        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${orderingParam}&${tagsQueryString}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const dataFromServer = await response.json();
+          setData(dataFromServer.results);
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [orderOption, orderDirection, page, search, selectedTags]);
+
 
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
@@ -195,19 +259,47 @@ export default function Page() {
             platform="ios"
           />
         </View>
-        <View style={{ marginHorizontal: '5%' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
-            <TouchableOpacity style={styles.filtersButton}>
-              <Ionicons name="ios-reorder-three-outline" size={16} color="white" />
-              <Text style={{ color: 'white' }}> {t('Search.Order')}</Text>
-            </TouchableOpacity>
+        <View style={{ marginHorizontal: '5%', zIndex: '100' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '6%' , zIndex: '100'}}>
+          <DropDownPicker
+            defaultValue={orderOption}
+            containerStyle={{
+              height: 40,
+              width: 120,
+              marginRight: 10,
+            }}
+            style={{ backgroundColor: '#ff6961',minHeight: 40,}}
+            labelStyle={{
+              fontSize: 14,
+              textAlign: 'left',
+              color: 'white',
+              
+            }}
+            dropDownStyle={{ backgroundColor: '#fafafa'}}
+            onChangeItem={(item) => {
+              handleOrderChange(item.value);
+              setValue(item.value);
+              setOpen(false);
+            }}
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="Ordenar"
+            placeholderStyle={{ color: "black" }}
+            placeholderIcon={() => (
+              <MaterialCommunityIcons name="order-alphabetical-descending" size={60} color="black" />
+            )}
+          />
             <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
-              <Ionicons name="ios-location-outline" size={16} color="black" />
               <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
+              <Ionicons name="ios-location-outline" size={16} color="black" marginLeft="4%" />
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
-            <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
+            <TouchableOpacity style={{ marginRight: '1%' }} onPress={handleOpenTags}>
               <Chip text='Tags' color="#87ceec" />
             </TouchableOpacity>
             <TagModal
@@ -224,12 +316,14 @@ export default function Page() {
               <Chip text='Data' color="#87ceec" />
             </TouchableOpacity>
           </View>
+          
         </View>
         {isloading ? (
           <ActivityIndicator />
         ) : (
           <FlatList
             data={data}
+            ListHeaderComponentStyle={{ zIndex: 10 }}
             renderItem={({ item, index }) => (
               <Item
                 title={item.nom}
