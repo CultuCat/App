@@ -111,5 +111,12 @@
   "Filters": {
     "Filter": "Filtrar",
     "Tags": "Escoge los tags por los que quieres filtrar"
+  },
+  "Home": {
+    "Welcome": "Bienvenido",
+    "Today": "Hoy",
+    "Week": "Esta semana",
+    "Free": "Gratis",
+    "Trendy": "Popular"
   }
 }

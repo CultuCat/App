@@ -26,6 +26,11 @@ export default function Layout() {
         options={{
           headerShown: false,
         }} />
+        <Stack.Screen
+        name="eventList"
+        options={{
+          headerShown: false,
+        }} />
     </Stack>
   );
 }

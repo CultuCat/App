@@ -111,5 +111,12 @@
   "Filters": {
     "Filter": "Filtrar",
     "Tags": "Escull els tags pels que vols filtrar"
+  },
+  "Home": {
+    "Welcome": "Benvingut",
+    "Today": "Avui",
+    "Week": "Aquesta setmana",
+    "Free": "Gratuït",
+    "Trendy": "Popular"
   }
 }
