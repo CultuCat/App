@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { View, Text,StyleSheet, Image, TouchableOpacity, Modal, TextInput, Keyboard, FlatList, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Pusher} from '@pusher/pusher-websocket-react-native';
-
 
 const ChatScreen = ({ user, userLId, onBack}) => {
   const [messages, setMessages] = useState([]);
@@ -29,7 +27,15 @@ const ChatScreen = ({ user, userLId, onBack}) => {
 
   useEffect(() => {
     fetchMessages();
+    const intervalId = setInterval(() => {
+      fetchMessages(); 
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, [uId, uIdR, url]);
+
+
+
 
   const sendMessage = async () => {
     try {
@@ -175,11 +181,10 @@ const styles = StyleSheet.create({
     },
     messagesBox: {
       flex: 1,
-      padding: 10,
-      paddingTop: 20,
+      paddingHorizontal: 10,
+      marginTop: 10,
     },
     messageContainer: {
-      maxWidth: '80%',
       borderRadius: 8,
       padding: 8,
       marginBottom: 8,
