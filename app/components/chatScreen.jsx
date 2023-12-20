@@ -182,12 +182,11 @@ const styles = StyleSheet.create({
     messagesBox: {
       flex: 1,
       paddingHorizontal: 10,
-      marginTop: 10,
     },
     messageContainer: {
       borderRadius: 8,
       padding: 8,
-      marginBottom: 8,
+      marginTop: 8,
     },
     sentMessage: {
       alignSelf: 'flex-end',
