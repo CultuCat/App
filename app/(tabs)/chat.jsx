@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
 import ChatScreen from '../components/chatScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 
 const Chat = () => {
@@ -11,6 +12,7 @@ const Chat = () => {
   const [friends, setFriends] = useState([]);
   const [uIdR, setUIdR] = useState(''); // Remote user id
   const [url, setUrl] = useState('https://cultucat.hemanuelpc.es');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const getLocalUser = async () => {
@@ -76,6 +78,9 @@ const Chat = () => {
           data={friends}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            <Text style={styles.noAmics}>{t('Chat.Afegir_amic')}</Text>
+          )}
         />
       )}
     </>
@@ -105,6 +110,12 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       color: '#ff6961'
   },
+  noAmics: {
+    flex: 1, 
+    alignSelf: 'center',
+    fontSize: 18,
+    paddingTop: 20
+  }
 });
 
 
