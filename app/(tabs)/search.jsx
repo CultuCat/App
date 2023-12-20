@@ -48,18 +48,18 @@ export default function Page() {
   const [orderOption, setOrderOption] = useState('dataIni');
   const [items, setItems] = useState([
     { label: 'Data asc', value: 'dataIni',  icon: () => (
-      <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="black" />
+      <MaterialCommunityIcons value= "dataIni"name="order-numeric-ascending" size={24} color="black" />
    )
     },
     { label: 'Data desc',  value: 'dataFi', icon: () => (
-      <MaterialCommunityIcons name="order-numeric-descending" size={24} color="black" />
+      <MaterialCommunityIcons value= "-dataIni" name="order-numeric-descending" size={24} color="black" />
    )
     },
-    { label: 'Nom asc' ,value: 'nomasc', icon: () => (
+    { label: 'Nom asc' ,value: 'nom', icon: () => (
     <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
     )
   },
-    { label: 'Nom desc' ,value: 'nomdesc',icon: () => (
+    { label: 'Nom desc' ,value: '-nom',icon: () => (
       <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
       )
     },
@@ -67,22 +67,16 @@ export default function Page() {
 
   const [orderDirection, setOrderDirection] = useState('asc');
 
-  const handleOrderChange = (option) => {
-    setOrderOption(option);
-    setOrderDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-
-        const orderingParam = `ordering=${orderDirection === 'desc' ? '-' : ''}${orderOption}`;
+        
         const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
 
-        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${orderingParam}&${tagsQueryString}`, {
+        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&ordering=${value}&${tagsQueryString}`, {
           method: 'GET',
           headers: {
             'Authorization': `Token ${userToken}`,
@@ -114,7 +108,7 @@ export default function Page() {
       setLoading(true);
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const nextPage = page + 1;
-      const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}`;
+      const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}&ordering=${value}`;
       const response = await fetch(url);
       const newData = await response.json();
 
@@ -243,8 +237,25 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
+  // Elimina el useEffect que estaba dentro de handleOrderChange
+  const handleOrderChange = (selectedValue) => {
+    setValue(selectedValue);
+  
+    // Hacer la llamada al backend cuando la opción cambia
+    fetch(`https://cultucat.hemanuelpc.es/events/?ordering=${selectedValue}`)
+      .then(response => response.json())
+      .then(data => {
+        // Actualizar el estado 'data' con los datos obtenidos del backend
+        setData(data.results);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  };
+  
+
+
+  
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
@@ -276,7 +287,13 @@ export default function Page() {
               
             }}
             dropDownStyle={{ backgroundColor: '#fafafa'}}
+            onSelectItem={(item) => {
+              console.log(item);
+              setValue(item.value);
+              handleOrderChange(item.value);
+            }}
             onChangeItem={(item) => {
+              setValue(item.value);
               handleOrderChange(item.value);
               setValue(item.value);
               setOpen(false);
