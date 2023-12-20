@@ -55,7 +55,7 @@ const ChatScreen = ({ user, userLId, onBack}) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       setNewMessage('');
-      fetchMessages(uId,uIdR,url);
+      fetchMessages();
     } catch (error) {
       console.error('Error submitting message:', error);
     }
