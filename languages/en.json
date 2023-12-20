@@ -106,6 +106,7 @@
   },
   "Chat": {
     "Chat": "Chat",
-    "Type_here": "Type here..."
+    "Type_here": "Type here...",
+    "Afegir_amic": "Add a friend and start chating"
   }
 }

@@ -106,6 +106,7 @@
   },
   "Chat": {
     "Chat": "Chats",
-    "Type_here": "Escribe aquí..."
+    "Type_here": "Escribe aquí...",
+    "Afegir_amic": "Añade un amigo o amiga y empieza a chatear"
   }
 }
