@@ -239,15 +239,13 @@ export default function Page() {
     }
   }
 
-  // Elimina el useEffect que estaba dentro de handleOrderChange
   const handleOrderChange = (selectedValue) => {
     setValue(selectedValue);
   
-    // Hacer la llamada al backend cuando la opción cambia
     fetch(`https://cultucat.hemanuelpc.es/events/?ordering=${selectedValue}`)
       .then(response => response.json())
       .then(data => {
-        // Actualizar el estado 'data' con los datos obtenidos del backend
+
         setData(data.results);
       })
       .catch(error => console.error('Error fetching data:', error));
