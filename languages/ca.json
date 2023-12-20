@@ -51,8 +51,9 @@
     "User": "Usuari"
   },
   "Search": {
+    "Search": "Cerca",
     "Busca": "Cerca...",
-    "Filtres": "Filtres",
+    "Order": "Ordenar",
     "Mapa": "Veure mapa"
   },
   "Event": {
@@ -108,5 +109,16 @@
     "Chat": "Xats",
     "Type_here": "Escriu aquí...",
     "Afegir_amic": "Afegeix a un amic o amiga i comença a xatejar"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escull els tags pels que vols filtrar"
+  },
+  "Home": {
+    "Welcome": "Benvingut",
+    "Today": "Avui",
+    "Week": "Aquesta setmana",
+    "Free": "Gratuït",
+    "Trendy": "Popular"
   }
 }
