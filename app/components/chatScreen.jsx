@@ -32,7 +32,7 @@ const ChatScreen = ({ user, userLId, onBack}) => {
     }, 5000);
 
     return () => clearInterval(intervalId);
-  }, [uId, uIdR, url]);
+  }, []);
 
 
 
