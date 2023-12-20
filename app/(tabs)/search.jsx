@@ -7,7 +7,7 @@ import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import TagModal from '../components/tagModal.jsx';
-import DropDownPicker from 'react-native-dropdown-picker';
+import DropdownOrder from '../components/dropdownOrder.jsx'; 
 
 export default function Page() {
   const { t } = useTranslation();
@@ -270,44 +270,7 @@ export default function Page() {
         </View>
         <View style={{ marginHorizontal: '5%', zIndex: '100' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '6%' , zIndex: '100'}}>
-          <DropDownPicker
-            defaultValue={orderOption}
-            containerStyle={{
-              height: 40,
-              width: 120,
-              marginRight: 10,
-            }}
-            style={{ backgroundColor: '#ff6961',minHeight: 40,}}
-            labelStyle={{
-              fontSize: 14,
-              textAlign: 'left',
-              color: 'white',
-              
-            }}
-            dropDownStyle={{ backgroundColor: '#fafafa'}}
-            onSelectItem={(item) => {
-              console.log(item);
-              setValue(item.value);
-              handleOrderChange(item.value);
-            }}
-            onChangeItem={(item) => {
-              setValue(item.value);
-              handleOrderChange(item.value);
-              setValue(item.value);
-              setOpen(false);
-            }}
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
-            placeholder="Ordenar"
-            placeholderStyle={{ color: "black" }}
-            placeholderIcon={() => (
-              <MaterialCommunityIcons name="order-alphabetical-descending" size={60} color="black" />
-            )}
-          />
+          <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
             <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
               <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
               <Ionicons name="ios-location-outline" size={16} color="black" marginLeft="4%" />
