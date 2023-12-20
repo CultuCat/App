@@ -51,8 +51,9 @@
     "User": "Usuario"
   },
   "Search": {
+    "Search": "Buscar",
     "Busca": "Buscar...",
-    "Filtres": "Filtros",
+    "Order": "Ordenar",
     "Mapa": "Ver mapa"
   },
   "Event": {
@@ -108,5 +109,16 @@
     "Chat": "Chats",
     "Type_here": "Escribe aquí...",
     "Afegir_amic": "Añade un amigo o amiga y empieza a chatear"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escoge los tags por los que quieres filtrar"
+  },
+  "Home": {
+    "Welcome": "Bienvenido",
+    "Today": "Hoy",
+    "Week": "Esta semana",
+    "Free": "Gratis",
+    "Trendy": "Popular"
   }
 }

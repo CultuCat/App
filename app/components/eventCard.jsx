@@ -23,7 +23,7 @@ const EventCard = ({ event, data, espai, imatge, onPress }) => {
         borderRadius: 15,
         overflow: 'hidden',
         marginHorizontal: '5%',
-        marginVertical: '2,5%',
+        marginVertical: '2.5%',
         width: '90%',
       }}
     >
