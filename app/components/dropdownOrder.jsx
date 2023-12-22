@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const DropdownOrder = ({ defaultValue, items, onValueChange }) => {
   const [open, setOpen] = useState(false);
@@ -16,7 +15,7 @@ const DropdownOrder = ({ defaultValue, items, onValueChange }) => {
           width: 120,
           marginRight: 10,
         }}
-        style={{ backgroundColor: '#ff6961', minHeight: 40 }}
+        style={{ backgroundColor: '#ff6961', minHeight: 40, borderRadius:10 }}
         labelStyle={{
           fontSize: 14,
           textAlign: 'left',
@@ -34,9 +33,6 @@ const DropdownOrder = ({ defaultValue, items, onValueChange }) => {
         setValue={setValue}
         placeholder="Ordenar"
         placeholderStyle={{ color: 'black' }}
-        placeholderIcon={() => (
-          <MaterialCommunityIcons name="order-alphabetical-descending" size={60} color="black" />
-        )}
       />
     </View>
   );

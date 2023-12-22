@@ -44,7 +44,7 @@ export default function Page() {
   const [tagVisible, setTagVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('dataIni');
   const [orderOption, setOrderOption] = useState('dataIni');
   const [items, setItems] = useState([
     { label: 'Data asc', value: 'dataIni',  icon: () => (
@@ -65,7 +65,6 @@ export default function Page() {
     },
   ]);
 
-  const [orderDirection, setOrderDirection] = useState('asc');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +75,7 @@ export default function Page() {
         
         const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
 
-        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&ordering=${value}&${tagsQueryString}`, {
+        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${value}`, {
           method: 'GET',
           headers: {
             'Authorization': `Token ${userToken}`,
@@ -98,7 +97,7 @@ export default function Page() {
     };
 
     fetchData();
-  }, [orderOption, orderDirection, page, search, selectedTags]);
+  }, [orderOption, page, search, selectedTags]);
 
 
   const loadMoreData = async () => {
@@ -258,7 +257,7 @@ export default function Page() {
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
         <Text style={styles.title}>{t('Search.Search')}</Text>
-        <View style={{ marginHorizontal: '3%' }}>
+        <View style={{ marginHorizontal: '3%' , marginBottom: '3%'}}>
           <SearchBar
             inputContainerStyle={styles.searchBarInputContainer}
             placeholder={t('Search.Busca')}
@@ -269,7 +268,7 @@ export default function Page() {
           />
         </View>
         <View style={{ marginHorizontal: '5%', zIndex: '100' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '6%' , zIndex: '100'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' , zIndex: '100'}}>
           <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
             <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
               <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
@@ -277,7 +276,7 @@ export default function Page() {
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
-            <TouchableOpacity style={{ marginRight: '1%' }} onPress={handleOpenTags}>
+            <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
               <Chip text='Tags' color="#87ceec" />
             </TouchableOpacity>
             <TagModal
@@ -287,9 +286,6 @@ export default function Page() {
               selectedTags={selectedTags}
               setSelectedTags={setSelectedTags}
             />
-            <TouchableOpacity style={{ marginRight: '2%' }}>
-              <Chip text='Preu' color="#87ceec" />
-            </TouchableOpacity>
             <TouchableOpacity>
               <Chip text='Data' color="#87ceec" />
             </TouchableOpacity>
