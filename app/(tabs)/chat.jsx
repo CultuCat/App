@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native'
 import ChatScreen from '../components/chatScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Divider from '../components/divider';
@@ -33,6 +33,7 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchFriends = async () => {
+      setloading(true);
       try {
         const response = await fetch(`${url}/users/${uId}/`);
         if (!response.ok) {
@@ -40,6 +41,7 @@ const Chat = () => {
         }
         const data = await response.json();
         setFriends(data.friends);
+        setloading(false);
       } catch (error) {
         console.error('Error fetching friends:', error);
       }
