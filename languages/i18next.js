@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 
 export const languageResources = {
     en: { translation: en },
-    ca: { translation: ca },
+    cat: { translation: ca },
     es: { translation: es },
 };
 
@@ -80,8 +80,8 @@ const useUserData = () => {
 
 i18next.use(initReactI18next).init({
     compatibilityJSON: 'v3',
-    lng: 'ca',
-    fallbackLng: 'ca',
+    lng: 'cat',
+    fallbackLng: 'cat',
     resources: languageResources,
 });
 
