@@ -75,7 +75,7 @@
   },
   "Index": {
     "Eror_credencials": "Usuari o contrasenya incorrecte",
-    "Benvingut": "Benvingut",
+    "Benvingut": "Benvingut/da",
     "User": "Nom d'usuari",
     "Password": "Contrasenya"
   },
@@ -115,7 +115,7 @@
     "Tags": "Escull els tags pels que vols filtrar"
   },
   "Home": {
-    "Welcome": "Benvingut",
+    "Welcome": "Benvingut/da",
     "Today": "Avui",
     "Week": "Aquesta setmana",
     "Free": "Gratuït",

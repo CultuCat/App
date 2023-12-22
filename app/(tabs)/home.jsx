@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import EventCard from '../components/eventCard.jsx';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import initializeI18Next from '../../languages/i18next.js';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors.js';
 
