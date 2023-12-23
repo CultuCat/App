@@ -259,8 +259,8 @@ export default function Page() {
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' , zIndex: '100'}}>
           <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
             <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
+            <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
               <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
-              <Ionicons name="ios-location-outline" size={16} color="black" marginLeft="4%" />
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
@@ -299,6 +299,7 @@ export default function Page() {
             contentContainerStyle={{ paddingHorizontal: '5%' }}
             onEndReachedThreshold={0.1}
             onEndReached={loadMoreData}
+
           />
         )}
       </SafeAreaView>
