@@ -6,10 +6,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 
+
+
+
 export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('')
   const [user, setUser] = useState(null);
   const { t } = useTranslation();
 
@@ -215,7 +218,6 @@ export default function Page() {
       imatge: pickerResult.assets[0].uri,
     }));
   };
-
   const handleSaveChanges = async () => {
     try {
       const userID = await getLocalUser();
@@ -232,20 +234,25 @@ export default function Page() {
 
       const userToken = JSON.parse(userTokenString).token;
 
-      const updatedProfile = {
-        first_name: first_name || user.first_name,
-        bio: bio || user.bio,
-        username: username || user.username,
-        imatge: user.imatge,  // Mantén la referencia a la imagen
-      };
+      const updatedProfile = new FormData();
+
+      updatedProfile.append('first_name', first_name || user.first_name);
+      updatedProfile.append('bio', bio || user.bio);
+      updatedProfile.append('username', username || user.username);
+      console.log(user.imatge);
+      if (user.imatge) {
+        const uri = Platform.OS === 'android' ? user.imatge : user.imatge.replace('file://', '');
+        updatedProfile.append('imatge', { uri, name: 'dd.jpeg', type: 'image/jpeg' });
+        console.log('URI:', uri);
+    }
 
       const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Token ${userToken}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(updatedProfile),
+        body: updatedProfile,
       });
 
       if (!response.ok) {
@@ -254,6 +261,7 @@ export default function Page() {
 
       const updatedUserData = await response.json();
       setUser(updatedUserData);
+      
     } catch (error) {
       console.error('Error updating user data:', error);
     }
@@ -313,6 +321,8 @@ export default function Page() {
           <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
         </TouchableOpacity>
       </Link>
+      
     </View>
+    
   );
 }
