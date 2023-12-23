@@ -28,7 +28,7 @@ export default function Page() {
       <MaterialCommunityIcons value= "dataIni"name="order-numeric-ascending" size={24} color="black" />
    )
     },
-    { label: 'Data desc',  value: 'dataFi', icon: () => (
+    { label: 'Data desc',  value: '-dataIni', icon: () => (
       <MaterialCommunityIcons value= "-dataIni" name="order-numeric-descending" size={24} color="black" />
    )
     },
