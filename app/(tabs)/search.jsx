@@ -44,37 +44,37 @@ export default function Page() {
 
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const userTokenString = await AsyncStorage.getItem("@user");
-        const userToken = JSON.parse(userTokenString).token;
-        
-        const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const userTokenString = await AsyncStorage.getItem("@user");
+      const userToken = JSON.parse(userTokenString).token;
 
-        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${value}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${userToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
 
-        if (response.ok) {
-          const dataFromServer = await response.json();
-          setData(dataFromServer.results);
-        } else {
-          throw new Error('Error en la solicitud');
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${value}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const dataFromServer = await response.json();
+        setData(dataFromServer.results);
+      } else {
+        throw new Error('Error en la solicitud');
       }
-    };
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [orderOption, page, search, selectedTags]);
+  fetchData();
+}, [orderOption, page, search, selectedTags]);
 
 
   const loadMoreData = async () => {
@@ -149,7 +149,7 @@ export default function Page() {
 
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
 
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${value}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`,
@@ -188,7 +188,7 @@ export default function Page() {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${value}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`,
@@ -215,21 +215,32 @@ export default function Page() {
     }
   }
 
-  const handleOrderChange = (selectedValue) => {
+  const handleOrderChange = async (selectedValue) => {
+  try {
+    setIsLoading(true);
     setValue(selectedValue);
-  
-    fetch(`https://cultucat.hemanuelpc.es/events/?ordering=${selectedValue}`)
-      .then(response => response.json())
-      .then(data => {
+    setPage(1);
+    setHasMoreData(true);
 
-        setData(data.results);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  };
-  
+    const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+    const url = `https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${selectedValue}`;
+    const response = await fetch(url);
+    const dataFromServer = await response.json();
 
+    if (response.ok) {
+      setData(dataFromServer.results);
+    } else {
+      console.error('Error en la solicitud:', response.status, response.statusText);
+      setHasMoreData(false);
+    }
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    setHasMoreData(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-  
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
@@ -286,8 +297,8 @@ export default function Page() {
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: '5%' }}
+            onEndReachedThreshold={0.1}
             onEndReached={loadMoreData}
-            onEndReachedThreshold={0.99}
           />
         )}
       </SafeAreaView>
