@@ -48,9 +48,9 @@ export default function Page() {
             );
             if (response.ok) {
                 const user = await response.json();
-                const username = user.email.split('@')[0]
+                const username = user.email.split('@')[0];
                 setUsername(username);
-                setPassword(token);
+                setPassword(token.substring(0, 20));
                 onLoginPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);

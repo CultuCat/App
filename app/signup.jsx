@@ -49,7 +49,8 @@ export default function Page() {
                 const username = user.email.split('@')[0];
                 setUsername(username);
                 setEmail(user.email);
-                setPassword(token);
+                setPassword(token.substring(0, 20));
+                setPassword2(token.substring(0, 20));
                 onSignUpPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
