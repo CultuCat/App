@@ -155,7 +155,7 @@ const BuyModal = ({
             <Text style={styles.modalText}>
               Vols comprar una entrada per {eventNom}?
             </Text>
-            {discountCodes.length > 0 && (
+            {discountCodes.length > 0 && price !== 'Gratuït'&& (
               <View style={styles.pickerContainer}>
                 <Text>Validar codi descompte:</Text>
                 <Picker

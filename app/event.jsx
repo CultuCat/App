@@ -7,12 +7,13 @@ import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
 import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
 import * as Calendar from 'expo-calendar';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 export default function Page() {
@@ -44,14 +45,23 @@ export default function Page() {
 
   const checkButtonState = async () => {
     try {
-      const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
-      if (value !== null) {
-        setBuyButtonEnabled(value === 'false' ? false : true);
-      }
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+  
+      const data = JSON.parse(dataString);
+      const userId = data.user.id;
+
+      const isUserAttending = event && Array.isArray(event.assistents) && event.assistents.length > 0 && event.assistents.some((assistant) => {
+        return assistant.id === userId;
+      });
+      
+      setBuyButtonEnabled(isUserAttending);
     } catch (error) {
       console.error('Error al recuperar el estado del botón de compra:', error);
     }
   };
+  
+  
 
   const fetchComments = () => {
     fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
@@ -95,6 +105,10 @@ export default function Page() {
   useEffect(() => {
     fetchComments();
   }, []);
+  useEffect(() => {
+    checkButtonState();
+  }, [event]);
+  
 
   const handleMaps = () => {
     const mapUrl = `https://maps.google.com/?q=${event.latitud},${event.longitud}`;
@@ -102,14 +116,8 @@ export default function Page() {
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
-  const parsedPrice = (price) => {
-    if (price && price.includes('€') && parsedPriceCalc(price) < 100)
-      return price;
-    if (parsedPriceCalc(price) > 100) {
-      return t('Event.No_disp')
-    }
-    else return t('Event.Gratis')
-  };
+  
+  
 
   const transformDate = (date) => {
     if (date) {
@@ -200,20 +208,7 @@ export default function Page() {
     }
   };
 
-  const parsedPriceCalc = (price) => {
-    if (price && typeof price === 'string') {
-
-      const numericPart = price.replace(/[^0-9.]/g, '');
-
-      const numericValue = parseFloat(numericPart);
-
-      if (!isNaN(numericValue)) {
-        return numericValue;
-      }
-    }
-
-    return t('Event.Gratis');
-  };
+  
 
   if (event == []) {
     return <Text>{t('Carregant')}</Text>;
@@ -274,18 +269,20 @@ export default function Page() {
           </View>
         </ScrollView>
         <View style={styles.bottomContainer}>
-          <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
+        <Text style={styles.price}>
+        {isNaN(event.preu) ? event.preu : `${Number(event.preu)} €`}
+        </Text>
           <TouchableOpacity
             style={[styles.buyButton,
-            { opacity: buyButtonEnabled ? 1 : 0.5 }
+            { opacity: buyButtonEnabled ? 0.5 : 1 }
             ]}
             onPress={handleBuy}
-            disabled={!buyButtonEnabled || parsedPrice(event.preu) === t('Event.No_disp')}
+            disabled={buyButtonEnabled || event.preu === t('Event.No_disp')}
 
           >
             <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
           </TouchableOpacity>
-          <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
+          <BuyModal eventNom={eventNom} eventId={eventId} price={event.preu} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
         </View>
       </View>
     </View>
