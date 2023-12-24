@@ -12,7 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('');
   const [user, setUser] = useState(null);
   const { t } = useTranslation();
 
