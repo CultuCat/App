@@ -6,17 +6,12 @@ import Chip from '../../components/chip.jsx';
 import { ScrollView } from 'react-native';
 import Divider from '../../components/divider';
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RankingModal from '../../components/rankingModal.jsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function ProfileFriend() {
   const [user, setUser] = useState(null);
-  const [chips, setChips] = useState(null);
-  const [selectedChipIndex, setSelectedChipIndex] = useState(null);
-  const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const { t } = useTranslation();
   const route = useRoute();
   const userId = route.params.id;
@@ -118,7 +113,7 @@ export default function ProfileFriend() {
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
           >
-            {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
+            { user.tags_preferits.length > 0 ? (
               user.tags_preferits.map((tag, index) => (
                 <TouchableOpacity
                   key={tag.id}
@@ -143,7 +138,7 @@ export default function ProfileFriend() {
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
           >
-            {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
+            {user.espais_preferits.length > 0 ? (
               user.espais_preferits.map((espai, index) => (
                 <TouchableOpacity
                   key={espai.id}
