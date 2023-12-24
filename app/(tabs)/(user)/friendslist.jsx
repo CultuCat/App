@@ -3,19 +3,29 @@ import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Page() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
+  const handlePress = (friendId) => {
+    // Navegar a la pantalla de perfil
+    console.log(friendId);
+    navigation.navigate('profilefriend', { id: friendId });
+  };
+  
 
-  const Item = ({ title, image }) => (
-    <TouchableOpacity style={styles.item}>
+ 
+  const Item = ({ id, username, image }) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
       <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{username}</Text>
       </View>
     </TouchableOpacity>
   );
+    
 
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
@@ -71,12 +81,12 @@ export default function Page() {
         containerStyle={styles.searchBarContainer}
       />
       <FlatList
-        data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.username} image={{ uri: item.imatge }} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      data={filteredData}
+      renderItem={({ item }) => (
+        <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
+      )}
+      keyExtractor={(item) => item.id.toString()}
+    />
     </SafeAreaView>
   );
 }
