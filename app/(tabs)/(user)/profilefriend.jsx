@@ -1,9 +1,7 @@
-import React from 'react';
-import { Text, View, Button, StyleSheet, Image, TouchableOpacity, Alert, Modal, ActivityIndicator, SafeAreaView } from 'react-native';
+import {  ScrollView,Text, View,StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { Link } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
-import { ScrollView } from 'react-native';
 import Divider from '../../components/divider';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
