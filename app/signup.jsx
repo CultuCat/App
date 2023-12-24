@@ -17,6 +17,7 @@ export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
+    const googlePassword = "$W4#yLz2*QsFv@6uG8hJ1pA5nDx@9oP3r";
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
         iosClientId: '852693017999-3bur3t29c1stjg1ft95njoagkjfao394.apps.googleusercontent.com',
@@ -49,8 +50,8 @@ export default function Page() {
                 const username = user.email.split('@')[0];
                 setUsername(username);
                 setEmail(user.email);
-                setPassword(token.substring(0, 20));
-                setPassword2(token.substring(0, 20));
+                setPassword(googlePassword);
+                setPassword2(googlePassword);
                 onSignUpPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
