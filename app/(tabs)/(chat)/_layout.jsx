@@ -7,7 +7,11 @@ export default function Layout() {
       <Stack.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          headerShown: false,
+        }} />
+        <Stack.Screen
+        name="chatScreen"
+        options={{
           headerShown: false,
         }} />
     </Stack>
