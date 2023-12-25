@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, TextInput, Keyboard, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Keyboard, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const ChatScreen = ({ user, userLId, onBack }) => {
+export default function ChatScreen() {
+  const route = useRoute();
+  const { user, uId } = route.params;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const uId = userLId; //Local user id
   const uIdR = user.id; //Remote user id
   const url = 'https://cultucat.hemanuelpc.es';
   const { t } = useTranslation();
-
+  const navigation = useNavigation();
 
   const fetchMessages = async () => {
     try {
@@ -73,18 +75,16 @@ const ChatScreen = ({ user, userLId, onBack }) => {
     Keyboard.dismiss();
   };
 
+
   return (
-    <Modal
-      animationType="none"
-      onRequestClose={onBack}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
-      >
+      <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
         <View style={styles.userInfo}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="ios-chevron-back" size={24} color="white" />
           </TouchableOpacity>
           <View style={styles.userDetails}>
@@ -115,8 +115,8 @@ const ChatScreen = ({ user, userLId, onBack }) => {
             <Ionicons name="send" size={20} color='white' />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -196,5 +196,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default ChatScreen;

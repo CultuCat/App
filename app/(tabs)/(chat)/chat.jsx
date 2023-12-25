@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native'
-import ChatScreen from '../components/chatScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Divider from '../components/divider';
+import Divider from '../../components/divider';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
-  const [visibleUser, setVisibleUser] = useState(false);
   const [uId, setUId] = useState(''); // Local user id
   const [friends, setFriends] = useState([]);
   const [loading, setloading] = useState(false);
   const url = 'https://cultucat.hemanuelpc.es';
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const getLocalUser = async () => {
@@ -52,12 +52,7 @@ const Chat = () => {
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
-    setVisibleUser(true)
-  };
-
-  const handleBackToUsers = () => {
-    setSelectedUser(null);
-    setVisibleUser(false);
+    navigation.navigate('chatScreen', {user, uId})
   };
 
 
@@ -79,8 +74,6 @@ const Chat = () => {
         <Text style={styles.title}>{t('Chat.Chat')}</Text>
         {loading ? (
           <ActivityIndicator />
-        ) : visibleUser ? (
-          <ChatScreen user={selectedUser} userLId={uId} onBack={handleBackToUsers} />
         ) : (
           <FlatList
             data={friends}
