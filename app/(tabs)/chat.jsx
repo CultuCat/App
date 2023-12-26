@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Divider from '../../components/divider';
+import Divider from '../components/divider';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 

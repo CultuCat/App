@@ -31,6 +31,11 @@ export default function Layout() {
         options={{
           headerShown: false,
         }} />
+        <Stack.Screen
+        name="chatScreen"
+        options={{
+          headerShown: false,
+        }} />
     </Stack>
   );
 }
