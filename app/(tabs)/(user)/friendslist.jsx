@@ -71,6 +71,7 @@ export default function Page() {
         containerStyle={styles.searchBarContainer}
       />
       <FlatList
+      style={styles.list}
         data={filteredData}
         renderItem={({ item }) => (
           <Item title={item.username} image={{ uri: item.imatge }} />
@@ -122,4 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 40,
   },
+  list: {
+    marginTop:60,
+  }
 });
