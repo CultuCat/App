@@ -153,4 +153,7 @@ const styles = StyleSheet.create({
   list: {
     marginTop:60,
   }
+  list: {
+    marginTop:60,
+  }
 });
