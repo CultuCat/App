@@ -107,7 +107,9 @@
     "Enviar": "Enviar Comentari"
   },
   "Chat": {
-    "Chat": "Xats"
+    "Chat": "Xats",
+    "Type_here": "Escriu aquí...",
+    "Afegir_amic": "Afegeix a un amic o amiga i comença a xatejar"
   },
   "Filters": {
     "Filter": "Filtrar",

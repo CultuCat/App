@@ -35,6 +35,7 @@ export default function Layout() {
       <Tabs.Screen
         name="chat"
         options={{
+          headerShown: false,
           tabBarIcon: ({ size, color }) => <Ionicons name="ios-chatbox" size={size} color={color} />,
         }} />
       <Tabs.Screen
