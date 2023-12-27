@@ -18,6 +18,9 @@ export default function ProfileFriend() {
   const handleBackToProfile = () => {
     navigation.navigate('user'); 
   };
+  const goBackToFriendList = () => {
+    navigation.goBack();
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -169,6 +172,18 @@ export default function ProfileFriend() {
                 alignItems: 'center',
               }}>
                 <Text style={styles.buttonText}>{t('Tornar al Perfil')}</Text>
+                <Ionicons name="ios-arrow-back" size={16} color="black" />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.userButton}
+              onPress={goBackToFriendList}
+            >
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                <Text style={styles.buttonText}>{t('FriendList')}</Text>
                 <Ionicons name="ios-arrow-back" size={16} color="black" />
               </View>
             </TouchableOpacity>

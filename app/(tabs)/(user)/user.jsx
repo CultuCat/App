@@ -144,21 +144,21 @@ const User = () => {
         return "#bebebe";
       case 3:
         return "#ffd700";
-      default:
+      case -1:
         return "#d2d0d0";
     }
   };
   const getTrofeuIcon = (trofeu) => {
     switch (trofeu.nom) {
-      case "Més esdeveniments":
+      case "Explorador cultural":
         return "trophy-award";
       case "Reviewer":
         return "trophy-outline";
-      case "Parlaner":
+      case "Xerraire":
         return "trophy-variant";
-      case "Coleccionista":
+      case "Col·leccionista d'or":
         return "trophy";
-      case "El més amigable":
+      case "Popular":
         return "trophy-variant-outline";
       default:
         return "trophy-award";
@@ -250,7 +250,8 @@ const User = () => {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginHorizontal: '5%'
+        marginHorizontal: '5%',
+        marginTop:'1%'
       }}>
         <Text style={styles.title}>{t('User.User')}</Text>
         {user ? (<Link href={'/(tabs)/(user)/configuration'} asChild>
@@ -303,12 +304,17 @@ const User = () => {
             <Text style={styles.userCardText}>{user.friends.length}</Text>
           </View>
         </View>
-        <ScrollView>
+        <ScrollView
+        marginTop={15}
+        marginBottom={10}
+        >
           <Text style={styles.titles}>{t('User.Bio')}</Text>
           <Text style={styles.bio}>{user.bio}</Text>
           <Divider />
           <Text style={styles.titles}>{t('User.Tags_favs')}</Text>
           <ScrollView
+            marginTop={10}
+            marginBottom={10}
             horizontal
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
@@ -337,6 +343,8 @@ const User = () => {
             horizontal
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
+            marginTop={10}
+            marginBottom={10}
           >
             {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
               user.espais_preferits.map((espai, index) => (
@@ -361,9 +369,18 @@ const User = () => {
             horizontal
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
+            marginTop={10}
           >
             {trofeus && trofeus
-              .filter((trofeu) => trofeu.level_achived_user !== -1)
+            .sort((trofeu1, trofeu2) => {
+              if (getTrofeuColor(trofeu1) === "#d2d0d0" && getTrofeuColor(trofeu2) !== "#d2d0d0") {
+                return 1;
+              } else if (getTrofeuColor(trofeu1) !== "#d2d0d0" && getTrofeuColor(trofeu2) === "#d2d0d0") {
+                return -1; 
+              } else {
+                return 0;
+              }
+            })
               .map((trofeu, index) => (
                 <TouchableOpacity
                   onPress={() => handleTrofeuPress(index)}
@@ -391,7 +408,9 @@ const User = () => {
                         <Text>Descripció del trofeu:</Text>
                         <Text style={styles.descripcio2}>{trofeu.descripcio}</Text>
                         <Divider />
-                        <Text style={styles.descripcio2}>Nivell {trofeu.level_achived_user}</Text>
+                        <Text style={styles.descripcio2}>
+                        {trofeu.level_achived_user !== -1 ? `Nivell ${trofeu.level_achived_user}` : t('User.Notrophy')}
+                      </Text>     
                         <Button title="Tancar" onPress={toggleModal} />
                       </View>
                     </View>
@@ -443,6 +462,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  
   },
   recuadroRojo: {
     width: '90%',
@@ -515,6 +535,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     marginHorizontal: '5%',
+    marginTop:8,
   },
   botoFletxaTr: {
     width: 10,
@@ -528,21 +549,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: 'white', 
     padding: 20,
     borderRadius: 10,
+    borderColor: 'black', 
+    borderWidth: 1,
     alignItems: 'center',
   },
   trofeunom: {
     fontSize: 20,
-    color: '#ff6961',
+    color: '#87ceec',
     fontWeight: 'bold',
   },
   descripcio2: {
     fontSize: 15,
     fontWeight: 'bold',
+    marginBottom:2,
   },
 });
 

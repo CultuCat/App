@@ -14,7 +14,7 @@ export default function Page() {
     navigation.navigate('profilefriend', { id: friendId });
   };
   
-
+  
  
   const Item = ({ id, username, image }) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
@@ -98,6 +98,7 @@ export default function Page() {
         containerStyle={styles.searchBarContainer}
       />
       <FlatList
+      style={styles.list}
       data={filteredData}
       renderItem={({ item }) => (
         <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
@@ -149,4 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 40,
   },
+  list: {
+    marginTop:60,
+  }
 });
