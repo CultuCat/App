@@ -41,7 +41,6 @@ const CustomCalendarPicker = ({
         <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeCalendar}>
           <Ionicons name="ios-close-outline" size={36} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>{t('Calendar.Title')}</Text>
         <View style={{ marginBottom: 20 }}>
           <CalendarPicker
             startFromMonday={true}
@@ -49,14 +48,14 @@ const CustomCalendarPicker = ({
             minDate={new Date()}
             maxDate={new Date(2030, 6, 3)}
             todayBackgroundColor="#f2e6ff"
-            selectedDayColor="#7300e6"
+            selectedDayColor="#87ceec"
             selectedDayTextColor="#FFFFFF"
             onDateChange={onDateChange}
             selectedStartDate={selectedStartDate}
             selectedEndDate={selectedEndDate}
           />
         </View>
-        <Button title="Aceptar" onPress={handleAccept} />
+        <Button title="Filtrar per data" onPress={handleAccept} />
       </View>
     </Modal>
   );

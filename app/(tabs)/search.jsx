@@ -92,10 +92,10 @@ export default function Page() {
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const dataMin = formatDate(selectedStartDate);
       const dataMax = formatDate(selectedEndDate);
-      console.log(dataMax,dataMin)
+    
       const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
-      console.log(url);
+
       const response = await fetch(url);
       const newData = await response.json();
 
@@ -291,7 +291,7 @@ export default function Page() {
     const dataMin = formatDate(selectedStartDate);
     const dataMax = formatDate(selectedEndDate);
     const url = `https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
-    console.log(url);
+   
     const response = await fetch(url);
     const dataFromServer = await response.json();
 
