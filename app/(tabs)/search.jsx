@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator,Modal,Button, Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { MaterialIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import TagModal from '../components/tagModal.jsx';
+import DropdownOrder from '../components/dropdownOrder.jsx'; 
 import EventPreview from '../components/eventPreview.jsx';
+import CustomCalendarPicker from '../components/calendarPicker.jsx';
 
 export default function Page() {
   const { t } = useTranslation();
@@ -18,7 +20,70 @@ export default function Page() {
   const [isloading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [tagVisible, setTagVisible] = useState(false);
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('dataIni');
+  const [orderOption, setOrderOption] = useState('dataIni');
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const [items, setItems] = useState([
+    { label: 'Data asc', value: 'dataIni',  icon: () => (
+      <MaterialCommunityIcons value= "dataIni"name="order-numeric-ascending" size={24} color="black" />
+   )
+    },
+    { label: 'Data desc',  value: '-dataIni', icon: () => (
+      <MaterialCommunityIcons value= "-dataIni" name="order-numeric-descending" size={24} color="black" />
+   )
+    },
+    { label: 'Nom asc' ,value: 'nom', icon: () => (
+    <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
+    )
+  },
+    { label: 'Nom desc' ,value: '-nom',icon: () => (
+      <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
+      )
+    },
+  ]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const userTokenString = await AsyncStorage.getItem("@user");
+        const userToken = JSON.parse(userTokenString).token;
+  
+        const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+        const dataMin = formatDate(selectedStartDate);
+        const dataMax = formatDate(selectedEndDate);
+  
+        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${value}&data_min=${dataMin}&data_max=${dataMax}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (response.ok) {
+          const dataFromServer = await response.json();
+          console.log(dataFromServer);
+          setData(dataFromServer.results);
+        } else {
+          throw new Error('Error en la solicitud');
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [orderOption, page, search, selectedTags, selectedStartDate, selectedEndDate, value]);
+  
+
 
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
@@ -26,8 +91,12 @@ export default function Page() {
     try {
       setLoading(true);
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      const dataMin = formatDate(selectedStartDate);
+      const dataMax = formatDate(selectedEndDate);
+    
       const nextPage = page + 1;
-      const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&query=${search}&${tagsQueryString}`;
+      const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
+      console.log(url);
       const response = await fetch(url);
       const newData = await response.json();
 
@@ -43,6 +112,50 @@ export default function Page() {
       setLoading(false);
     }
   };
+  
+  const formatDate = (date) => {
+    if (date) {
+      return new Date(date).toLocaleDateString().replace(/\//g, '-');
+    }
+    return '';
+  };
+
+ const handleAcceptCalendar = async () => {
+
+  try {
+    setIsLoading(true);
+    setPage(1);
+    const userTokenString = await AsyncStorage.getItem("@user");
+    const userToken = JSON.parse(userTokenString).token;
+    const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+    const dataMin = formatDate(selectedStartDate);
+    const dataMax = formatDate(selectedEndDate);
+
+    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${userToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const filteredEvents = await response.json();
+      setData(filteredEvents.results);
+      if (data.length > 0) {
+        setHasMoreData(true);
+      } else {
+        setHasMoreData(false);
+      }
+    } else {
+      console.error('Error en la solicitud GET:', response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error('Error en la solicitud GET:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const navigation = useNavigation();
   const handlePressMap = () => {
@@ -59,7 +172,7 @@ export default function Page() {
         setIsLoading(true);
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-
+        
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -91,8 +204,9 @@ export default function Page() {
       const userToken = JSON.parse(userTokenString).token;
 
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
+      const dataMin = formatDate(selectedStartDate);
+      const dataMax = formatDate(selectedEndDate);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${value}&data_min=${dataMin}&data_max=${dataMax}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`,
@@ -117,6 +231,13 @@ export default function Page() {
   const handleOpenTags = () => {
     setTagVisible(true);
   };
+  const handleOpenCalendar = () => {
+    setCalendarVisible(true);
+  };
+  const handleCloseCalendar = () => {
+    setCalendarVisible(false);
+  };
+
 
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -131,7 +252,9 @@ export default function Page() {
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}`, {
+      const dataMin = formatDate(selectedStartDate);
+      const dataMax = formatDate(selectedEndDate);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${value}&data_min=${dataMin}&data_max=${dataMax}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${userToken}`,
@@ -156,13 +279,42 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
+  const handleOrderChange = async (selectedValue) => {
+  try {
+    setIsLoading(true);
+    setValue(selectedValue);
+    setPage(1);
+    setHasMoreData(true);
+
+    const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+    const dataMin = formatDate(selectedStartDate);
+    const dataMax = formatDate(selectedEndDate);
+    const url = `https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
+    
+    const response = await fetch(url);
+    const dataFromServer = await response.json();
+
+    if (response.ok) {
+      setData(dataFromServer.results);
+    } else {
+      console.error('Error en la solicitud:', response.status, response.statusText);
+      setHasMoreData(false);
+    }
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    setHasMoreData(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
         <Text style={styles.title}>{t('Search.Search')}</Text>
-        <View style={{ marginHorizontal: '3%' }}>
+        <View style={{ marginHorizontal: '3%' , marginBottom: '3%'}}>
           <SearchBar
             inputContainerStyle={styles.searchBarInputContainer}
             placeholder={t('Search.Busca')}
@@ -172,20 +324,17 @@ export default function Page() {
             platform="ios"
           />
         </View>
-        <View style={{ marginHorizontal: '5%' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
-            <TouchableOpacity style={styles.filtersButton}>
-              <Ionicons name="ios-reorder-three-outline" size={16} color="white" />
-              <Text style={{ color: 'white' }}> {t('Search.Order')}</Text>
-            </TouchableOpacity>
+        <View style={{ marginHorizontal: '5%', zIndex: '100' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' , zIndex: '100'}}>
+          <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
             <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
-              <Ionicons name="ios-location-outline" size={16} color="black" />
+            <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
               <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
             <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
-              <Chip text='Tags' color="#87ceec" />
+              <Chip text='Tags' color="#87ceec" flex='1'/>
             </TouchableOpacity>
             <TagModal
               tagVisible={tagVisible}
@@ -194,19 +343,27 @@ export default function Page() {
               selectedTags={selectedTags}
               setSelectedTags={setSelectedTags}
             />
-            <TouchableOpacity style={{ marginRight: '2%' }}>
-              <Chip text='Preu' color="#87ceec" />
-            </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleOpenCalendar}>
               <Chip text='Data' color="#87ceec" />
             </TouchableOpacity>
+            <CustomCalendarPicker
+              calendarVisible={calendarVisible}
+              setCalendarVisible={setCalendarVisible}
+              onAccept={handleAcceptCalendar}
+              selectedStartDate={selectedStartDate}
+              selectedEndDate={selectedEndDate}
+              setSelectedStartDate={setSelectedStartDate}
+              setSelectedEndDate={setSelectedEndDate}
+            />   
           </View>
+          
         </View>
         {isloading ? (
           <ActivityIndicator />
         ) : (
           <FlatList
             data={data}
+            ListHeaderComponentStyle={{ zIndex: 10 }}
             renderItem={({ item }) => (
               <EventPreview
                 event={item.nom}
@@ -218,8 +375,9 @@ export default function Page() {
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: '5%' }}
+            onEndReachedThreshold={0.1}
             onEndReached={loadMoreData}
-            onEndReachedThreshold={0.99}
+
           />
         )}
       </SafeAreaView>
@@ -320,4 +478,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'black'
   },
+  
 });

@@ -106,7 +106,9 @@
     "Enviar": "Enviar Comentario"
   },
   "Chat": {
-    "Chat": "Chats"
+    "Chat": "Chats",
+    "Type_here": "Escribe aquí...",
+    "Afegir_amic": "Añade un amigo o amiga y empieza a chatear"
   },
   "Filters": {
     "Filter": "Filtrar",
