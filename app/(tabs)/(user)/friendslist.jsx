@@ -10,7 +10,6 @@ export default function Page() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const handlePress = (friendId) => {
-    // Navegar a la pantalla de perfil
     console.log(friendId);
     navigation.navigate('profilefriend', { id: friendId });
   };
@@ -19,7 +18,8 @@ export default function Page() {
  
   const Item = ({ id, username, image }) => (
     <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
-      <Image source={image} style={styles.image} />
+      <Image source={{ uri: image.uri }} style={styles.image} />
+
       <View style={styles.itemText}>
         <Text style={styles.title}>{username}</Text>
       </View>
@@ -55,17 +55,34 @@ export default function Page() {
           console.error('User data not found in AsyncStorage');
           return;
         }
-        setUser(userData);
-        setData(userData.friends || []);
+
+        const userString = await AsyncStorage.getItem("@user");
+        const token = JSON.parse(userString).token; 
+
+        const headers = {
+          'Authorization': `Token ${token}`,
+        };
+        console.log(userData.id)
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
+          method: 'GET',
+          headers,
+        });
+        if (response.ok) {
+          const responseData = await response.json();
+          setUser(userData);
+          setData(responseData.friends || []);
+          console.log(responseData.friends[0].imatge);
+        } else {
+          console.error('Error fetching user data:', response.statusText);
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
-
-
+  
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())
   );
