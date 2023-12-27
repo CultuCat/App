@@ -68,6 +68,7 @@ export default function Page() {
   
         if (response.ok) {
           const dataFromServer = await response.json();
+          console.log(dataFromServer);
           setData(dataFromServer.results);
         } else {
           throw new Error('Error en la solicitud');
@@ -95,7 +96,7 @@ export default function Page() {
     
       const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
-
+      console.log(url);
       const response = await fetch(url);
       const newData = await response.json();
 
@@ -141,7 +142,7 @@ export default function Page() {
     if (response.ok) {
       const filteredEvents = await response.json();
       setData(filteredEvents.results);
-      if (newData.results.length > 0) {
+      if (data.length > 0) {
         setHasMoreData(true);
       } else {
         setHasMoreData(false);
@@ -171,7 +172,7 @@ export default function Page() {
         setIsLoading(true);
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-
+        
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -291,7 +292,7 @@ export default function Page() {
     const dataMin = formatDate(selectedStartDate);
     const dataMax = formatDate(selectedEndDate);
     const url = `https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
-   
+    
     const response = await fetch(url);
     const dataFromServer = await response.json();
 
