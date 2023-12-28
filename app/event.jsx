@@ -47,21 +47,20 @@ export default function Page() {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
-  
+
       const data = JSON.parse(dataString);
       const userId = data.user.id;
 
       const isUserAttending = event && Array.isArray(event.assistents) && event.assistents.length > 0 && event.assistents.some((assistant) => {
         return assistant.id === userId;
       });
-      
+
       setBuyButtonEnabled(isUserAttending);
     } catch (error) {
       console.error('Error al recuperar el estado del botón de compra:', error);
     }
   };
-  
-  
+
 
   const fetchComments = () => {
     fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
@@ -108,7 +107,7 @@ export default function Page() {
   useEffect(() => {
     checkButtonState();
   }, [event]);
-  
+
 
   const handleMaps = () => {
     const mapUrl = `https://maps.google.com/?q=${event.latitud},${event.longitud}`;
@@ -116,8 +115,8 @@ export default function Page() {
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
   };
-  
-  
+
+
 
   const transformDate = (date) => {
     if (date) {
@@ -208,8 +207,6 @@ export default function Page() {
     }
   };
 
-  
-
   if (event == []) {
     return <Text>{t('Carregant')}</Text>;
   }
@@ -242,7 +239,13 @@ export default function Page() {
             <Text style={styles.title}>{event.nom}</Text>
             <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
             <Text>{event.espai?.nom}</Text>
-            <Chip text="Music" color="#d2d0d0" />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {event.tags?.map((tag) => (
+                <View key={tag.id} style={{ marginRight: '1%', marginTop: '1%' }}>
+                  <Chip text={tag.nom} color="#87ceec" />
+                </View>
+              ))}
+            </View>
             <Text style={styles.subtitle}>{t('Event.Descripcio')}</Text>
             <Text>{event.descripcio}</Text>
             <View style={{ marginVertical: 10 }}>
@@ -269,16 +272,15 @@ export default function Page() {
           </View>
         </ScrollView>
         <View style={styles.bottomContainer}>
-        <Text style={styles.price}>
-        {isNaN(event.preu) ? event.preu : `${Number(event.preu)} €`}
-        </Text>
+          <Text style={styles.price}>
+            {isNaN(event.preu) ? event.preu : `${Number(event.preu)} €`}
+          </Text>
           <TouchableOpacity
             style={[styles.buyButton,
             { opacity: buyButtonEnabled ? 0.5 : 1 }
             ]}
             onPress={handleBuy}
             disabled={buyButtonEnabled || event.preu === t('Event.No_disp')}
-
           >
             <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
           </TouchableOpacity>
