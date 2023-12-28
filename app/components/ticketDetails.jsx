@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible }) => {
   const { t } = useTranslation();
+  const [info, setInfo] = useState('');
 
   const transformDate = (date) => {
     const dateObj = new Date(date);
@@ -23,6 +24,27 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
   const closeModal = () => {
     setSelectedTicketVisible(false);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        id = ticket.id;
+        const response = await fetch(`https://cultucat.hemanuelpc.es/tickets/${id}`);
+
+        if (!response.ok) {
+          throw new Error('No se pudo obtener el archivo JSON');
+        }
+        const data = await response.json();
+        setInfo(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchData();
+  }, [ticket.id]);
+
+  console.log('info', info);
 
   return (
     <Modal
@@ -48,7 +70,7 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         </View>
         <View style={styles.divider}></View>
         <Image
-            source={{ uri:  'https://upload.wikimedia.org/wikipedia/commons/2/2f/Rickrolling_QR_code.png?20200615212723'}}
+            source={{ uri: info.image}}
             style={styles.qr}
           />
       </View>
