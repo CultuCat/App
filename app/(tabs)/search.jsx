@@ -89,7 +89,6 @@ export default function Page() {
   
       const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
-      console.log(url);
       const response = await fetch(url);
       const newData = await response.json();
   
@@ -122,7 +121,6 @@ export default function Page() {
     const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
     const dataMin = formatDate(selectedStartDate);
     const dataMax = formatDate(selectedEndDate);
-    console.log(dataMin,dataMax);
     const response = await fetch(`https://cultucat.hemanuelpc.es/events/?data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`, {
       method: 'GET',
       headers: {
@@ -344,9 +342,8 @@ export default function Page() {
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: '5%' }}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.5}
             onEndReached={loadMoreData}
-
           />
         )}
       </SafeAreaView>
