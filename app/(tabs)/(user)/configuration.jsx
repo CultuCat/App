@@ -287,26 +287,24 @@ export default function Configuration() {
 
   const saveUserLanguage = async (lng) => {
     try {
-        const userId = user.id;
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userId}/language/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              language: lng,
-            }),
-        });
+      const userId = user.id;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userId}/language/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language: lng,
+        }),
+      });
 
-        if (!response.ok) {
-          const errorlang = await response.json();
-          throw new Error(`Error in save language request: ${JSON.stringify(errorlang)}`);
-        }
+      if (!response.ok) {
         const errorlang = await response.json();
-        console.log(`${JSON.stringify(errorlang)}`);
+        throw new Error(`Error in save language request: ${JSON.stringify(errorlang)}`);
+      }
 
     } catch (error) {
-        console.error('Error updating user language:', error);
+      console.error('Error updating user language:', error);
     }
   };
 
