@@ -28,7 +28,7 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
   useEffect(() => {
     const fetchData = async () => {
       try {
-        id = ticket.id;
+        let id = ticket.id;
         const response = await fetch(`https://cultucat.hemanuelpc.es/tickets/${id}`);
 
         if (!response.ok) {
