@@ -277,7 +277,9 @@ export default function Page() {
           </Text>
           <TouchableOpacity
             style={[styles.buyButton,
-            { opacity: buyButtonEnabled ? 0.5 : 1 }
+              {
+                opacity: buyButtonEnabled || event.preu == t('Event.No_disp') ? 0.5 : 1,
+              },
             ]}
             onPress={handleBuy}
             disabled={buyButtonEnabled || event.preu === t('Event.No_disp')}
