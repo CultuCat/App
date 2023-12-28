@@ -15,11 +15,11 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
       weekday: 'short',
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
     };
     const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
     return formatter.format(dateObj);
   };
-
 
   const closeModal = () => {
     setSelectedTicketVisible(false);
@@ -43,8 +43,6 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
 
     fetchData();
   }, [ticket.id]);
-
-  console.log('info', info);
 
   return (
     <Modal
@@ -70,12 +68,12 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         </View>
         <View style={styles.divider}></View>
         <Image
-            source={{ uri: info.image}}
-            style={styles.qr}
-          />
+          source={{ uri: info.image }}
+          style={styles.qr}
+        />
       </View>
     </Modal>
-    
+
   );
 };
 
