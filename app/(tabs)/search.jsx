@@ -46,19 +46,15 @@ export default function Page() {
     },
   ]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        setPage(1);
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-  
-        const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-        const dataMin = formatDate(selectedStartDate);
-        const dataMax = formatDate(selectedEndDate);
-  
-        const response = await fetch(`https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${value}&data_min=${dataMin}&data_max=${dataMax}`, {
+        
+        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
             'Authorization': `Token ${userToken}`,
@@ -68,7 +64,6 @@ export default function Page() {
   
         if (response.ok) {
           const dataFromServer = await response.json();
-          console.log(dataFromServer);
           setData(dataFromServer.results);
         } else {
           throw new Error('Error en la solicitud');
@@ -81,25 +76,22 @@ export default function Page() {
     };
   
     fetchData();
-  }, [orderOption, page, search, selectedTags, selectedStartDate, selectedEndDate, value]);
-  
-
+  }, []);  
 
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
-
+  
     try {
       setLoading(true);
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const dataMin = formatDate(selectedStartDate);
       const dataMax = formatDate(selectedEndDate);
-    
+  
       const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
-      console.log(url);
       const response = await fetch(url);
       const newData = await response.json();
-
+  
       if (newData?.results && newData.results.length > 0) {
         setData((prevData) => [...prevData, ...newData.results]);
         setPage(nextPage);
@@ -124,13 +116,11 @@ export default function Page() {
 
   try {
     setIsLoading(true);
-    setPage(1);
     const userTokenString = await AsyncStorage.getItem("@user");
     const userToken = JSON.parse(userTokenString).token;
     const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
     const dataMin = formatDate(selectedStartDate);
     const dataMax = formatDate(selectedEndDate);
-
     const response = await fetch(`https://cultucat.hemanuelpc.es/events/?data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`, {
       method: 'GET',
       headers: {
@@ -142,6 +132,7 @@ export default function Page() {
     if (response.ok) {
       const filteredEvents = await response.json();
       setData(filteredEvents.results);
+      setPage(1);
       if (data.length > 0) {
         setHasMoreData(true);
       } else {
@@ -166,36 +157,8 @@ export default function Page() {
     navigation.navigate('event', { eventId });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const userTokenString = await AsyncStorage.getItem("@user");
-        const userToken = JSON.parse(userTokenString).token;
-        
-        const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${userToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const dataFromServer = await response.json();
-          setData(dataFromServer.results);
-        } else {
-          throw new Error('Error en la solicitud');
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
+  
+  
 
   const handleAccept = async () => {
     try {
@@ -216,6 +179,7 @@ export default function Page() {
 
       if (response.ok) {
         const filteredEvents = await response.json();
+        setPage(1);
         setData(filteredEvents.results);
       } else {
         console.error('Error en la solicitud GET:', response.status, response.statusText);
@@ -249,6 +213,7 @@ export default function Page() {
   const handleSearch = async () => {
     try {
       setIsLoading(true);
+      
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
@@ -282,33 +247,35 @@ export default function Page() {
   }
 
   const handleOrderChange = async (selectedValue) => {
-  try {
-    setIsLoading(true);
-    setValue(selectedValue);
-    setPage(1);
-    setHasMoreData(true);
-
-    const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-    const dataMin = formatDate(selectedStartDate);
-    const dataMax = formatDate(selectedEndDate);
-    const url = `https://cultucat.hemanuelpc.es/events/?page=${page}&query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
-    
-    const response = await fetch(url);
-    const dataFromServer = await response.json();
-
-    if (response.ok) {
-      setData(dataFromServer.results);
-    } else {
-      console.error('Error en la solicitud:', response.status, response.statusText);
+    try {
+      setIsLoading(true);
+      setValue(selectedValue);
+      setHasMoreData(true);
+  
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      const dataMin = formatDate(selectedStartDate);
+      const dataMax = formatDate(selectedEndDate);
+      const url = `https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
+  
+      const response = await fetch(url);
+      const dataFromServer = await response.json();
+  
+      if (response.ok) {
+        setData(dataFromServer.results);
+      } else {
+        console.error('Error en la solicitud:', response.status, response.statusText);
+        setHasMoreData(false);
+      }
+      setPage(1);
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
       setHasMoreData(false);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error en la solicitud:', error);
-    setHasMoreData(false);
-  } finally {
-    setIsLoading(false);
-  }
-};
+
+  };
+  
 
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
@@ -375,9 +342,8 @@ export default function Page() {
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: '5%' }}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.5}
             onEndReached={loadMoreData}
-
           />
         )}
       </SafeAreaView>

@@ -62,7 +62,6 @@ export default function Page() {
         const headers = {
           'Authorization': `Token ${token}`,
         };
-        console.log(userData.id)
         const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
           method: 'GET',
           headers,
@@ -71,7 +70,6 @@ export default function Page() {
           const responseData = await response.json();
           setUser(userData);
           setData(responseData.friends || []);
-          console.log(responseData.friends[0].imatge);
         } else {
           console.error('Error fetching user data:', response.statusText);
         }
