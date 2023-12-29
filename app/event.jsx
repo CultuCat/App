@@ -39,10 +39,6 @@ export default function Page() {
     setUsersVisible(true);
   }
 
-  useEffect(() => {
-    checkButtonState();
-  }, []);
-
   const checkButtonState = async () => {
     try {
       const dataString = await AsyncStorage.getItem("@user");
@@ -78,10 +74,14 @@ export default function Page() {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   useEffect(() => {
+    setLoading(true);
     fetch(`https://cultucat.hemanuelpc.es/events/${params.eventId}`, {
       method: "GET"
     })
@@ -98,12 +98,9 @@ export default function Page() {
       .catch((error) => {
         console.error(error);
       });
-
+      fetchComments();
   }, []);
 
-  useEffect(() => {
-    fetchComments();
-  }, []);
   useEffect(() => {
     checkButtonState();
   }, [event]);
@@ -206,9 +203,6 @@ export default function Page() {
     }
   };
 
-  if (event == []) {
-    return <Text>{t('Carregant')}</Text>;
-  }
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
