@@ -76,7 +76,7 @@
   },
   "Index": {
     "Eror_credencials": "Usuario o contraseña incorrecta",
-    "Benvingut": "Bienvenido",
+    "Benvingut": "Bienvenido/da",
     "User": "Nombre de usuario",
     "Password": "Contraseña"
   },
@@ -116,7 +116,7 @@
     "Tags": "Escoge los tags por los que quieres filtrar"
   },
   "Home": {
-    "Welcome": "Bienvenido",
+    "Welcome": "Bienvenido/da",
     "Today": "Hoy",
     "Week": "Esta semana",
     "Free": "Gratis",

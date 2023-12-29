@@ -17,13 +17,7 @@ export default function Configuration() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ca');
-
-  const changeLng = lng => {
-    i18next.changeLanguage(lng);
-    setVisible(false);
-    setSelectedLanguage(lng);
-  };
+  const [selectedLanguage, setSelectedLanguage] = useState(i18next.language);
 
 
   const styles = StyleSheet.create({
@@ -280,6 +274,37 @@ export default function Configuration() {
 
     } catch (error) {
       console.error('Error al eliminar el usuario en el backend:', error);
+    }
+  };
+
+  const changeLng = lng => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+    setSelectedLanguage(lng);
+    //PUT
+    saveUserLanguage(lng);
+  };
+
+  const saveUserLanguage = async (lng) => {
+    try {
+      const userId = user.id;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userId}/language/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language: lng,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorlang = await response.json();
+        throw new Error(`Error in save language request: ${JSON.stringify(errorlang)}`);
+      }
+
+    } catch (error) {
+      console.error('Error updating user language:', error);
     }
   };
 
