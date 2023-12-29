@@ -1,0 +1,125 @@
+{
+  "Carregant": "Loading...",
+  "Cancel": "Cancel",
+  "Delete": "Delete",
+  "Config": {
+    "Visibilitat": "Visibility",
+    "User_vis": "Visible User",
+    "User_no_vis": "Invisible User",
+    "Xat": "Chat with users",
+    "User_xat": "User wants to chat",
+    "User_no_xat": "User doesn't want to chat",
+    "Idioma": "Languages",
+    "Canvi_idioma": "Change language",
+    "Eliminar": "Delete Account",
+    "Confirmation": "Are you sure you want to delete your account?",
+    "Desar": "Save",
+    "Sessio": "Log Out",
+    "Confirmation_ses": "Are you sure you want to log out?",
+    "Si": "Yes",
+    "No": "No"
+  },
+  "Edit_User": {
+    "Username": "Username",
+    "Nom": "Name",
+    "Bio": "Biography",
+    "Desar_can": "Save changes"
+  },
+  "Friendlist": {
+    "Busca": "Type here..."
+  },
+  "User": {
+    "Eliminar_lloc_fav": "Remove favorite place",
+    "Conf_lloc_fav": "Are you sure you want to remove the favorite place?",
+    "Delete_tag": "Delete tag",
+    "Conf_delete_tag": "Are you sure you want to delete this tag?",
+    "Espai_delete": "Space Deleted",
+    "Espai_delete_text": "Favorite place has been successfully deleted",
+    "Tag_delete": "Tag Deleted",
+    "Tag_delete_text": "The tag has been deleted successfully",
+    "Punts": "Points",
+    "Amics": "Friends",
+    "Bio": "Biography",
+    "Tags_favs": "Favorite Tags",
+    "Llocs_favs": "Favorite Places",
+    "No_tags": "No tags",
+    "No_llocs": "No favorite places",
+    "Trofeus": "Trophies",
+    "Ranking": "View ranking",
+    "Rank": "Ranking",
+    "Edit": "Edit profile",
+    "User": "User"
+  },
+  "Search": {
+    "Search": "Search",
+    "Busca": "Search...",
+    "Order": "Order",
+    "Mapa": "View map"
+  },
+  "Event": {
+    "No_disp": "Not available",
+    "Gratis": "Free",
+    "Perm_calendar": "Permissions required to access calendar",
+    "Perm_recordatoris": "Permissions required to access reminders",
+    "Calendar": "Select a calendar",
+    "Error_agregar": "Error adding event to calendar",
+    "Seleccio_calendar": "No calendar selected",
+    "Afegit_calendar": "Event added to calendar",
+    "Descripcio": "Description",
+    "Do_you_know": "Do you know?",
+    "Assistents": "View event attendees",
+    "Ubicacio": "View location on map",
+    "Afegir_cal": "Add to calendar",
+    "Comentaris": "Comments",
+    "Assistents_list": "Attendees",
+    "No_assistents": "There are no attendees for this event"
+  },
+  "Index": {
+    "Eror_credencials": "Incorrect username or password",
+    "Benvingut": "Welcome",
+    "User": "Username",
+    "Password": "Password"
+  },
+  "Map": {
+    "Esdeveniments": "Events"
+  },
+  "Ticket": {
+    "Tots": "View all tickets",
+    "No_tickets_propers": "You have no tickets for upcoming events",
+    "No_tickets": "You have no tickets for events",
+    "Comprat": "Entrada comprada!",
+    "Ticket_donat": "You already have your ticket for this event",
+    "Vols_ticket": "Do you want to buy a ticket for",
+    "Codi_descompte": "Validate discount code:",
+    "Ticket": "Tickets",
+    "Entrada_a": "Ticket to"
+  },
+  "Signup": {
+    "Password_not_equal": "Passwords do not match",
+    "Username_existeix": "Username already exists",
+    "Email_existeix": "Email already exists",
+    "Registrat": "Sign Up",
+    "Email": "Email",
+    "Repetir_password": "Repeat password"
+  },
+  "Comments": {
+    "Comment": "Write your comment here",
+    "Enviar": "Submit Comment"
+  },
+  "Chat": {
+    "Chat": "Chat",
+    "Type_here": "Type here...",
+    "Afegir_amic": "Add a friend and start chating"
+  },
+  "Filters": {
+    "Filter": "Filter",
+    "Tags": "Choose the tags you want to filter by"
+  },
+  "Home": {
+    "Welcome": "Welcome",
+    "Today": "Today",
+    "Week": "This week",
+    "Free": "Free",
+    "Trendy": "Trendy"
+  }
+}

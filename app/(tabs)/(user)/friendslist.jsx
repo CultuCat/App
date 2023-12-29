@@ -2,16 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image, Button } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function Page() {
-  const Item = ({ title, image }) => (
-    <TouchableOpacity style={styles.item}>
-      <Image source={image} style={styles.image} />
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+  const handlePress = (friendId) => {
+    console.log(friendId);
+    navigation.navigate('profilefriend', { id: friendId });
+  };
+  
+  
+ 
+  const Item = ({ id, username, image }) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
+      <Image source={{ uri: image.uri }} style={styles.image} />
+
       <View style={styles.itemText}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{username}</Text>
       </View>
     </TouchableOpacity>
   );
+
   const ItemWithButtons = ({ id, title, image }) => (
     <View style={styles.itemContainer}>
       <TouchableOpacity style={styles.item}>
@@ -31,6 +45,7 @@ export default function Page() {
     </View>
   );
   
+
 
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
@@ -83,23 +98,25 @@ export default function Page() {
     try {
       const dataString = await AsyncStorage.getItem("@user");
       if (!dataString) return null;
-  
       const data = JSON.parse(dataString);
       console.log('User', data.user); 
       const promises = data.user.pending_friend_requests.map((id) => fetchUserDetails(id.from_user));
       const userDetails = await Promise.all(promises);
       setPending(userDetails);
       return data.user; 
+
     } catch (error) {
       console.error('Error getting local user data:', error);
       return null;
     }
   };
+
   const fetchUserDetails = async (id) => {
     const response = await fetch(`https://cultucat.hemanuelpc.es/users/${id}`);
     const data = await response.json();
     return data;
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -108,10 +125,24 @@ export default function Page() {
           console.error('User data not found in AsyncStorage');
           return;
         }
-  
-        setUser(userData); 
-  
-        setData(userData.friends || []);
+
+        const userString = await AsyncStorage.getItem("@user");
+        const token = JSON.parse(userString).token; 
+
+        const headers = {
+          'Authorization': `Token ${token}`,
+        };
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
+          method: 'GET',
+          headers,
+        });
+        if (response.ok) {
+          const responseData = await response.json();
+          setUser(userData);
+          setData(responseData.friends || []);
+        } else {
+          console.error('Error fetching user data:', response.statusText);
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -120,16 +151,15 @@ export default function Page() {
     fetchData();
   }, []);
   
-
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())
   );
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder={t('Friendlist.Busca')}
         onChangeText={updateSearch}
         value={search}
         platform="ios"
@@ -144,13 +174,15 @@ export default function Page() {
         keyExtractor={(item) => item.id}
       />
       <Text style={styles.title}>Friends</Text>
+
       <FlatList
-        data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.username} image={{ uri: item.imatge}} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      style={styles.list}
+      data={filteredData}
+      renderItem={({ item }) => (
+        <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
+      )}
+      keyExtractor={(item) => item.id.toString()}
+    />
     </SafeAreaView>
   );
 }
@@ -204,18 +236,22 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginLeft: 10,
   },
-
-  searchBarInputContainer: {
-    width: 290,
-    height: 30,
-    borderWidth: 0,
-    marginBottom: 10,
-    padding: 10,
-    marginTop: 5,
-    marginLeft: 20,
-    borderRadius: 15,
-  },
   searchBarContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
     backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
   },
+  searchBarInputContainer: {
+    backgroundColor: '#fff',
+    height: 40,
+  },
+  list: {
+    marginTop:60,
+  }
+ 
 });

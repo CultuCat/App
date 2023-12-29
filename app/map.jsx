@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image, TextInput} from 'react-native';
-import { Link } from 'expo-router';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
-  const Item = ({ title, ubicacion, data, image ,onPress}) => (
+  const { t } = useTranslation();
+  const Item = ({ title, ubicacion, data, image, onPress }) => (
     <TouchableOpacity style={styles.item} onPress={onPress}>
       <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
@@ -17,8 +18,8 @@ export default function Page() {
         <Text style={styles.ubicacion}>{ubicacion}</Text>
         <TouchableOpacity>
           <MaterialIcons
-          style={styles.ticket}
-          name="local-activity"    
+            style={styles.ticket}
+            name="local-activity"
           />
         </TouchableOpacity>
       </View>
@@ -44,15 +45,13 @@ export default function Page() {
   const navigation = useNavigation();
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
-  };  
+  };
   const fetchMarkers = (region) => {
-    console.log('fetching markers');
     const { latitude, longitude } = region;
     setNMarkers(Math.floor(Math.max((customRegion.longitudeDelta * 120), 20)));
-    console.log(nMarkers);
     const url = `https://cultucat.hemanuelpc.es/spaces/?latitud=${latitude}&longitud=${longitude}&num_objs=${nMarkers}`;
     fetch(url)
-    .then((response) => response.json())
+      .then((response) => response.json())
       .then((data) => {
         setCustomMarkers(
           data.map((item) => ({
@@ -64,7 +63,7 @@ export default function Page() {
           }))
         );
       })
-      .catch((error) => console.error("Error fetching markers"));
+      .catch(() => console.error("Error fetching markers"));
   };
 
   const onTouchEnd = () => {
@@ -80,17 +79,17 @@ export default function Page() {
       setSelectedMarker(marker);
       const url = `https://cultucat.hemanuelpc.es/events/?espai=${marker.key}`;
       fetch(url)
-      .then((response) => response.json())
+        .then((response) => response.json())
         .then((data) => {
-            setEvents(
-              data.results.map((item) => ({
-                id: item.id,
-                title: item.nom,
-                data: item.dataIni,
-                //ubicacion: item.espai.nom,
-                image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : require('../assets/teatro.png'),
-              }))
-            );
+          setEvents(
+            data.results.map((item) => ({
+              id: item.id,
+              title: item.nom,
+              data: item.dataIni,
+              //ubicacion: item.espai.nom,
+              image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
+            }))
+          );
         })
         .catch((error) => console.error(error));
     } else {
@@ -120,41 +119,41 @@ export default function Page() {
             title={marker.title}
             description={marker.description}
             events={marker.events}
-            onPress={()=>toggleEvents(marker)}
+            onPress={() => toggleEvents(marker)}
           />
         ))}
       </MapView>
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholder="Type Here..."
+        placeholder={t('Friendlist.Busca')}
         onChangeText={updateSearch}
         value={search}
         platform="ios"
         containerStyle={styles.searchBarContainer}
       />
       <View style={[styles.buttonEvents, showEvents && { height: '10%' }]}>
-  <TouchableOpacity
-    title="Esdeveniments"
-    onPress={()=>toggleEvents(selectedMarker)}
-    disabled={!selectedMarker}
-    style={styles.button}
-  >
-    <Text style={styles.eventsText}> Esdevenimets</Text>
-  </TouchableOpacity>
+        <TouchableOpacity
+          title="Esdeveniments"
+          onPress={() => toggleEvents(selectedMarker)}
+          disabled={!selectedMarker}
+          style={styles.button}
+        >
+          <Text style={styles.eventsText}>{t('Map.Esdeveniments')}</Text>
+        </TouchableOpacity>
 
-</View>
+      </View>
       {showEvents && (
         <View style={styles.list}>
           <Text style={styles.markerTitle}>{selectedMarker.title}</Text>
           <FlatList
             data={events}
             renderItem={({ item }) => (
-              <Item 
-                title={item.title} 
-                data={item.data} 
-                ubicacion={item.ubicacion} 
-                image={item.image} 
-                onPress={()=>handlePressEvent(item.id)}
+              <Item
+                title={item.title}
+                data={item.data}
+                ubicacion={item.ubicacion}
+                image={item.image}
+                onPress={() => handlePressEvent(item.id)}
               />
             )}
             keyExtractor={item => item.id}
@@ -207,10 +206,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  list:{
-    marginVertical:0,
-    paddingVertical:0,
-    flex:1
+  list: {
+    marginVertical: 0,
+    paddingVertical: 0,
+    flex: 1
   },
   map: {
     width: '100%',
@@ -242,8 +241,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     padding: 10,
-    marginVertical:0,
-    paddingVertical:0,
+    marginVertical: 0,
+    paddingVertical: 0,
   },
   searchBarContainer: {
     position: 'absolute',
@@ -257,7 +256,6 @@ const styles = StyleSheet.create({
   },
   searchBarInputContainer: {
     backgroundColor: '#fff',
-    borderRadius: 20,
     height: 40,
   },
 });

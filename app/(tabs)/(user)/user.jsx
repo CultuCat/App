@@ -1,14 +1,15 @@
 import React from 'react';
-import { Text, View, Button, StyleSheet, Image, TouchableOpacity, Alert, Modal } from 'react-native';
+import { Text, View, Button, StyleSheet, Image, TouchableOpacity, Alert, Modal, ActivityIndicator, SafeAreaView } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
 import { ScrollView } from 'react-native';
 import Divider from '../../components/divider';
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RankingModal from '../../components/rankingModal.jsx';
+import { useTranslation } from 'react-i18next';
 
 const User = () => {
   const [user, setUser] = useState(null);
@@ -42,6 +43,7 @@ const User = () => {
       console.log('Respuesta de la solicitud POST:', data);
     }
   };
+  const { t } = useTranslation();
 
   const handleRanking = () => {
     setRankingVisible(true);
@@ -50,29 +52,29 @@ const User = () => {
   const handleChipPress = (index) => {
     setSelectedChipIndex(index);
     Alert.alert(
-      "Eliminar lloc favorit",
-      "Estàs segur que vols eliminar el lloc favorit ?",
+      t('User.Eliminar_lloc_fav'),
+      t('User.Conf_lloc_fav'),
       [
-        { text: "Cancelar", onPress: () => setSelectedChipIndex(null), style: "cancel" },
-        { text: "Eliminar", onPress: () => handleDeleteChip(index) },
+        { text: t('Cancel'), onPress: () => setSelectedChipIndex(null), style: "cancel" },
+        { text: t('Delete'), onPress: () => handleDeleteChip(index) },
       ]
     );
   };
   const handleTagPress = (tagId) => {
     setSelectedTagIndex(tagId);
     Alert.alert(
-      "Eliminar tag",
-      "Estàs segur que vols eliminar aquesta tag ?",
+      t('User.Delete_tag'),
+      t('User.Conf_delete_tag'),
       [
-        { text: "Cancelar", onPress: () => setSelectedTagIndex(null), style: "cancel" },
-        { text: "Eliminar", onPress: () => handleDeleteTag(tagId) },
+        { text: t('Cancel'), onPress: () => setSelectedTagIndex(null), style: "cancel" },
+        { text: t('Delete'), onPress: () => handleDeleteTag(tagId) },
       ]
     );
   };
-  
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
-    setSelectedTrofeuIndex(null); 
+    setSelectedTrofeuIndex(null);
   };
 
   const handleDeleteChip = async (espaiId) => {
@@ -106,7 +108,7 @@ const User = () => {
         }));
 
         setSelectedChipIndex(null);
-        Alert.alert('Espai Eliminat', 'El lloc preferit ha estat eliminat correctament');
+        Alert.alert(t('User.Espai_delete'), t('User.Espai_delete_text'));
       } catch (error) {
         console.error('Error al eliminar el lloc preferit en el backend:', error);
       }
@@ -146,7 +148,7 @@ const User = () => {
         }));
 
         setSelectedTagIndex(null);
-        Alert.alert('Tag Eliminat', 'El tag ha estat eliminat correctament');
+        Alert.alert(t('User.Tag_delete'), t('User.Tag_delete_text'));
       } catch (error) {
         console.error('Error al eliminar el tag en el backend:', error);
 
@@ -165,21 +167,21 @@ const User = () => {
         return "#bebebe";
       case 3:
         return "#ffd700";
-      default:
+      case -1:
         return "#d2d0d0";
     }
   };
   const getTrofeuIcon = (trofeu) => {
     switch (trofeu.nom) {
-      case "Més esdeveniments":
+      case "Explorador cultural":
         return "trophy-award";
       case "Reviewer":
         return "trophy-outline";
-      case "Parlaner":
+      case "Xerraire":
         return "trophy-variant";
-      case "Coleccionista":
+      case "Col·leccionista d'or":
         return "trophy";
-      case "El més amigable":
+      case "Popular":
         return "trophy-variant-outline";
       default:
         return "trophy-award";
@@ -241,7 +243,7 @@ const User = () => {
       try {
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-  
+
         const response = await fetch('https://cultucat.hemanuelpc.es/trophies/', {
           method: 'GET',
           headers: {
@@ -249,7 +251,7 @@ const User = () => {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (response.ok) {
           const dataFromServer = await response.json();
           setTrofeus(dataFromServer);
@@ -260,43 +262,29 @@ const User = () => {
         console.error(error);
       }
     };
-  
+
     fetchData();
   }, []);
 
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <View style={{ marginTop: 60, marginHorizontal: '5%' }}>
-          <Text>Cargando...</Text>
-        </View>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <View style={{ marginTop: 60 }}>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginHorizontal: '5%'
-        }}>
-          <Text style={styles.title}>Usuari</Text>
-          
-          {user.id !== currentUser && (
-            <TouchableOpacity onPress={handleIconClick}>
-              <Ionicons name={iconName} size={24} color="black" />
-            </TouchableOpacity>
-          )}
-
-          <Link href={'/(tabs)/(user)/configuration'} asChild>
-            <TouchableOpacity>
-              <Ionicons name="ios-settings-outline" size={24} color="black" />
-            </TouchableOpacity>
-          </Link>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: '5%',
+        marginTop:'1%'
+      }}>
+        <Text style={styles.title}>{t('User.User')}</Text>
+        {user ? (<Link href={'/(tabs)/(user)/configuration'} asChild>
+          <TouchableOpacity>
+            <Ionicons name="ios-settings-outline" size={24} color="black" />
+          </TouchableOpacity>
+        </Link>) : (<View />)}
+      </View>
+      {!user ? (
+        <ActivityIndicator />
+      ) : (<View style={{ flex: 1 }}>
         <View style={styles.recuadroRojo}>
           <View style={{
             flexDirection: 'row',
@@ -327,79 +315,94 @@ const User = () => {
             flexDirection: 'row',
             justifyContent: 'center',
           }}>
-            <Text style={styles.userCardText}>Punts</Text>
+            <Text style={styles.userCardText}>{t('User.Punts')}</Text>
             <Text style={styles.userCardText}>{user.puntuacio}</Text>
             <View style={styles.separator2} />
             <Link href={'/(tabs)/(user)/friendslist'} asChild>
               <TouchableOpacity >
-                <Text style={styles.userCardText}>Amics</Text>
+                <Text style={styles.userCardText}>{t('User.Amics')}</Text>
               </TouchableOpacity>
             </Link>
             <Text style={styles.userCardText}>{user.friends.length}</Text>
           </View>
         </View>
-        <ScrollView>
-          <View style={{ flex: 1, marginBottom: 250 }}>
-            <Text style={styles.titles}>Bio</Text>
-            <Text style={styles.bio}>{user.bio}</Text>
-            <Divider />
-            <Text style={styles.titles}>Tags Favorites</Text>
-            <ScrollView
-              horizontal
-              alwaysBounceHorizontal={true}
-              contentContainerStyle={styles.chipContainer}
-            >
-              {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
-                user.tags_preferits.map((tag, index) => (
-                  <TouchableOpacity
-                    key={tag.id}
-                    onPress={() => handleTagPress(tag.id)}
-                    style={[
-                      { marginHorizontal: 2.5 },
-                      index === 0 && { marginLeft: 15 },
-                      index === user.tags_preferits.length - 1 && { marginRight: 15 },
-                    ]}>
-                    <Chip text={tag.nom} color="#d2d0d0" />
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text>No hi ha tags</Text>
-              )}
-            </ScrollView>
-            <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
-            <Divider />
-            <Text style={styles.titles}>Llocs Favorits</Text>
-            <ScrollView
-              horizontal
-              alwaysBounceHorizontal={true}
-              contentContainerStyle={styles.chipContainer}
-            >
-              {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
-                user.espais_preferits.map((espai, index) => (
-                  <TouchableOpacity
-                    key={espai.id}
-                    onPress={() => handleChipPress(espai.id)}
-                    style={[
-                      { marginHorizontal: 2.5 },
-                      index === 0 && { marginLeft: 15 },
-                      index === user.espais_preferits.length - 1 && { marginRight: 15 },
-                    ]}>
-                    <Chip text={espai.nom} color="#d2d0d0" />
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text>No hi ha llocs preferits</Text>
-              )}
-            </ScrollView>
-            <Divider />
-            <Text style={styles.titles}>Trofeus</Text>
-            <ScrollView
-              horizontal
-              alwaysBounceHorizontal={true}
-              contentContainerStyle={styles.chipContainer}
-            >
-              {trofeus && trofeus
-              .filter((trofeu) => trofeu.level_achived_user !== -1)
+        <ScrollView
+        marginTop={15}
+        marginBottom={10}
+        >
+          <Text style={styles.titles}>{t('User.Bio')}</Text>
+          <Text style={styles.bio}>{user.bio}</Text>
+          <Divider />
+          <Text style={styles.titles}>{t('User.Tags_favs')}</Text>
+          <ScrollView
+            marginTop={10}
+            marginBottom={10}
+            horizontal
+            alwaysBounceHorizontal={true}
+            contentContainerStyle={styles.chipContainer}
+          >
+            {user && user.tags_preferits && user.tags_preferits.length > 0 ? (
+              user.tags_preferits.map((tag, index) => (
+                <TouchableOpacity
+                  key={tag.id}
+                  onPress={() => handleTagPress(tag.id)}
+                  style={[
+                    { marginHorizontal: 2.5 },
+                    index === 0 && { marginLeft: 15 },
+                    index === user.tags_preferits.length - 1 && { marginRight: 15 },
+                  ]}>
+                  <Chip text={tag.nom} color="#d2d0d0" />
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text>{t('User.No_tags')}</Text>
+            )}
+          </ScrollView>
+          <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
+          <Divider />
+          <Text style={styles.titles}>{t('User.Llocs_favs')}</Text>
+          <ScrollView
+            horizontal
+            alwaysBounceHorizontal={true}
+            contentContainerStyle={styles.chipContainer}
+            marginTop={10}
+            marginBottom={10}
+          >
+            {user && user.espais_preferits && user.espais_preferits.length > 0 ? (
+              user.espais_preferits.map((espai, index) => (
+                <TouchableOpacity
+                  key={espai.id}
+                  onPress={() => handleChipPress(espai.id)}
+                  style={[
+                    { marginHorizontal: 2.5 },
+                    index === 0 && { marginLeft: 15 },
+                    index === user.espais_preferits.length - 1 && { marginRight: 15 },
+                  ]}>
+                  <Chip text={espai.nom} color="#d2d0d0" />
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text>{t('User.No_llocs')}</Text>
+            )}
+          </ScrollView>
+          <Divider />
+          <Text style={styles.titles}>{t('User.Trofeus')}</Text>
+          <ScrollView
+            horizontal
+            alwaysBounceHorizontal={true}
+            contentContainerStyle={styles.chipContainer}
+            marginTop={10}
+          >
+            {trofeus && trofeus
+            .sort((trofeu1, trofeu2) => {
+              if (getTrofeuColor(trofeu1) === "#d2d0d0" && getTrofeuColor(trofeu2) !== "#d2d0d0") {
+                return 1;
+              } else if (getTrofeuColor(trofeu1) !== "#d2d0d0" && getTrofeuColor(trofeu2) === "#d2d0d0") {
+                return -1; 
+              } else {
+                return 0;
+              }
+            })
               .map((trofeu, index) => (
                 <TouchableOpacity
                   onPress={() => handleTrofeuPress(index)}
@@ -427,52 +430,53 @@ const User = () => {
                         <Text>Descripció del trofeu:</Text>
                         <Text style={styles.descripcio2}>{trofeu.descripcio}</Text>
                         <Divider />
-                        <Text style={styles.descripcio2}>Nivell {trofeu.level_achived_user}</Text>
+                        <Text style={styles.descripcio2}>
+                        {trofeu.level_achived_user !== -1 ? `Nivell ${trofeu.level_achived_user}` : t('User.Notrophy')}
+                      </Text>     
                         <Button title="Tancar" onPress={toggleModal} />
                       </View>
                     </View>
                   </Modal>
                 </TouchableOpacity>
               ))
-              } 
-            </ScrollView>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '10%'
-            }}>
+            }
+          </ScrollView>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '10%'
+          }}>
+            <TouchableOpacity
+              style={styles.userButton}
+              onPress={() => handleRanking()}
+            >
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                <Text style={styles.buttonText}>{t('User.Ranking')}</Text>
+                <Ionicons name="ios-star-outline" size={16} color="black" />
+              </View>
+            </TouchableOpacity>
+            <RankingModal userId={user.id} rankingVisible={rankingVisible} setRankingVisible={setRankingVisible} />
+            <Link href={'/(tabs)/(user)/editprofile'} asChild>
               <TouchableOpacity
                 style={styles.userButton}
-                onPress={() => handleRanking()}
               >
                 <View style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}>
-                  <Text style={styles.buttonText}>Veure rànquing</Text>
-                  <Ionicons name="ios-star-outline" size={16} color="black" />
+                  <Text style={styles.buttonText}>{t('User.Edit')}</Text>
+                  <Ionicons name="ios-person-circle-outline" size={16} color="black" />
                 </View>
               </TouchableOpacity>
-              <RankingModal userId={user.id} rankingVisible={rankingVisible} setRankingVisible={setRankingVisible} />
-              <Link href={'/(tabs)/(user)/editprofile'} asChild>
-                <TouchableOpacity
-                  style={styles.userButton}
-                >
-                  <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
-                    <Text style={styles.buttonText}>Editar perfil</Text>
-                    <Ionicons name="ios-person-circle-outline" size={16} color="black" />
-                  </View>
-                </TouchableOpacity>
-              </Link>
-            </View>
+            </Link>
           </View>
         </ScrollView>
-      </View>
-    </View >
+      </View>)}
+    </ SafeAreaView>
   );
 }
 
@@ -480,6 +484,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  
   },
   recuadroRojo: {
     width: '90%',
@@ -501,7 +506,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    marginVertical: 15,
+    marginVertical: 10,
   },
   name: {
     fontWeight: 'bold',
@@ -552,6 +557,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     marginHorizontal: '5%',
+    marginTop:8,
   },
   botoFletxaTr: {
     width: 10,
@@ -565,21 +571,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: 'white', 
     padding: 20,
     borderRadius: 10,
+    borderColor: 'black', 
+    borderWidth: 1,
     alignItems: 'center',
   },
   trofeunom: {
     fontSize: 20,
-    color: '#ff6961',
+    color: '#87ceec',
     fontWeight: 'bold',
   },
   descripcio2: {
     fontSize: 15,
     fontWeight: 'bold',
+    marginBottom:2,
   },
 });
 

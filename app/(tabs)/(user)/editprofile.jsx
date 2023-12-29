@@ -1,15 +1,20 @@
-import React , { useState,useEffect } from 'react';
-import { Text , StyleSheet,TouchableOpacity, Image, View, TextInput} from 'react-native';
-import { MaterialIcons} from "@expo/vector-icons";
+import React, { useState, useEffect } from 'react';
+import { Text, StyleSheet, TouchableOpacity, Image, View, TextInput } from 'react-native';
+import { MaterialIcons } from "@expo/vector-icons";
 import { Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
+
+
 
 
 export default function Page() {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [username, setUsername] = useState(''); 
- const [user, setUser] = useState(null);
+  const [username, setUsername] = useState('');
+  const [user, setUser] = useState(null);
+  const { t } = useTranslation();
 
   const styles = StyleSheet.create({
     fotoProfile: {
@@ -21,13 +26,13 @@ export default function Page() {
     },
     camera: {
       fontSize: 30,
-      color:'black',
+      color: 'black',
       marginLeft: 200,
       marginTop: -26,
     },
     lock: {
       fontSize: 24,
-      color:'black',
+      color: 'black',
       marginLeft: 65,
       marginTop: -45,
     },
@@ -53,23 +58,23 @@ export default function Page() {
       marginLeft: 150,
       borderRadius: 15,
     },
-    
+
     username: {
       fontWeight: 'bold',
       marginLeft: 50,
       marginTop: -40,
-    
+
     },
     pickerContainer: {
       marginLeft: 155,
-      marginTop: 40, 
+      marginTop: 40,
     },
 
     genere: {
       fontWeight: 'bold',
       marginLeft: 50,
       marginTop: -30,
-      
+
     },
     contrasenya: {
       fontWeight: 'bold',
@@ -78,50 +83,50 @@ export default function Page() {
       marginBottom: 34,
     },
     cancelButton: {
-      width: 130, 
-      height: 40, 
-      backgroundColor: 'transparent', 
-      borderWidth: 1, 
-      borderColor: 'black', 
+      width: 130,
+      height: 40,
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: 'black',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 6, 
+      borderRadius: 6,
       marginLeft: 40,
       marginTop: 25,
       marginBottom: 10,
     },
     saveButton: {
-      width: 130, 
-      height: 40, 
-      backgroundColor: '#ff6961', 
-      borderWidth: 1, 
-      borderColor: 'black', 
+      width: 130,
+      height: 40,
+      backgroundColor: '#ff6961',
+      borderWidth: 1,
+      borderColor: 'black',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 6, 
+      borderRadius: 6,
       marginLeft: 220,
       marginTop: -50,
-      
+
     },
-    container: { 
-      flexDirection: 'row', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      backgroundColor: '#f3f3f3',   
-      borderRadius: 8, 
-      paddingHorizontal: 14, 
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#f3f3f3',
+      borderRadius: 8,
+      paddingHorizontal: 14,
       marginTop: 40,
-  },
+    },
     icon: {
       marginTop: 15,
       marginLeft: 10,
-      
+
     },
     input3: {
-      color: '#333', 
-      paddingVertical: 10, 
-      padding: 10, 
-      fontSize: 12, 
+      color: '#333',
+      paddingVertical: 10,
+      padding: 10,
+      fontSize: 12,
       marginLeft: 150,
       borderColor: 'gray',
       borderWidth: 1,
@@ -138,7 +143,7 @@ export default function Page() {
     visibilitatButton: {
       marginTop: 20,
     }
-    
+
   });
 
   const getLocalUser = async () => {
@@ -152,7 +157,7 @@ export default function Page() {
       return null;
     }
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -161,13 +166,13 @@ export default function Page() {
           console.error('User ID not found in AsyncStorage');
           return;
         }
-  
+
         const userTokenString = await AsyncStorage.getItem("@user");
         if (!userTokenString) {
           console.error('User token not found in AsyncStorage');
           return;
         }
-  
+
         const userToken = JSON.parse(userTokenString).token;
         const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
           headers: {
@@ -175,127 +180,149 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
-  
+
         const userData = await response.json();
         setUser(userData);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-  
+
     fetchData();
   }, []);
-    
-    
-  
-    if (!user) {
-      return <Text>Cargando...</Text>;
-    }
-    const handleSaveChanges = async () => {
-      try {
-        const userID = await getLocalUser();
-        if (!userID) {
-          console.error('User ID not found in AsyncStorage');
-          return;
-        }
-  
-        const userTokenString = await AsyncStorage.getItem("@user");
-        if (!userTokenString) {
-          console.error('User token not found in AsyncStorage');
-          return;
-        }
-  
-        const userToken = JSON.parse(userTokenString).token;
-        console.log(userToken);
-  
-        const updatedProfile = {
-          first_name: first_name || user.first_name,
-          bio: bio || user.bio,
-          username: username || user.username,
-        };
-        console.log(first_name);
-  
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Token ${userToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedProfile),
-        });
-  
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
-        }
-  
-        const updatedUserData = await response.json();
-        setUser(updatedUserData);
-  
-      } catch (error) {
-        console.error('Error updating user data:', error);
-      }
-    };
 
+  if (!user) {
+    return <Text>{t('Carregant')}</Text>;
+  }
+
+  const handleSelectImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Se requiere permiso para acceder a la galería de fotos.');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+    if (pickerResult.canceled) {
+      return;
+    }
+
+    setUser((prevUser) => ({
+      ...prevUser,
+      imatge: pickerResult.assets[0].uri,
+    }));
+  };
+  const handleSaveChanges = async () => {
+    try {
+      const userID = await getLocalUser();
+      if (!userID) {
+        console.error('User ID not found in AsyncStorage');
+        return;
+      }
+
+      const userTokenString = await AsyncStorage.getItem("@user");
+      if (!userTokenString) {
+        console.error('User token not found in AsyncStorage');
+        return;
+      }
+
+      const userToken = JSON.parse(userTokenString).token;
+
+      const updatedProfile = new FormData();
+
+      updatedProfile.append('first_name', first_name || user.first_name);
+      updatedProfile.append('bio', bio || user.bio);
+      updatedProfile.append('username', username || user.username);
+      console.log(user.imatge);
+      if (user.imatge) {
+        const uri = Platform.OS === 'android' ? user.imatge : user.imatge.replace('file://', '');
+        updatedProfile.append('imatge', { uri, name: 'dd.jpeg', type: 'image/jpeg' });
+        console.log('URI:', uri);
+    }
+
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: updatedProfile,
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+
+      const updatedUserData = await response.json();
+      setUser(updatedUserData);
+      
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+  };
   return (
-  <View>
-    <TouchableOpacity >
-      <Image
-        style={styles.fotoProfile}
-        source={{
-          uri:
-            user.imatge,
-         }}
-      />
-      <MaterialIcons
-        style={styles.camera}
-        name="photo-camera"
-        
-      />
-    </TouchableOpacity>
-    <TextInput
+    <View>
+      <TouchableOpacity onPress={handleSelectImage}>
+        <Image
+          style={styles.fotoProfile}
+          source={{
+            uri:
+              user.imatge,
+          }}
+        />
+        <MaterialIcons
+          style={styles.camera}
+          name="photo-camera"
+
+        />
+      </TouchableOpacity>
+      <TextInput
         style={styles.input}
         placeholder={user.username}
         value={username}
-        onChangeText={(text) => setUsername(text)} 
-       
-    />
-    <Text style= {styles.username}>Username: </Text>
-    <TextInput
+        onChangeText={(text) => setUsername(text)}
+
+      />
+      <Text style={styles.username}>{t('Edit_User.Username')}: </Text>
+      <TextInput
         style={styles.input2}
         placeholder={user.first_name}
         value={first_name}
         onChangeText={text => setName(text)}
-    />
-    <Text style= {styles.username}>Nom: </Text>
-    <TextInput
+      />
+      <Text style={styles.username}>{t('Edit_User.Nom')}: </Text>
+      <TextInput
         style={styles.input3}
         placeholder={user.bio}
         value={bio}
         onChangeText={text => setBio(text)}
-    />
-    <Text style= {styles.genere}>Bio: </Text>
-    <View style={styles.container}>
+      />
+      <Text style={styles.genere}>{t('Edit_User.Bio')}: </Text>
+      <View style={styles.container}>
+      </View>
+      <Link href={'(user)/user'} asChild>
+        <TouchableOpacity
+          style={styles.cancelButton}
+        >
+          <Text style={styles.rankingText}>{t('Cancel')}</Text>
+        </TouchableOpacity>
+      </Link>
+
+      <Link href={'(user)/user'} asChild>
+        <TouchableOpacity
+          style={styles.saveButton} onPress={handleSaveChanges}
+        >
+          <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
+        </TouchableOpacity>
+      </Link>
+      
     </View>
-    <Link href={'(user)/user'} asChild>
-    <TouchableOpacity
-        style={styles.cancelButton}
-      >
-      <Text style={styles.rankingText}>Cancelar</Text>
-    </TouchableOpacity>
-    </Link>
     
-    <Link href={'(user)/user'} asChild>
-    <TouchableOpacity
-        style={styles.saveButton } onPress={handleSaveChanges}
-      >
-      <Text style={styles.rankingText}>Desar canvis</Text>
-    </TouchableOpacity>
-    </Link>  
-  </View>
   );
-   
-        }
+}

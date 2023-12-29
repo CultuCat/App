@@ -1,0 +1,126 @@
+{
+  "Carregant": "Carregant...",
+  "Cancel": "Cancelar",
+  "Delete": "Eliminar",
+  "Config": {
+    "Visibilitat": "Visibilitat Usuari",
+    "User_vis": "Usuari Visible",
+    "User_no_vis": "Usuari no Visible",
+    "Xat": "Xatejar amb usuaris",
+    "User_xat": "Usuari vol xatejar",
+    "User_no_xat": "Usuari no vol xatejar",
+    "Idioma": "Idiomes",
+    "Canvi_idioma": "Canviar idioma",
+    "Eliminar": "Eliminar Compte",
+    "Confirmation": "Estàs segur que vols eliminar el teu compte?",
+    "Desar": "Desar",
+    "Sessio": "Tancar Sessió",
+    "Confirmation_ses": "Estàs segur que vols tancar la sessió?",
+    "Si": "Sí",
+    "No": "No"
+  },
+  "Edit_User": {
+    "Username": "Nom d'usuari",
+    "Nom": "Nom",
+    "Bio": "Biografia",
+    "Desar_can": "Desar canvis"
+  },
+  "Friendlist": {
+    "Busca": "Escriu aquí..."
+  },
+  "User": {
+    "Eliminar_lloc_fav": "Eliminar lloc favorit",
+    "Conf_lloc_fav": "Estàs segur que vols eliminar el lloc favorit ?",
+    "Delete_tag": "Eliminar tag",
+    "Conf_delete_tag": "Estàs segur que vols eliminar aquesta tag ?",
+    "Espai_delete": "Espai Eliminat",
+    "Espai_delete_text": "El lloc preferit ha estat eliminat correctament",
+    "Tag_delete": "Tag Eliminat",
+    "Tag_delete_text": "El tag ha estat eliminat correctament",
+    "Punts": "Punts",
+    "Amics": "Amics",
+    "Bio": "Biografia",
+    "Tags_favs": "Etiquetes Preferides",
+    "Llocs_favs": "Llocs Preferits",
+    "No_tags": "No hi ha tags",
+    "No_llocs": "No hi ha llocs preferits",
+    "Trofeus": "Trofeus",
+    "Ranking": "Veure rànquing",
+    "Rank": "Rànquing",
+    "Edit": "Editar perfil",
+    "User": "Usuari",
+    "Notrophy": "No has aconseguit aquest trofeu"
+  },
+  "Search": {
+    "Search": "Cerca",
+    "Busca": "Cerca...",
+    "Order": "Ordenar",
+    "Mapa": "Veure mapa"
+  },
+  "Event": {
+    "No_disp": "No disponible",
+    "Gratis": "Gratuït",
+    "Perm_calendar": "Es requereixen permisos per accedir al calendari",
+    "Perm_recordatoris": "Es requereixen permisos per accedir als recordatoris",
+    "Calendar": "Selecciona un calendari",
+    "Error_agregar": "Error al agregar l'esdeveniment al calendari",
+    "Seleccio_calendar": "No s'ha seleccionat un calendari",
+    "Afegit_calendar": "Esdeveniment afegit al calendari",
+    "Descripcio": "Descripció",
+    "Do_you_know": "Sabies que?",
+    "Assistents": "Veure assistens a l'esdeveniment",
+    "Ubicacio": "Veure ubicació al mapa",
+    "Afegir_cal": "Afegir al calendari",
+    "Comentaris": "Comentaris",
+    "Assistents_list": "Assistents",
+    "No_assistents": "No hi ha assistents per aquest esdeveniment"
+  },
+  "Index": {
+    "Eror_credencials": "Usuari o contrasenya incorrecte",
+    "Benvingut": "Benvingut/da",
+    "User": "Nom d'usuari",
+    "Password": "Contrasenya"
+  },
+  "Map": {
+    "Esdeveniments": "Esdeveniments"
+  },
+  "Ticket": {
+    "Tots": "Veure tots els tiquets",
+    "No_tickets_propers": "No tens entrades per propers esdeveniments",
+    "No_tickets": "No tens entrades a esdeveniments",
+    "Comprat": "Entrada comprada!",
+    "Ticket_donat": "Ja tens el teu tiquet per aquest esdeveniment",
+    "Vols_ticket": "Vols comprar una entrada per",
+    "Codi_descompte": "Validar codi descompte:",
+    "Ticket": "Tiquets",
+    "Entrada_a": "Entrada a"
+  },
+  "Signup": {
+    "Password_not_equal": "Les contrasenyes no són iguals",
+    "Username_existeix": "Ja existeix una usuari amb aquest username",
+    "Email_existeix": "Ja existeix una usuari amb aquest email",
+    "Registrat": "Registra't",
+    "Email": "Email",
+    "Repetir_password": "Repeteix la contrasenya"
+  },
+  "Comments": {
+    "Comment": "Escriu el teu comentari aquí",
+    "Enviar": "Enviar Comentari"
+  },
+  "Chat": {
+    "Chat": "Xats",
+    "Type_here": "Escriu aquí...",
+    "Afegir_amic": "Afegeix a un amic o amiga i comença a xatejar"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escull els tags pels que vols filtrar"
+  },
+  "Home": {
+    "Welcome": "Benvingut/da",
+    "Today": "Avui",
+    "Week": "Aquesta setmana",
+    "Free": "Gratuït",
+    "Trendy": "Popular"
+  }
+}

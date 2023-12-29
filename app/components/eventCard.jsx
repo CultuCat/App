@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const TicketCard = ({ event, data, espai, imatge, onPress }) => {
+const EventCard = ({ event, data, espai, imatge, onPress }) => {
   const transformDate = (date) => {
     const dateObj = new Date(date);
     const formatOptions = {
@@ -18,11 +18,13 @@ const TicketCard = ({ event, data, espai, imatge, onPress }) => {
     <TouchableOpacity
       onPress={onPress}
       style={{
-        width: 300,
-        height: 300,
+        flex: 1,
+        aspectRatio: 1,
         borderRadius: 15,
         overflow: 'hidden',
-        margin: 10,
+        marginHorizontal: '5%',
+        marginVertical: '2.5%',
+        width: '90%',
       }}
     >
       <Image
@@ -58,4 +60,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TicketCard;
+export default EventCard;
