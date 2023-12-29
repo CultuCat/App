@@ -10,7 +10,6 @@ export default function Page() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const handlePress = (friendId) => {
-    console.log(friendId);
     navigation.navigate('profilefriend', { id: friendId });
   };
   
@@ -56,54 +55,70 @@ export default function Page() {
   const [data, setData] = useState([]);
   const [pending, setPending] = useState([]); 
   const handleAccept = async (id) => {
-    const rId = user.pending_friend_requests.find(request => request.from_user === id).id;
-    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data.user.id}/accept_friend_request`, {
+    const rId = user.pending_friend_requests.find(request => request.from_user.id === id).id;
+    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${user.id}/accept_friend_request/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         "id": rId,
-        "is_accepted": "true",
+        "is_accepted": true,
       }),
     });
     if (!response.ok) {
       console.error('Error en la solicitud POST:', response);
     } else {
       const data = await response.json();
-      console.log('Respuesta de la solicitud POST:', data);
+      const userData = await getLocalUser();
+      setUser(userData);
     }
   };
   
   const handleReject = async (id) => {
-    const rId = user.pending_friend_requests.find(request => request.from_user === id).id;
-    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${data.user.id}/accept_friend_request`, {
+    const rId = user.pending_friend_requests.find(request => request.from_user.id === id).id;
+    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${user.id}/accept_friend_request/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         "id": rId,
-        "is_accepted": "false",
+        "is_accepted": false,
       }),
     });
     if (!response.ok) {
       console.error('Error en la solicitud POST:', response);
     } else {
       const data = await response.json();
-      console.log('Respuesta de la solicitud POST:', data);
+      const userData = await getLocalUser();
+      setUser(userData);
     }
   };
   const getLocalUser = async () => {
     try {
-      const dataString = await AsyncStorage.getItem("@user");
-      if (!dataString) return null;
-      const data = JSON.parse(dataString);
-      console.log('User', data.user); 
-      const promises = data.user.pending_friend_requests.map((id) => fetchUserDetails(id.from_user));
-      const userDetails = await Promise.all(promises);
+      const userString = await AsyncStorage.getItem("@user");
+      if (!userString) {
+        console.error('User token not found in AsyncStorage');
+        return;
+      }
+      const userJSON = JSON.parse(userString).user;
+      const userID = userJSON.id;
+      const userToken = JSON.parse(userString).token;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+      const userData = await response.json();
+      const userDetails = userData.pending_friend_requests.map(request => request.from_user);
       setPending(userDetails);
-      return data.user; 
+      return userData; 
 
     } catch (error) {
       console.error('Error getting local user data:', error);
@@ -111,11 +126,7 @@ export default function Page() {
     }
   };
 
-  const fetchUserDetails = async (id) => {
-    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${id}`);
-    const data = await response.json();
-    return data;
-  };
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -157,6 +168,7 @@ export default function Page() {
 
   return (
     <SafeAreaView style={styles.container}>
+      
       <SearchBar
         inputContainerStyle={styles.searchBarInputContainer}
         placeholder={t('Friendlist.Busca')}
@@ -165,24 +177,27 @@ export default function Page() {
         platform="ios"
         containerStyle={styles.searchBarContainer}
       />
-      <Text style={styles.title}>Friend requests</Text>
-      <FlatList
-        data={pending}
-        renderItem={({ item }) => (
-          <ItemWithButtons  id={item.id} title={item.username} image={{ uri: item.imatge}} />
-        )}
-        keyExtractor={(item) => item.id}
+      
+      
+        <Text style={styles.title}>Friend requests</Text>
+        <FlatList
+          data={pending}
+          renderItem={({ item }) => (
+            <ItemWithButtons  id={item.id} title={item.username} image={{ uri: item.imatge}} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+        <Text style={styles.title}>Friends</Text>
+        <FlatList
+          style={styles.list}
+          data={filteredData}
+          renderItem={({ item }) => (
+            <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
+          )}
+        keyExtractor={(item) => item.id.toString()}
       />
-      <Text style={styles.title}>Friends</Text>
-
-      <FlatList
-      style={styles.list}
-      data={filteredData}
-      renderItem={({ item }) => (
-        <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
-      )}
-      keyExtractor={(item) => item.id.toString()}
-    />
+      
+      
     </SafeAreaView>
   );
 }
@@ -237,10 +252,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   searchBarContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     zIndex: 1,
     backgroundColor: 'transparent',
     borderBottomColor: 'transparent',

@@ -23,26 +23,7 @@ const User = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [iconName, setIconName] = useState('heart-outline');
 
-  const handleIconClick = async () => {
-    setIconName('time-outline');
   
-    const response = await fetch(`https://cultucat.hemanuelpc.es/${currentUser}/send_friend_request/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "to_user": user.id,
-      }),
-    });
-  
-    if (!response.ok) {
-      console.error('Error en la solicitud POST:', response);
-    } else {
-      const data = await response.json();
-      console.log('Respuesta de la solicitud POST:', data);
-    }
-  };
   const { t } = useTranslation();
 
   const handleRanking = () => {
@@ -309,7 +290,7 @@ const User = () => {
               source={{
                 uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
-            />
+            />     
           </View>
           <View style={{
             flexDirection: 'row',

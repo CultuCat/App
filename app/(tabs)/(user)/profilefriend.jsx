@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function ProfileFriend() {
   const [user, setUser] = useState(null);
@@ -14,7 +15,63 @@ export default function ProfileFriend() {
   const route = useRoute();
   const userId = route.params.id;
   const navigation = useNavigation();
-
+  
+  const [friendStatus, setFriendStatus] = useState('notFriend');
+  const checkFriendStatus = async () => {
+    try {
+      const userString = await AsyncStorage.getItem("@user");
+      if (!userString) {
+        console.error('User token not found in AsyncStorage');
+        return;
+      }
+      const userToken = JSON.parse(userString).token;
+      const id = JSON.parse(userString).user.id;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${id}`, {
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+      const data = await response.json();
+      if (data.friends.some(friend => friend.id === userId)) {
+        //setFriendStatus('isFriend');
+        setFriendStatus('isFriend');
+      } else if(data.pending_friend_requests_sent.some(request => request.to_user === userId)) {
+        setFriendStatus('requestSent');
+      }
+      
+    } catch (error) {
+      console.error('Error fetching friend status:', error);
+    }
+  };
+  const handleIconClick = async () => {
+    const userString = await AsyncStorage.getItem("@user");
+    if (!userString) {
+      console.error('User token not found in AsyncStorage');
+      return;
+    }
+    const userID = JSON.parse(userString).user.id;
+    
+    const response = await fetch(`https://cultucat.hemanuelpc.es/${userID}/send_friend_request/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "to_user": userId,
+      }),
+    });
+  
+    if (!response.ok) {
+      console.error('Error en la solicitud POST:', response);
+    } else {
+      const data = await response.json();
+      setFriendStatus('requestSent');
+    }
+  };
   const handleBackToProfile = () => {
     navigation.navigate('user'); 
   };
@@ -24,7 +81,6 @@ export default function ProfileFriend() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(userId)
         const userTokenString = await AsyncStorage.getItem("@user");
         if (!userTokenString) {
           console.error('User token not found in AsyncStorage');
@@ -51,6 +107,7 @@ export default function ProfileFriend() {
     };
 
     fetchData();
+    checkFriendStatus();
   }, []);
 
 
@@ -92,7 +149,24 @@ export default function ProfileFriend() {
                 uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
             />
+              <TouchableOpacity
+              onPress={() => {
+                if (friendStatus === 'notFriend') {
+                  handleIconClick();
+                } 
+              }}
+            >
+              {friendStatus === 'isFriend' ? (
+                <MaterialCommunityIcons name="heart" size={24} color="black" />
+              ) : friendStatus === 'requestSent' ? (
+                <Ionicons name="account-clock-outline" size={24} color="black" />
+              ) : (
+                <Ionicons name="person-add" size={24} color="black" />
+              )}
+            </TouchableOpacity>
+            
           </View>
+          
           <View style={{
             flexDirection: 'row',
             justifyContent: 'center',
