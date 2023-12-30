@@ -20,10 +20,7 @@ const User = () => {
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const [rankingVisible, setRankingVisible] = useState(false);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [iconName, setIconName] = useState('heart-outline');
-
-  
+  const [isModalVisible, setModalVisible] = useState(false);  
   const { t } = useTranslation();
 
   const handleRanking = () => {

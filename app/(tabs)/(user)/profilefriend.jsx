@@ -1,13 +1,13 @@
-import {  ScrollView,Text, View,StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { Link } from 'expo-router';
 import { React, useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
 import Divider from '../../components/divider';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 export default function ProfileFriend() {
   const [user, setUser] = useState(null);
@@ -15,7 +15,7 @@ export default function ProfileFriend() {
   const route = useRoute();
   const userId = route.params.id;
   const navigation = useNavigation();
-  
+
   const [friendStatus, setFriendStatus] = useState('notFriend');
   const checkFriendStatus = async () => {
     try {
@@ -37,12 +37,11 @@ export default function ProfileFriend() {
       }
       const data = await response.json();
       if (data.friends.some(friend => friend.id === userId)) {
-        //setFriendStatus('isFriend');
         setFriendStatus('isFriend');
-      } else if(data.pending_friend_requests_sent.some(request => request.to_user === userId)) {
+      } else if (data.pending_friend_requests_sent.some(request => request.to_user === userId)) {
         setFriendStatus('requestSent');
       }
-      
+
     } catch (error) {
       console.error('Error fetching friend status:', error);
     }
@@ -54,7 +53,7 @@ export default function ProfileFriend() {
       return;
     }
     const userID = JSON.parse(userString).user.id;
-    
+
     const response = await fetch(`https://cultucat.hemanuelpc.es/${userID}/send_friend_request/`, {
       method: 'POST',
       headers: {
@@ -64,7 +63,7 @@ export default function ProfileFriend() {
         "to_user": userId,
       }),
     });
-  
+
     if (!response.ok) {
       console.error('Error en la solicitud POST:', response);
     } else {
@@ -73,7 +72,7 @@ export default function ProfileFriend() {
     }
   };
   const handleBackToProfile = () => {
-    navigation.navigate('user'); 
+    navigation.navigate('user');
   };
   const goBackToFriendList = () => {
     navigation.goBack();
@@ -149,11 +148,11 @@ export default function ProfileFriend() {
                 uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
             />
-              <TouchableOpacity
+            <TouchableOpacity
               onPress={() => {
                 if (friendStatus === 'notFriend') {
                   handleIconClick();
-                } 
+                }
               }}
             >
               {friendStatus === 'isFriend' ? (
@@ -164,9 +163,9 @@ export default function ProfileFriend() {
                 <Ionicons name="person-add" size={24} color="black" />
               )}
             </TouchableOpacity>
-            
+
           </View>
-          
+
           <View style={{
             flexDirection: 'row',
             justifyContent: 'center',
@@ -174,7 +173,7 @@ export default function ProfileFriend() {
             <Text style={styles.userCardText}>{t('User.Punts')}</Text>
             <Text style={styles.userCardText}>{user.puntuacio}</Text>
             <View style={styles.separator2} />
-            <Text style={styles.userCardText}>{t('User.Amics')}</Text>  
+            <Text style={styles.userCardText}>{t('User.Amics')}</Text>
             <Text style={styles.userCardText}>{user.friends.length}</Text>
           </View>
         </View>
@@ -188,11 +187,11 @@ export default function ProfileFriend() {
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
           >
-            { user.tags_preferits.length > 0 ? (
+            {user.tags_preferits.length > 0 ? (
               user.tags_preferits.map((tag, index) => (
                 <TouchableOpacity
                   key={tag.id}
-                 
+
                   style={[
                     { marginHorizontal: 2.5 },
                     index === 0 && { marginLeft: 15 },
@@ -230,7 +229,7 @@ export default function ProfileFriend() {
             )}
           </ScrollView>
           <Divider />
-          
+
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -261,7 +260,7 @@ export default function ProfileFriend() {
                 <Ionicons name="ios-arrow-back" size={16} color="black" />
               </View>
             </TouchableOpacity>
-           
+
           </View>
         </ScrollView>
       </View>)}
