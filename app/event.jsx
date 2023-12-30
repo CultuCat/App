@@ -13,6 +13,7 @@ import UserListModal from './components/userListModal.jsx';
 import * as Calendar from 'expo-calendar';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { transformDate } from '../functions/transformDate.js';
 
 
 export default function Page() {
@@ -111,21 +112,6 @@ export default function Page() {
 
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
-  };
-
-
-  const transformDate = (date) => {
-    if (date) {
-      const dateObj = new Date(date);
-      const formatOptions = {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      };
-      const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-      return formatter.format(dateObj);
-    }
-    return null
   };
 
   const getCalendarPermission = async () => {

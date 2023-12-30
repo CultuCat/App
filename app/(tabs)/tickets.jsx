@@ -18,7 +18,7 @@ const Tickets = () => {
 
   const filteredTickets = showAllTickets
     ? tickets
-    : tickets.filter((ticket) => new Date(ticket.data) >= today);
+    : tickets.filter((ticket) => new Date(ticket.dataFi) >= today);
 
   const handleTicketClick = (ticket) => {
     setSelectedTicket(ticket);
@@ -28,9 +28,9 @@ const Tickets = () => {
   const renderTicketCard = ({ item }) => (
     <EventCard
       event={item.nomEvent}
-      data={item.data}
+      data={item.dataIni}
       espai={item.espai}
-      imatge={item.imatge}
+      imatge={item.imatges_list[0]}
       onPress={() => handleTicketClick(item)}
     />
   );

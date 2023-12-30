@@ -1,19 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { transformDate } from '../../functions/transformDate';
 
 const EventCard = ({ event, data, espai, imatge, onPress }) => {
-  const transformDate = (date) => {
-    const dateObj = new Date(date);
-    const formatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    };
-    const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-    return formatter.format(dateObj);
-  };
-
   return (
     <TouchableOpacity
       onPress={onPress}

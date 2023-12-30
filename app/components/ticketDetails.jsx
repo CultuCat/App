@@ -1,48 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { useTranslation } from 'react-i18next';
+import { transformDate } from '../../functions/transformDate';
 
 
 const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible }) => {
   const { t } = useTranslation();
-  const [info, setInfo] = useState('');
-
-  const transformDate = (date) => {
-    const dateObj = new Date(date);
-    const formatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    };
-    const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-    return formatter.format(dateObj);
-  };
 
   const closeModal = () => {
     setSelectedTicketVisible(false);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const id = ticket.id;
-        const response = await fetch(`https://cultucat.hemanuelpc.es/tickets/${id}`);
-
-        if (!response.ok) {
-          throw new Error('No se pudo obtener el archivo JSON');
-        }
-        const data = await response.json();
-        setInfo(data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchData();
-  }, [ticket.id]);
 
   return (
     <Modal
@@ -57,18 +26,19 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         <Text style={styles.title}>{t('Ticket.Entrada_a')}</Text>
         <View style={styles.ticketContainer}>
           <Image
-            source={{ uri: ticket.imatge }}
+            source={{ uri: ticket.imatges_list[0] }}
             style={styles.imatge}
           />
           <View style={styles.ticketDetails}>
             <Text style={styles.ticketTextTitle}>{ticket.nomEvent}</Text>
-            <Text style={styles.ticketTextDate}>{transformDate(ticket.data)}</Text>
+            <Text style={styles.ticketTextDate}>{transformDate(ticket.dataIni)} -</Text>
+            <Text style={styles.ticketTextDate}>{transformDate(ticket.dataFi)}</Text>
             <Text style={styles.ticketText}>{ticket.espai}</Text>
           </View>
         </View>
         <View style={styles.divider}></View>
         <Image
-          source={{ uri: info.image }}
+          source={{ uri: ticket.image }}
           style={styles.qr}
         />
       </View>
@@ -120,7 +90,7 @@ const styles = StyleSheet.create({
   },
   ticketText: {
     fontSize: 16,
-    marginBottom: 5,
+    marginVertical: 5,
   },
   ticketTextTitle: {
     fontSize: 16,
@@ -129,7 +99,6 @@ const styles = StyleSheet.create({
   },
   ticketTextDate: {
     fontSize: 16,
-    marginBottom: 5,
     color: colors.secondary,
   },
   divider: {

@@ -1,20 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, Image, View } from 'react-native';
 import colors from '../../constants/colors';
+import { transformDate } from '../../functions/transformDate';
 
 
 const EventPreview = ({ event, data, espai, imatge, onPress }) => {
-  const transformDate = (date) => {
-    const dateObj = new Date(date);
-    const formatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    };
-    const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-    return formatter.format(dateObj);
-  };
-
   const truncateText = (text, maxLength) => {
     if (text.length > maxLength) {
       return `${text.substring(0, maxLength)}...`;
