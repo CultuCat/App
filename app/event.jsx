@@ -249,7 +249,7 @@ export default function Page() {
                   <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
                     <Text style={{ margin: 10 }}>{t('Event.Assistents')}</Text>
                   </TouchableOpacity>
-                  <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
+                  <UserListModal users={event.assistents} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
                   <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
                     <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
                   </TouchableOpacity>

@@ -1,59 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image, Button } from 'react-native';
+import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import UserPreview from '../../components/userPreview';
+import { Ionicons } from '@expo/vector-icons';
+import colors from '../../../constants/colors';
 
 
-export default function Page() {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-  const handlePress = (friendId) => {
-    navigation.navigate('profilefriend', { id: friendId });
-  };
-  
-  
- 
-  const Item = ({ id, username, image }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
-      <Image source={{ uri: image.uri }} style={styles.image} />
-
-      <View style={styles.itemText}>
-        <Text style={styles.title}>{username}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const ItemWithButtons = ({ id, title, image }) => (
-    <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.item}>
-        <Image source={image} style={styles.image} />
-        <View style={styles.itemText}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      </TouchableOpacity>
-      <View style={styles.buttonsContainer}>
-      <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => handleAccept(id)}>
-        <Text style={styles.buttonText}>✓</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => handleReject(id)}>
-        <Text style={styles.buttonText}>✗</Text>
-      </TouchableOpacity>
-      </View>
-    </View>
-  );
-  
-
-
-  const [search, setSearch] = useState('');
-  const [user, setUser] = useState(null);
-  const updateSearch = (text) => {
-    setSearch(text);
-  };
-
-  const [data, setData] = useState([]);
-  const [pending, setPending] = useState([]); 
+const ItemWithButtons = ({ id, username, name, image }) => {
   const handleAccept = async (id) => {
     const rId = user.pending_friend_requests.find(request => request.from_user.id === id).id;
     const response = await fetch(`https://cultucat.hemanuelpc.es/users/${user.id}/accept_friend_request/`, {
@@ -74,7 +30,7 @@ export default function Page() {
       setUser(userData);
     }
   };
-  
+
   const handleReject = async (id) => {
     const rId = user.pending_friend_requests.find(request => request.from_user.id === id).id;
     const response = await fetch(`https://cultucat.hemanuelpc.es/users/${user.id}/accept_friend_request/`, {
@@ -95,6 +51,38 @@ export default function Page() {
       setUser(userData);
     }
   };
+
+  return (
+    <View style={styles.itemContainer}>
+      <TouchableOpacity style={styles.item}>
+        <Image source={{ uri: image }} style={styles.image} />
+        <View style={styles.itemText}>
+          <Text style={styles.subtitle}>{name}</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => handleAccept(id)}>
+          <Text style={styles.buttonText}>✓</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => handleReject(id)}>
+          <Text style={styles.buttonText}>✗</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default function Page() {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+  const [search, setSearch] = useState('');
+  const [user, setUser] = useState(null);
+  const updateSearch = (text) => {
+    setSearch(text);
+  };
+  const [data, setData] = useState([]);
+  const [pending, setPending] = useState([]);
+
   const getLocalUser = async () => {
     try {
       const userString = await AsyncStorage.getItem("@user");
@@ -116,17 +104,13 @@ export default function Page() {
         throw new Error('Error en la solicitud');
       }
       const userData = await response.json();
-      const userDetails = userData.pending_friend_requests.map(request => request.from_user);
-      setPending(userDetails);
-      return userData; 
+      return userData;
 
     } catch (error) {
       console.error('Error getting local user data:', error);
       return null;
     }
   };
-
- 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,7 +122,7 @@ export default function Page() {
         }
 
         const userString = await AsyncStorage.getItem("@user");
-        const token = JSON.parse(userString).token; 
+        const token = JSON.parse(userString).token;
 
         const headers = {
           'Authorization': `Token ${token}`,
@@ -149,6 +133,8 @@ export default function Page() {
         });
         if (response.ok) {
           const responseData = await response.json();
+          const userDetails = userData.pending_friend_requests.map(request => request.from_user);
+          setPending(userDetails);
           setUser(userData);
           setData(responseData.friends || []);
         } else {
@@ -158,51 +144,85 @@ export default function Page() {
         console.error('Error fetching user data:', error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
   const filteredData = data.filter((item) =>
-    item.username.toLowerCase().includes(search.toLowerCase())
+    (item.username.toLowerCase().includes(search.toLowerCase()) ||
+      item.first_name.toLowerCase().includes(search.toLowerCase())) &&
+    item.isVisible && !item.isBlocked
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      
-      <SearchBar
-        inputContainerStyle={styles.searchBarInputContainer}
-        placeholder={t('Friendlist.Busca')}
-        onChangeText={updateSearch}
-        value={search}
-        platform="ios"
-        containerStyle={styles.searchBarContainer}
-      />
-      
-      
-        <Text style={styles.title}>Friend requests</Text>
+    <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
+      <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
+        <View style={{ marginHorizontal: '5%' }}>
+          <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+            <Ionicons name="ios-close-outline" size={36} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Friends</Text>
+        </View>
+        <View style={{ marginHorizontal: '3%', marginBottom: '3%' }}>
+          <SearchBar
+            inputContainerStyle={styles.searchBarInputContainer}
+            placeholder={t('Friendlist.Busca')}
+            onChangeText={updateSearch}
+            value={search}
+            platform="ios"
+          />
+        </View>
+        {pending.length > 0 && (
+          <View style={{ flex: 0 }}>
+            <FlatList
+              data={pending}
+              renderItem={({ item }) => (
+                <ItemWithButtons id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          </View>
+        )}
         <FlatList
-          data={pending}
-          renderItem={({ item }) => (
-            <ItemWithButtons  id={item.id} title={item.username} image={{ uri: item.imatge}} />
-          )}
-          keyExtractor={(item) => item.id}
-        />
-        <Text style={styles.title}>Friends</Text>
-        <FlatList
-          style={styles.list}
           data={filteredData}
           renderItem={({ item }) => (
-            <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
+            <UserPreview id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
           )}
-        keyExtractor={(item) => item.id.toString()}
-      />
-      
-      
-    </SafeAreaView>
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  androidView: {
+    backgroundColor: '#ffffff',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  androidMarginTop: {
+    marginTop: 40,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginTop: 10,
+    alignSelf: 'flex-start'
+  },
+  iconContainer: {
+    backgroundColor: colors.terciary,
+    borderRadius: 100,
+    aspectRatio: 1,
+    position: 'absolute',
+  },
+  closeIcon: {
+    top: 10,
+    right: 0,
+  },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -211,9 +231,6 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     marginHorizontal: 16,
-  },
-  container: {
-   //flex: 1,
   },
   button: {
     padding: 10,
@@ -227,6 +244,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
+  subtitle: {
+    fontSize: 19,
+    marginTop: 7,
+    marginLeft: 10,
+  },
+  searchBarInputContainer: {
+    height: 30,
+    borderWidth: 0,
+    borderRadius: 10,
+    default: 'ios',
+  },
   item: {
     backgroundColor: '#e0e0e0',
     padding: 15,
@@ -234,35 +262,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 20,
     flexDirection: 'row',
-    marginTop: 14,
-    flex:1,
+    marginTop: 10,
+    flex: 1,
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     marginRight: 10,
-    borderRadius: 40
+    borderRadius: 100
   },
   itemText: {
     //flex: 1,
   },
-  title: {
-    fontSize: 19,
-    marginTop: 7,
-    marginLeft: 10,
-  },
-  searchBarContainer: {
-    zIndex: 1,
-    backgroundColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderTopColor: 'transparent',
-  },
-  searchBarInputContainer: {
-    backgroundColor: '#fff',
-    height: 40,
-  },
-  list: {
-    marginTop:60,
-  }
- 
 });
