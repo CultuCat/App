@@ -28,7 +28,8 @@ const Tickets = () => {
   const renderTicketCard = ({ item }) => (
     <EventCard
       event={item.nomEvent}
-      data={item.dataIni}
+      dataIni={item.dataIni}
+      dataFi={item.dataFi}
       espai={item.espai}
       imatge={item.imatges_list[0]}
       onPress={() => handleTicketClick(item)}

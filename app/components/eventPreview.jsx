@@ -4,7 +4,7 @@ import colors from '../../constants/colors';
 import { transformDate } from '../../functions/transformDate';
 
 
-const EventPreview = ({ event, data, espai, imatge, onPress }) => {
+const EventPreview = ({ event, dataIni, dataFi, espai, imatge, onPress }) => {
   const truncateText = (text, maxLength) => {
     if (text.length > maxLength) {
       return `${text.substring(0, maxLength)}...`;
@@ -25,9 +25,15 @@ const EventPreview = ({ event, data, espai, imatge, onPress }) => {
         <Text style={styles.title} numberOfLines={1}>
           {truncateText(event, 25)}
         </Text>
-        <Text style={styles.date} numberOfLines={1}>
-          {transformDate(data)}
-        </Text>
+        {dataIni === dataFi ? (
+          <Text style={styles.date} numberOfLines={1}>
+            {transformDate(dataIni)}
+          </Text>
+        ) : (
+          <Text style={styles.date} numberOfLines={1}>
+            {transformDate(dataIni)} - {transformDate(dataFi)}
+          </Text>
+        )}
         <Text style={styles.espai} numberOfLines={1}>
           {truncateText(espai, 38)}
         </Text>

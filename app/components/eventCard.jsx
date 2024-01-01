@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { transformDate } from '../../functions/transformDate';
 
-const EventCard = ({ event, data, espai, imatge, onPress }) => {
+const EventCard = ({ event, dataIni, dataFi, espai, imatge, onPress }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -31,7 +31,15 @@ const EventCard = ({ event, data, espai, imatge, onPress }) => {
         }}
       >
         <Text style={styles.title} numberOfLines={1}>{event}</Text>
-        <Text style={styles.subtitle} numberOfLines={1}>{transformDate(data)}</Text>
+        {dataIni === dataFi ? (
+          <Text style={styles.subtitle} numberOfLines={1}>
+            {transformDate(dataIni)}
+          </Text>
+        ) : (
+          <Text style={styles.subtitle} numberOfLines={1}>
+            {transformDate(dataIni)} - {transformDate(dataFi)}
+          </Text>
+        )}
         <Text style={styles.subtitle} numberOfLines={1}>{espai}</Text>
       </LinearGradient>
     </TouchableOpacity>

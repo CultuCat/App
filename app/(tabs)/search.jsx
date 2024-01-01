@@ -334,7 +334,8 @@ export default function Page() {
             renderItem={({ item }) => (
               <EventPreview
                 event={item.nom}
-                data={item.dataIni}
+                dataIni={item.dataIni}
+                dataFi={item.dataFi}
                 espai={item.espai.nom}
                 imatge={item.imatges_list[0]}
                 onPress={() => handlePressEvent(item.id)}

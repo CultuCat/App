@@ -31,8 +31,16 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
           />
           <View style={styles.ticketDetails}>
             <Text style={styles.ticketTextTitle}>{ticket.nomEvent}</Text>
-            <Text style={styles.ticketTextDate}>{transformDate(ticket.dataIni)} -</Text>
-            <Text style={styles.ticketTextDate}>{transformDate(ticket.dataFi)}</Text>
+            {ticket.dataIni === ticket.dataFi ? (
+              <Text style={styles.ticketTextDate}>
+                {transformDate(ticket.dataIni)}
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.ticketTextDate}>{transformDate(ticket.dataIni)} -</Text>
+                <Text style={styles.ticketTextDate}>{transformDate(ticket.dataFi)}</Text>
+              </>
+            )}
             <Text style={styles.ticketText}>{ticket.espai}</Text>
           </View>
         </View>

@@ -99,7 +99,7 @@ export default function Page() {
       .catch((error) => {
         console.error(error);
       });
-      fetchComments();
+    fetchComments();
   }, []);
 
   useEffect(() => {
@@ -196,7 +196,7 @@ export default function Page() {
           <ActivityIndicator />
         ) : (
           <View>
-            <ScrollView style={[Platform.OS === 'ios' && {height: '94%'}, Platform.OS === 'android' && {height: '90%'}]}>
+            <ScrollView style={[Platform.OS === 'ios' && { height: '94%' }, Platform.OS === 'android' && { height: '90%' }]}>
               <View style={styles.imageContainer}>
                 <ImageBackground
                   style={styles.fotoLogo}
@@ -215,9 +215,17 @@ export default function Page() {
                   </TouchableOpacity>
                 </ImageBackground>
               </View>
-              <View style={{ marginHorizontal: '7.5%' }}>
+              <View style={{ marginHorizontal: '5%' }}>
                 <Text style={styles.title}>{event.nom}</Text>
-                <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
+                {event?.dataIni === event?.dataFi ? (
+                  <Text style={{ color: '#ff6961' }}>
+                    {transformDate(event?.dataIni)}
+                  </Text>
+                ) : (
+                  <Text style={{ color: '#ff6961' }}>
+                    {transformDate(event?.dataIni)} - {transformDate(event?.dataFi)}
+                  </Text>
+                )}
                 <Text>{event.espai?.nom}</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                   {event.tags?.map((tag) => (
@@ -290,9 +298,9 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   imageContainer: {
-    marginVertical: 20,
-    width: '85%',
-    marginHorizontal: '7.5%',
+    marginVertical: 10,
+    width: '90%',
+    marginHorizontal: '5%',
     aspectRatio: 1,
   },
   fotoLogo: {
