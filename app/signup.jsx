@@ -17,6 +17,8 @@ export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
+    const [isGoogleUser, setIsGoogleUser] = useState(false);
+    const [image, setImage] = userState(null);
     const googlePassword = "$W4#yLz2*QsFv@6uG8hJ1pA5nDx@9oP3r";
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
@@ -52,6 +54,8 @@ export default function Page() {
                 setEmail(user.email);
                 setPassword(googlePassword);
                 setPassword2(googlePassword);
+                setIsGoogleUser(true);
+                setImage(user.picture);
                 onSignupPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
@@ -76,6 +80,8 @@ export default function Page() {
                     username: username,
                     email: email,
                     password: password,
+                    isGoogleUser: isGoogleUser,
+                    imatge_url: image,
                 }),
             })
                 .then((response) => response.json())
