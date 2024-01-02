@@ -51,8 +51,9 @@
     "User": "User"
   },
   "Search": {
+    "Search": "Search",
     "Busca": "Search...",
-    "Filtres": "Filters",
+    "Order": "Order",
     "Mapa": "View map"
   },
   "Event": {
@@ -64,7 +65,8 @@
     "Error_agregar": "Error adding event to calendar",
     "Seleccio_calendar": "No calendar selected",
     "Afegit_calendar": "Event added to calendar",
-    "Descripcio": "Event description",
+    "Descripcio": "Description",
+    "Do_you_know": "Do you know?",
     "Assistents": "View event attendees",
     "Ubicacio": "View location on map",
     "Afegir_cal": "Add to calendar",
@@ -105,6 +107,19 @@
     "Enviar": "Submit Comment"
   },
   "Chat": {
-    "Chat": "Chat"
+    "Chat": "Chat",
+    "Type_here": "Type here...",
+    "Afegir_amic": "Add a friend and start chating"
+  },
+  "Filters": {
+    "Filter": "Filter",
+    "Tags": "Choose the tags you want to filter by"
+  },
+  "Home": {
+    "Welcome": "Welcome",
+    "Today": "Today",
+    "Week": "This week",
+    "Free": "Free",
+    "Trendy": "Trendy"
   }
 }
