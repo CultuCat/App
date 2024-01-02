@@ -73,9 +73,6 @@ export default function Page() {
             }),
         })
             .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Incorrect username or password");
-                }
                 return response.json();
             })
             .then((data) => {
@@ -83,15 +80,18 @@ export default function Page() {
                     AsyncStorage.setItem("@user", JSON.stringify(data));
                     router.replace('/(tabs)/home');
                 }
+                else if (data.detail.includes('bloquejat'))
+                    Alert.alert("Error", t('Index.Eror_credencials'));
+                else
+                    Alert.alert("Error", t('Index.Eror_credencials'));
             })
             .catch((error) => {
                 console.error("Error:", error);
-                Alert.alert("Error", t('Index.Eror_credencials'));
             });
     };
 
     return (
-        <View style={[{flex: 1}, Platform.OS === 'android' && styles.androidView]}>
+        <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
             <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
                 <View style={styles.imageContainer}>
                     <Image

@@ -52,7 +52,7 @@ export default function Page() {
                 setEmail(user.email);
                 setPassword(googlePassword);
                 setPassword2(googlePassword);
-                onSignUpPress();
+                onSignupPress();
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
             }
