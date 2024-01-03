@@ -18,7 +18,7 @@ export default function Page() {
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const [isGoogleUser, setIsGoogleUser] = useState(false);
-    const [image, setImage] = userState(null);
+    const [image, setImage] = useState(null);
     const googlePassword = "$W4#yLz2*QsFv@6uG8hJ1pA5nDx@9oP3r";
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
