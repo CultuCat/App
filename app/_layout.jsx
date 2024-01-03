@@ -1,6 +1,7 @@
 import React from 'react';
 import { Stack } from 'expo-router/stack';
 import { useState, useEffect } from 'react';
+import { Button, Text, View } from "react-native";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
@@ -50,7 +51,7 @@ export default function Layout() {
       }
       // Learn more about projectId:
       // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-      token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
+      token = (await Notifications.getExpoPushTokenAsync({ projectId: '8c1fb42d-6ad6-4db4-906a-39dd9794da7f' })).data;
       console.log(token);
     } else {
       alert('Must use physical device for Push Notifications');
@@ -85,6 +86,10 @@ export default function Layout() {
 
 
   return (
+    <View style={{ marginTop: 100, alignItems: "center" }}>
+      <Text style={{ marginVertical: 30 }}>Expo RN Push Notifications</Text>
+      <Button title="Send push notification" onPress={sendNotification} />
+    </View>,
     <Stack>
       <Stack.Screen
         name="index"
