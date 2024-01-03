@@ -86,33 +86,38 @@ export default function Layout() {
 
 
   return (
-    <View style={{ marginTop: 100, alignItems: "center" }}>
-      <Text style={{ marginVertical: 30 }}>Expo RN Push Notifications</Text>
-      <Button title="Send push notification" onPress={sendNotification} />
-    </View>,
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Login',
-          headerShown: false,
-        }} />
+    <>
+      {/* 
+      <View style={{ marginTop: 100, alignItems: "center" }}>
+        <Text style={{ marginVertical: 30 }}>Expo RN Push Notifications</Text>
+        <Button title="Send push notification" onPress={sendNotification} />
+      </View>*/}
+      
+      <Stack>
         <Stack.Screen
-        name="signup"
-        options={{
-          title: 'Signup',
-          headerShown: false,
-        }} />
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-        }} />
+          name="index"
+          options={{
+            title: 'Login',
+            headerShown: false,
+          }} />
         <Stack.Screen
-        name="event"
-        options={{
-          headerShown: false,
-        }} />
-    </Stack>
+          name="signup"
+          options={{
+            title: 'Signup',
+            headerShown: false,
+          }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }} />
+        <Stack.Screen
+          name="event"
+          options={{
+            headerShown: false,
+          }} />
+      </Stack>
+    </>
   );
+   
 }
