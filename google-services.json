@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "852693017999",
+    "project_id": "cultucat",
+    "storage_bucket": "cultucat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852693017999:android:7a28ed147f0b54a251d7fa",
+        "android_client_info": {
+          "package_name": "com.anonymous.App"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "852693017999-ijlpih4e5sqte66p812vihvea3vsbne4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEjb40-6HqGR3mHP-0ynNYnMFNFzR8ixE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "852693017999-ijlpih4e5sqte66p812vihvea3vsbne4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "852693017999-3bur3t29c1stjg1ft95njoagkjfao394.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anonymous.App"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
