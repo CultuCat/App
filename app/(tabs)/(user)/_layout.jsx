@@ -15,6 +15,11 @@ export default function Layout() {
         options={{
           headerShown: false,
         }} />
+        <Stack.Screen
+        name="friendslist"
+        options={{
+          headerShown: false,
+        }} />
     </Stack>
   );
 };

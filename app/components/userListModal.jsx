@@ -1,55 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
+import UserPreview from './userPreview';
 
 const UserListModal = ({
-    eventId,
+    users,
     usersVisible,
     setUsersVisible,
 }) => {
-    const handleUser = (id) => {
-        // TODO: click on user
-        return () => {
-            console.log("User id:", id);
-        };
-    };
-
-    const User = ({ id, avatar, name, nickname }) => (
-        <TouchableOpacity style={styles.user} onPress={handleUser(id)}>
-            <Image source={{ uri: avatar }} style={styles.image} onError={(error) => console.log("Error cargando la imagen:", error)} />
-            <View style={styles.itemText}>
-                <Text style={styles.name}>{name}</Text>
-                <Text>{nickname}</Text>
-            </View>
-            <Ionicons name="ios-chevron-forward" size={24} color="black" />
-        </TouchableOpacity>
-    );
-
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        fetch(`https://cultucat.hemanuelpc.es/tickets/?event=${eventId}`, {
-            method: "GET"
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Error en la solicitud');
-                }
-            })
-            .then((data) => {
-                setUsers(data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-
-    }, []);
     const closeModal = () => {
         setUsersVisible(false);
     };
+
+    const filteredUsers = users ? users.filter((item) =>
+        item.isVisible && !item.isBlocked
+    ) : [];
 
     return (
         <Modal
@@ -58,15 +24,17 @@ const UserListModal = ({
             onRequestClose={closeModal}
         >
             <View style={styles.modalContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
-                    <Ionicons name="ios-close-outline" size={36} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.title}>Assistents</Text>
-                {users.length > 0 ? (
+                <View style={{marginHorizontal: '5%'}}>
+                    <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
+                        <Ionicons name="ios-close-outline" size={36} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>Assistents</Text>
+                </View>
+                {filteredUsers ? (
                     <FlatList
-                        data={users}
+                        data={filteredUsers}
                         renderItem={({ item }) => (
-                            <User id={item.id} avatar={item.avatar} name={item.name} nickname={item.nickname} />
+                            <UserPreview id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
                         )}
                         keyExtractor={(item) => item.id}
                     />
@@ -99,7 +67,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginTop: 60,
         marginVertical: 20,
-        marginHorizontal: 20,
     },
     modalContent: {
         backgroundColor: 'white',
@@ -113,30 +80,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 75,
         textAlign: 'center',
-        fontWeight: 'bold',
-
-    },
-    user: {
-        padding: 14,
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: '#e0e0e0',
-        borderWidth: 1,
-        marginVertical: 5,
-        marginHorizontal: 5,
-    },
-    image: {
-        width: 70,
-        height: 70,
-        marginRight: 10,
-        borderRadius: 100,
-    },
-    itemText: {
-        flex: 1,
-    },
-    name: {
-        fontSize: 20,
         fontWeight: 'bold',
     },
     title: {

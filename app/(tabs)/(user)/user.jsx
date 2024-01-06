@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next';
 
 const User = () => {
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [chips, setChips] = useState(null);
   const [selectedTrofeuIndex, setSelectedTrofeuIndex] = useState(null);
   const [trofeus, setTrofeus] = useState(null);
   const [selectedChipIndex, setSelectedChipIndex] = useState(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const [rankingVisible, setRankingVisible] = useState(false);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);  
   const { t } = useTranslation();
 
   const handleRanking = () => {
@@ -186,8 +187,7 @@ const User = () => {
           console.error('User ID not found in AsyncStorage');
           return;
         }
-
-
+        setCurrentUser(userID);
         const userTokenString = await AsyncStorage.getItem("@user");
         if (!userTokenString) {
           console.error('User token not found in AsyncStorage');
@@ -287,7 +287,7 @@ const User = () => {
               source={{
                 uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
               }}
-            />
+            />     
           </View>
           <View style={{
             flexDirection: 'row',
