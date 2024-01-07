@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity, Platform } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,6 @@ const User = ({ position, me, imatge, name, username, points }) => {
         position == 1 && styles.user1,
         position == 2 && styles.user2,
         position == 3 && styles.user3,
-
     ];
 
     return (
@@ -54,7 +53,8 @@ const RankingModal = ({
                 console.error(error);
             });
 
-    }, []);
+    }, [Platform === 'ios' && users]);
+
     const closeModal = () => {
         setRankingVisible(false);
     };
@@ -65,11 +65,18 @@ const RankingModal = ({
             visible={rankingVisible}
             onRequestClose={closeModal}
         >
-            <View style={styles.modalContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
-                    <Ionicons name="ios-close-outline" size={36} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.title}>{t('User.Rank')}</Text>
+            <View style={[styles.modalContainer, Platform.OS === 'android' && {marginTop: '0'}]}>
+                <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: '1%'
+                }}>
+                    <Text style={styles.title}>{t('User.Rank')}</Text>
+                    <TouchableOpacity style={styles.iconContainer} onPress={closeModal}>
+                        <Ionicons name="ios-close-outline" size={36} color="black" />
+                    </TouchableOpacity>
+                </View>
                 <FlatList
                     data={users}
                     renderItem={({ item, index }) => (
@@ -87,18 +94,13 @@ const styles = StyleSheet.create({
         backgroundColor: colors.terciary,
         borderRadius: 100,
         aspectRatio: 1,
-        position: 'absolute',
-    },
-    closeIcon: {
-        top: 10,
-        right: 0,
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'white',
         marginTop: 60,
-        marginVertical: 20,
+        marginBottom: 20,
         marginHorizontal: 20,
     },
     modalContent: {
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 20,
-        marginTop: 50,
+        marginTop: 10,
         alignSelf: 'flex-start'
     },
 });

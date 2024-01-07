@@ -80,7 +80,7 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
+      keyboardVerticalOffset={-20}
     >
       <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
         <View style={styles.userInfo}>
