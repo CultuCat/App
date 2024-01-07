@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RankingModal from '../../components/rankingModal.jsx';
 import { useTranslation } from 'react-i18next';
 import EditModal from '../../components/editModal.jsx';
+import ConfigModal from '../../components/configModal.jsx';
 
 
 const User = () => {
@@ -21,6 +22,7 @@ const User = () => {
   const [selectedTagIndex, setSelectedTagIndex] = useState(null);
   const [rankingVisible, setRankingVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
+  const [configVisible, setConfigVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -30,6 +32,10 @@ const User = () => {
 
   const handleEdit = () => {
     setEditVisible(true);
+  };
+
+  const handleConfig = () => {
+    setConfigVisible(true);
   };
 
   const handleChipPress = (index) => {
@@ -263,11 +269,14 @@ const User = () => {
           marginTop: '1%'
         }}>
           <Text style={styles.title}>{t('User.User')}</Text>
-          {user ? (<Link href={'/(tabs)/(user)/configuration'} asChild>
-            <TouchableOpacity>
-              <Ionicons name="ios-settings-outline" size={24} color="black" />
-            </TouchableOpacity>
-          </Link>) : (<View />)}
+          {user ? (
+            <>
+              <TouchableOpacity onPress={handleConfig}>
+                <Ionicons name="ios-settings-outline" size={24} color="black" />
+              </TouchableOpacity>
+              <ConfigModal userId={user.id} configVisible={configVisible} setConfigVisible={setConfigVisible} />
+            </>
+          ) : (null)}
         </View>
         {!user ? (
           <ActivityIndicator />
