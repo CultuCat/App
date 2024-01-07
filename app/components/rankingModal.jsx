@@ -54,7 +54,8 @@ const RankingModal = ({
                 console.error(error);
             });
 
-    }, []);
+    }, [users]);
+
     const closeModal = () => {
         setRankingVisible(false);
     };
@@ -66,10 +67,17 @@ const RankingModal = ({
             onRequestClose={closeModal}
         >
             <View style={styles.modalContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={closeModal}>
-                    <Ionicons name="ios-close-outline" size={36} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.title}>{t('User.Rank')}</Text>
+                <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: '1%'
+                }}>
+                    <Text style={styles.title}>{t('User.Rank')}</Text>
+                    <TouchableOpacity style={styles.iconContainer} onPress={closeModal}>
+                        <Ionicons name="ios-close-outline" size={36} color="black" />
+                    </TouchableOpacity>
+                </View>
                 <FlatList
                     data={users}
                     renderItem={({ item, index }) => (
@@ -87,11 +95,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.terciary,
         borderRadius: 100,
         aspectRatio: 1,
-        position: 'absolute',
-    },
-    closeIcon: {
-        top: 10,
-        right: 0,
     },
     modalContainer: {
         flex: 1,
@@ -160,7 +163,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 20,
-        marginTop: 50,
+        marginTop: 10,
         alignSelf: 'flex-start'
     },
 });
