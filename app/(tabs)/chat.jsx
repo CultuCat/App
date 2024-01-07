@@ -52,7 +52,7 @@ const Chat = () => {
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
-    navigation.navigate('chatScreen', {user, uId})
+    navigation.navigate('chatScreen', { user, uId })
   };
 
 
@@ -64,9 +64,11 @@ const Chat = () => {
           <Text style={styles.userName}>{item.first_name}</Text>
         </View>
       </View>
-      <Divider/>
+      <Divider />
     </TouchableOpacity>
   );
+
+  const filteredFriends = friends?.filter((item) => item.isVisible && !item.isBlocked && item.wantsToTalk);
 
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
@@ -76,7 +78,7 @@ const Chat = () => {
           <ActivityIndicator />
         ) : (
           <FlatList
-            data={friends}
+            data={filteredFriends}
             renderItem={renderUserItem}
             keyExtractor={(item) => item.id.toString()}
             ListEmptyComponent={

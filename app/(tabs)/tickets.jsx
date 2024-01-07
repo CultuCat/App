@@ -70,53 +70,61 @@ const Tickets = () => {
     };
 
     fetchData();
-  }, []);
+  }, [tickets]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>{t('Ticket.Ticket')}</Text>
-      {loading ? (
-        <ActivityIndicator />
-      ) : tickets.length > 0 ? (
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '5%', marginVertical: 15 }}>
-            <Switch
-              style={{ zIndex: 1 }}
-              value={showAllTickets}
-              onValueChange={(value) => setShowAllTickets(value)}
-            />
-            <Text style={{ marginLeft: 10 }}>{t('Ticket.Tots')}</Text>
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
-            {filteredTickets.length > 0 ? (
-              <FlatList
-                data={filteredTickets}
-                renderItem={renderTicketCard}
-                keyExtractor={(item) => item.nomEvent}
+    <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
+      <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
+        <Text style={styles.title}>{t('Ticket.Ticket')}</Text>
+        {loading ? (
+          <ActivityIndicator />
+        ) : tickets.length > 0 ? (
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '5%', marginVertical: 15 }}>
+              <Switch
+                style={{ zIndex: 1 }}
+                value={showAllTickets}
+                onValueChange={(value) => setShowAllTickets(value)}
               />
-            ) : (
-              <Text>{t('Ticket.No_tickets_propers')}</Text>
+              <Text style={{ marginLeft: 10 }}>{t('Ticket.Tots')}</Text>
+            </View>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              {filteredTickets.length > 0 ? (
+                <FlatList
+                  data={filteredTickets}
+                  renderItem={renderTicketCard}
+                  keyExtractor={(item) => item.nomEvent}
+                />
+              ) : (
+                <Text>{t('Ticket.No_tickets_propers')}</Text>
+              )}
+            </View>
+            {selectedTicket && (
+              <TicketDetails
+                ticket={selectedTicket}
+                selectedTicketVisible={selectedTicketVisible}
+                setSelectedTicketVisible={setSelectedTicketVisible}
+              />
             )}
           </View>
-          {selectedTicket && (
-            <TicketDetails
-              ticket={selectedTicket}
-              selectedTicketVisible={selectedTicketVisible}
-              setSelectedTicketVisible={setSelectedTicketVisible}
-            />
-          )}
-        </View>
-      ) : (
-        <Text>{t('Ticket.No_tickets')}</Text>
-      )}
-    </SafeAreaView>
+        ) : (
+          <Text>{t('Ticket.No_tickets')}</Text>
+        )}
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  androidView: {
+    backgroundColor: '#ffffff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  androidMarginTop: {
+    marginTop: 40,
   },
   title: {
     fontSize: 30,

@@ -87,14 +87,14 @@
     "Esdeveniments": "Esdeveniments"
   },
   "Ticket": {
-    "Tots": "Veure tots els tiquets",
+    "Tots": "Veure totes les entrades",
     "No_tickets_propers": "No tens entrades per propers esdeveniments",
     "No_tickets": "No tens entrades a esdeveniments",
     "Comprat": "Entrada comprada!",
-    "Ticket_donat": "Ja tens el teu tiquet per aquest esdeveniment",
+    "Ticket_donat": "Ja tens la teva entrada per aquest esdeveniment",
     "Vols_ticket": "Vols comprar una entrada per",
     "Codi_descompte": "Validar codi descompte:",
-    "Ticket": "Tiquets",
+    "Ticket": "Entrades",
     "Entrada_a": "Entrada a"
   },
   "Signup": {
