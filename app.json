@@ -31,13 +31,13 @@
         "googleMaps": {
           "apiKey": "AIzaSyDKNpDQG6YYQIBwYIAjbCxYAXMogsZSvYg"
         }
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-   
-      "plugins": [
+    "plugins": [
         [
           "expo-image-picker",
           {
@@ -45,6 +45,15 @@
           }
         ],
         "expo-router"
-      ]  
+      ],
+      "extra": {
+        "router": {
+          "origin": false
+        },
+        "eas": {
+          "projectId": "8c1fb42d-6ad6-4db4-906a-39dd9794da7f"
+        }
+      },
+      "owner": "nuriacn"
   }
 }
