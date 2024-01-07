@@ -48,7 +48,6 @@ export default function Page() {
             );
             if (response.ok) {
                 const user = await response.json();
-                console.log(user);
                 await fetch('https://cultucat.hemanuelpc.es/users/signup', {
                     method: 'POST',
                     headers: {
@@ -65,9 +64,7 @@ export default function Page() {
                 })
                     .then((response) => response.json())
                     .then((data) => {
-                        console.log(data);
                         if (data.token) {
-                            console.log('he entrat');
                             AsyncStorage.setItem("@user", JSON.stringify(data));
                             router.replace('/(tabs)/home');
                         } else if (data.username) {

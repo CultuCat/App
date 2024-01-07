@@ -49,10 +49,30 @@ export default function Page() {
             );
             if (response.ok) {
                 const user = await response.json();
-                const username = user.email.split('@')[0];
-                setUsername(username);
-                setPassword(googlePassword);
-                onLoginPress();
+                await fetch("https://cultucat.hemanuelpc.es/users/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: user.email.split('@')[0],
+                        password: googlePassword,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.token) {
+                            AsyncStorage.setItem("@user", JSON.stringify(data));
+                            router.replace('/(tabs)/home');
+                        }
+                        else if (data.detail.includes('bloquejat'))
+                            Alert.alert("Error", t('Index.Eror_credencials'));
+                        else
+                            Alert.alert("Error", t('Index.Eror_credencials'));
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
             }
@@ -72,9 +92,7 @@ export default function Page() {
                 password: password,
             }),
         })
-            .then((response) => {
-                return response.json();
-            })
+            .then((response) => response.json())
             .then((data) => {
                 if (data.token) {
                     AsyncStorage.setItem("@user", JSON.stringify(data));
