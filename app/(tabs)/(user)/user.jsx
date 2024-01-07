@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Button, StyleSheet, Image, TouchableOpacity, Alert, Modal, ActivityIndicator, SafeAreaView } from 'react-native';
+import { Text, View, Button, StyleSheet, Image, TouchableOpacity, Alert, Modal, ActivityIndicator, SafeAreaView, Platform } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
@@ -228,7 +228,7 @@ const User = () => {
     };
 
     fetchData();
-  }, [user]);
+  }, [Platform === 'ios' && user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -256,7 +256,7 @@ const User = () => {
     };
 
     fetchData();
-  }, [trofeus]);
+  }, [Platform === 'ios' && trofeus]);
 
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>

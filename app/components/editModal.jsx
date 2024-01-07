@@ -51,7 +51,7 @@ const EditModal = ({
     };
 
     fetchData();
-  }, [user]);
+  }, [Platform === 'ios' && user]);
 
   if (!user) {
     return <Text>{t('Carregant')}</Text>;
@@ -127,7 +127,7 @@ const EditModal = ({
       visible={editVisible}
       onRequestClose={closeModal}
     >
-      <View style={styles.modalContainer}>
+      <View style={[styles.modalContainer, Platform.OS === 'android' && { marginTop: '0' }]}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     marginTop: 60,
-    marginVertical: 20,
+    marginBottom: 20,
     marginHorizontal: 20,
   },
   title: {

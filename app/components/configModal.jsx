@@ -183,14 +183,14 @@ const ConfigModal = ({
       onRequestClose={closeModal}
       style={{ height: '50%' }}
     >
-      <View style={styles.modalContainer}>
+      <View style={[styles.modalContainer, Platform.OS === 'android' && {marginTop: '0'}]}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
           marginTop: '1%'
         }}>
-          <Text style={styles.title}>Configuració</Text>
+          <Text style={styles.title}>{t('Config.Config')}</Text>
           <TouchableOpacity style={styles.iconContainer} onPress={closeModal}>
             <Ionicons name="ios-close-outline" size={36} color="black" />
           </TouchableOpacity>
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     marginTop: 60,
-    marginVertical: 20,
+    marginBottom: 20,
     marginHorizontal: 20,
   },
   title: {

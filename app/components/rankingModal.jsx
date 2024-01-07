@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity, Platform } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,6 @@ const User = ({ position, me, imatge, name, username, points }) => {
         position == 1 && styles.user1,
         position == 2 && styles.user2,
         position == 3 && styles.user3,
-
     ];
 
     return (
@@ -54,7 +53,7 @@ const RankingModal = ({
                 console.error(error);
             });
 
-    }, [users]);
+    }, [Platform === 'ios' && users]);
 
     const closeModal = () => {
         setRankingVisible(false);
@@ -66,7 +65,7 @@ const RankingModal = ({
             visible={rankingVisible}
             onRequestClose={closeModal}
         >
-            <View style={styles.modalContainer}>
+            <View style={[styles.modalContainer, Platform.OS === 'android' && {marginTop: '0'}]}>
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'white',
         marginTop: 60,
-        marginVertical: 20,
+        marginBottom: 20,
         marginHorizontal: 20,
     },
     modalContent: {

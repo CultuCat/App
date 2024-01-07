@@ -3,6 +3,7 @@
   "Cancel": "Cancel",
   "Delete": "Delete",
   "Config": {
+    "Config": "Settings",
     "Permissions": "User permissions",
     "Visibilitat": "Profile privacy",
     "User_vis": "Public",
