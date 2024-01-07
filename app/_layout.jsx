@@ -24,7 +24,7 @@ export default function Layout() {
       try {
         const userID = await getLocalUser();
         if (!userID) {
-          console.error('User ID not found in AsyncStorage');
+          setLang('cat');
           return;
         }
 
