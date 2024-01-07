@@ -48,15 +48,37 @@ export default function Page() {
             );
             if (response.ok) {
                 const user = await response.json();
-                setName(user.name);
-                const username = user.email.split('@')[0];
-                setUsername(username);
-                setEmail(user.email);
-                setPassword(googlePassword);
-                setPassword2(googlePassword);
-                setIsGoogleUser(true);
-                setImage(user.picture);
-                onSignupPress();
+                console.log(user);
+                await fetch('https://cultucat.hemanuelpc.es/users/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        first_name: user.name,
+                        username: user.email.split('@')[0],
+                        email: user.email,
+                        password: googlePassword,
+                        isGoogleUser: true,
+                        imatge_url: user.picture,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log(data);
+                        if (data.token) {
+                            console.log('he entrat');
+                            AsyncStorage.setItem("@user", JSON.stringify(data));
+                            router.replace('/(tabs)/home');
+                        } else if (data.username) {
+                            Alert.alert("Error", t('Signup.Username_existeix'));
+                        } else {
+                            Alert.alert("Error", t('Signup.Email_existeix'));
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
             }
@@ -104,7 +126,7 @@ export default function Page() {
     return (
         <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
             <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
-            <View style={styles.imageContainer}>
+                <View style={styles.imageContainer}>
                     <Image
                         style={{ flex: 1, resizeMode: 'contain' }}
                         source={require('../assets/full-logo.png')}
