@@ -60,6 +60,7 @@ const ConfigModal = ({
   }, []);
 
   const handleLogout = async () => {
+    closeModal();
     await AsyncStorage.removeItem("@user");
     navigation.replace('index');
   };
@@ -109,6 +110,7 @@ const ConfigModal = ({
         const errorResponse = await response.json();
         throw new Error(`Error en la solicitud DELETE al backend: ${JSON.stringify(errorResponse)}`);
       }
+      closeModal();
       navigation.navigate('index');
 
     } catch (error) {
