@@ -3,22 +3,11 @@ import { View, Text, Image, StyleSheet, Modal, TouchableOpacity } from 'react-na
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { useTranslation } from 'react-i18next';
+import { transformDate } from '../../functions/transformDate';
 
 
 const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible }) => {
   const { t } = useTranslation();
-
-  const transformDate = (date) => {
-    const dateObj = new Date(date);
-    const formatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    };
-    const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-    return formatter.format(dateObj);
-  };
-
 
   const closeModal = () => {
     setSelectedTicketVisible(false);
@@ -37,23 +26,32 @@ const TicketDetails = ({ ticket, selectedTicketVisible, setSelectedTicketVisible
         <Text style={styles.title}>{t('Ticket.Entrada_a')}</Text>
         <View style={styles.ticketContainer}>
           <Image
-            source={{ uri: ticket.imatge }}
+            source={{ uri: ticket.imatges_list[0] }}
             style={styles.imatge}
           />
           <View style={styles.ticketDetails}>
             <Text style={styles.ticketTextTitle}>{ticket.nomEvent}</Text>
-            <Text style={styles.ticketTextDate}>{transformDate(ticket.data)}</Text>
+            {ticket.dataIni === ticket.dataFi ? (
+              <Text style={styles.ticketTextDate}>
+                {transformDate(ticket.dataIni)}
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.ticketTextDate}>{transformDate(ticket.dataIni)} -</Text>
+                <Text style={styles.ticketTextDate}>{transformDate(ticket.dataFi)}</Text>
+              </>
+            )}
             <Text style={styles.ticketText}>{ticket.espai}</Text>
           </View>
         </View>
         <View style={styles.divider}></View>
         <Image
-            source={{ uri:  'https://upload.wikimedia.org/wikipedia/commons/2/2f/Rickrolling_QR_code.png?20200615212723'}}
-            style={styles.qr}
-          />
+          source={{ uri: ticket.image }}
+          style={styles.qr}
+        />
       </View>
     </Modal>
-    
+
   );
 };
 
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
   },
   ticketText: {
     fontSize: 16,
-    marginBottom: 5,
+    marginVertical: 5,
   },
   ticketTextTitle: {
     fontSize: 16,
@@ -109,7 +107,6 @@ const styles = StyleSheet.create({
   },
   ticketTextDate: {
     fontSize: 16,
-    marginBottom: 5,
     color: colors.secondary,
   },
   divider: {

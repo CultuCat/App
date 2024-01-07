@@ -51,8 +51,9 @@
     "User": "Usuario"
   },
   "Search": {
+    "Search": "Buscar",
     "Busca": "Buscar...",
-    "Filtres": "Filtros",
+    "Order": "Ordenar",
     "Mapa": "Ver mapa"
   },
   "Event": {
@@ -64,7 +65,8 @@
     "Error_agregar": "Error al agregar el evento al calendario",
     "Seleccio_calendar": "No se ha seleccionado un calendario",
     "Afegit_calendar": "Evento agregado al calendario",
-    "Descripcio": "Descripción del evento",
+    "Descripcio": "Descripción",
+    "Do_you_know": "Sabías que?",
     "Assistents": "Ver asistentes al evento",
     "Ubicacio": "Ver ubicación en el mapa",
     "Afegir_cal": "Agregar al calendario",
@@ -74,7 +76,8 @@
   },
   "Index": {
     "Eror_credencials": "Usuario o contraseña incorrecta",
-    "Benvingut": "Bienvenido",
+    "Block": "Cuenta bloqueada",
+    "Benvingut": "Bienvenido/da",
     "User": "Nombre de usuario",
     "Password": "Contraseña"
   },
@@ -105,6 +108,19 @@
     "Enviar": "Enviar Comentario"
   },
   "Chat": {
-    "Chat": "Chats"
+    "Chat": "Chats",
+    "Type_here": "Escribe aquí...",
+    "Afegir_amic": "Añade un amigo o amiga y empieza a chatear"
+  },
+  "Filters": {
+    "Filter": "Filtrar",
+    "Tags": "Escoge los tags por los que quieres filtrar"
+  },
+  "Home": {
+    "Welcome": "Bienvenido/da",
+    "Today": "Hoy",
+    "Week": "Esta semana",
+    "Free": "Gratis",
+    "Trendy": "Popular"
   }
 }

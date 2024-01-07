@@ -4,6 +4,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
+
+
+
 
 export default function Page() {
   const [first_name, setName] = useState('');
@@ -191,11 +195,29 @@ export default function Page() {
     fetchData();
   }, []);
 
-
-
   if (!user) {
     return <Text>{t('Carregant')}</Text>;
   }
+
+  const handleSelectImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Se requiere permiso para acceder a la galería de fotos.');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+    if (pickerResult.canceled) {
+      return;
+    }
+
+    setUser((prevUser) => ({
+      ...prevUser,
+      imatge: pickerResult.assets[0].uri,
+    }));
+  };
   const handleSaveChanges = async () => {
     try {
       const userID = await getLocalUser();
@@ -212,19 +234,25 @@ export default function Page() {
 
       const userToken = JSON.parse(userTokenString).token;
 
-      const updatedProfile = {
-        first_name: first_name || user.first_name,
-        bio: bio || user.bio,
-        username: username || user.username,
-      };
+      const updatedProfile = new FormData();
+
+      updatedProfile.append('first_name', first_name || user.first_name);
+      updatedProfile.append('bio', bio || user.bio);
+      updatedProfile.append('username', username || user.username);
+      console.log(user.imatge);
+      if (user.imatge) {
+        const uri = Platform.OS === 'android' ? user.imatge : user.imatge.replace('file://', '');
+        updatedProfile.append('imatge', { uri, name: 'dd.jpeg', type: 'image/jpeg' });
+        console.log('URI:', uri);
+    }
 
       const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Token ${userToken}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(updatedProfile),
+        body: updatedProfile,
       });
 
       if (!response.ok) {
@@ -233,15 +261,14 @@ export default function Page() {
 
       const updatedUserData = await response.json();
       setUser(updatedUserData);
-
+      
     } catch (error) {
       console.error('Error updating user data:', error);
     }
   };
-
   return (
     <View>
-      <TouchableOpacity >
+      <TouchableOpacity onPress={handleSelectImage}>
         <Image
           style={styles.fotoProfile}
           source={{
@@ -294,6 +321,8 @@ export default function Page() {
           <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
         </TouchableOpacity>
       </Link>
+      
     </View>
+    
   );
 }

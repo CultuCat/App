@@ -10,6 +10,11 @@ export default function Layout() {
           title: 'User',
           headerShown: false,
         }} />
+        <Stack.Screen
+        name="profilefriend"
+        options={{
+          headerShown: false,
+        }} />
     </Stack>
   );
 };

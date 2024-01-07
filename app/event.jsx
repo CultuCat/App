@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
+import { Platform, Text, View, Linking, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, FlatList, Alert, SafeAreaView, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Chip from './components/chip.jsx';
 import colors from '../constants/colors';
 import CommentForm from './components/commentForm.jsx';
 import Comment from './components/comment.jsx';
 import ShareMenu from './components/shareMenu.jsx';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BuyModal from './components/buyModal.jsx';
 import UserListModal from './components/userListModal.jsx';
 import * as Calendar from 'expo-calendar';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { transformDate } from '../functions/transformDate.js';
 
 
 export default function Page() {
-
   const [event, setEvent] = useState([]);
   const [commentsEvent, setComments] = useState([]);
   const params = useLocalSearchParams();
@@ -27,6 +27,7 @@ export default function Page() {
   const route = useRoute();
   const eventId = route.params.eventId;
   const [calendars, setCalendars] = useState([]);
+  const [loading, setLoading] = useState(false);
   const eventNom = event.nom;
   const { t } = useTranslation();
 
@@ -38,20 +39,24 @@ export default function Page() {
     setUsersVisible(true);
   }
 
-  useEffect(() => {
-    checkButtonState();
-  }, []);
-
   const checkButtonState = async () => {
     try {
-      const value = await AsyncStorage.getItem(`buyButtonEnabled_${eventId}`);
-      if (value !== null) {
-        setBuyButtonEnabled(value === 'false' ? false : true);
-      }
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+
+      const data = JSON.parse(dataString);
+      const userId = data.user.id;
+
+      const isUserAttending = event && Array.isArray(event.assistents) && event.assistents.length > 0 && event.assistents.some((assistant) => {
+        return assistant.id === userId;
+      });
+
+      setBuyButtonEnabled(isUserAttending);
     } catch (error) {
       console.error('Error al recuperar el estado del botón de compra:', error);
     }
   };
+
 
   const fetchComments = () => {
     fetch('https://cultucat.hemanuelpc.es/comments/?event=' + params.eventId, {
@@ -69,10 +74,14 @@ export default function Page() {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   useEffect(() => {
+    setLoading(true);
     fetch(`https://cultucat.hemanuelpc.es/events/${params.eventId}`, {
       method: "GET"
     })
@@ -89,40 +98,19 @@ export default function Page() {
       .catch((error) => {
         console.error(error);
       });
-
+    fetchComments();
   }, []);
 
   useEffect(() => {
-    fetchComments();
-  }, []);
+    checkButtonState();
+  }, [event]);
+
 
   const handleMaps = () => {
     const mapUrl = `https://maps.google.com/?q=${event.latitud},${event.longitud}`;
 
     Linking.openURL(mapUrl)
       .catch((err) => console.error('Error al abrir el enlace: ', err));
-  };
-  const parsedPrice = (price) => {
-    if (price && price.includes('€') && parsedPriceCalc(price) < 100)
-      return price;
-    if (parsedPriceCalc(price) > 100) {
-      return t('Event.No_disp')
-    }
-    else return t('Event.Gratis')
-  };
-
-  const transformDate = (date) => {
-    if (date) {
-      const dateObj = new Date(date);
-      const formatOptions = {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      };
-      const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
-      return formatter.format(dateObj);
-    }
-    return null
   };
 
   const getCalendarPermission = async () => {
@@ -150,24 +138,10 @@ export default function Page() {
     try {
       await getCalendarPermission();
 
-      let selectedCalendar;
+      const calendars = await Calendar.getCalendarsAsync();
+      const selectedCalendar = calendars[0];
 
-      if (Platform.OS === 'ios') {
-        const calendarOptions = calendars.map(calendar => ({
-          text: calendar.title,
-          onPress: () => {
-            selectedCalendar = calendar;
-            createEvent(selectedCalendar);
-          },
-        }));
-
-        Alert.alert(t('Event.Calendar'), null, calendarOptions);
-      } else {
-        const calendars = await Calendar.getCalendarsAsync();
-        selectedCalendar = calendars[0];
-
-        createEvent(selectedCalendar);
-      }
+      createEvent(selectedCalendar);
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
       Alert.alert(t('Event.Error_agregar'));
@@ -185,14 +159,14 @@ export default function Page() {
     const eventDetails = {
       title: event?.nom,
       startDate: new Date(event?.dataIni),
-      endDate: new Date(new Date(event?.dataIni).getTime() + 60 * 60 * 1000),
+      endDate: new Date(event?.dataFi),
       timeZone: timeZone,
       location: event?.espai?.nom,
       alarms: [{ relativeOffset: -60, method: Calendar.AlarmMethod.DEFAULT }],
     };
 
     try {
-      const eventId = await Calendar.createEventAsync(selectedCalendar.id, eventDetails);
+      await Calendar.createEventAsync(selectedCalendar.id, eventDetails);
       Alert.alert(t('Event.Afegit_calendar'));
     } catch (error) {
       console.error('Error al agregar evento al calendario:', error);
@@ -200,107 +174,132 @@ export default function Page() {
     }
   };
 
-  const parsedPriceCalc = (price) => {
-    if (price && typeof price === 'string') {
-
-      const numericPart = price.replace(/[^0-9.]/g, '');
-
-      const numericValue = parseFloat(numericPart);
-
-      if (!isNaN(numericValue)) {
-        return numericValue;
-      }
-    }
-
-    return t('Event.Gratis');
-  };
-
-  if (event == []) {
-    return <Text>{t('Carregant')}</Text>;
-  }
   return (
-    <View style={{
-      flex: 1,
-      backgroundColor: '#ffffff',
-    }}>
-      <View style={styles.container}>
-        <ScrollView>
-          <View style={styles.imageContainer}>
-            <ImageBackground
-              style={styles.fotoLogo}
-              source={{
-                uri: event?.imatges_list?.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
-              }}
+    <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
+      <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <>
+            <KeyboardAvoidingView
+              style={[Platform.OS === 'ios' && { height: '94%' }, Platform.OS === 'android' && { height: '90%' }]}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-              <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
-                <Ionicons name="ios-close-outline" size={36} color="black" />
+              <ScrollView>
+                <View style={styles.imageContainer}>
+                  <ImageBackground
+                    style={styles.fotoLogo}
+                    source={{
+                      uri: event?.imatges_list?.length > 0 ? event.imatges_list[0] : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
+                    }}
+                  >
+                    <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+                      <Ionicons name="ios-close-outline" size={36} color="black" />
+                    </TouchableOpacity>
+                    <View style={[styles.iconContainer, styles.buyIcon]} >
+                      {buyButtonEnabled ? (
+                        <Ionicons name="bookmark" size={24} color="black" style={{ margin: 6 }} />
+                      ) : (
+                        <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
+                      )}
+                    </View>
+                    <TouchableOpacity style={styles.shareIcon}>
+                      <ShareMenu enllac={event?.enllacos_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
+                    </TouchableOpacity>
+                  </ImageBackground>
+                </View>
+                <View style={{ marginHorizontal: '5%' }}>
+                  <Text style={styles.title}>{event.nom}</Text>
+                  {event?.dataIni === event?.dataFi ? (
+                    <Text style={styles.date}>
+                      {transformDate(event?.dataIni)}
+                    </Text>
+                  ) : (
+                    <Text style={styles.date}>
+                      {transformDate(event?.dataIni)} - {transformDate(event?.dataFi)}
+                    </Text>
+                  )}
+                  <Text style={styles.espai}>{event.espai?.nom}</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 3 }}>
+                    {event.tags?.map((tag) => (
+                      <View key={tag.id} style={{ marginRight: '1%', marginTop: '1%' }}>
+                        <Chip text={tag.nom} color="#87ceec" />
+                      </View>
+                    ))}
+                  </View>
+                  <Text style={styles.subtitle}>{t('Event.Descripcio')}</Text>
+                  <Text style={{ textAlign: 'justify' }}>{event.descripcio}</Text>
+                  <Text style={styles.subtitle}>{t('Event.Do_you_know')}</Text>
+                  <Text style={{ textAlign: 'justify' }}>{event.pregunta?.question.content}</Text>
+                  <Text style={{ textAlign: 'justify' }}>{event.pregunta?.question.correct_answer}</Text>
+                  <View style={{ marginTop: 10 }}>
+                    {event.preu !== t('Event.No_disp') ? (
+                      <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
+                        <Text style={{ margin: 10 }}>{t('Event.Assistents')}</Text>
+                        <Ionicons style={{ marginHorizontal: 10 }} name="ios-people-outline" size={24} color="black" />
+                      </TouchableOpacity>
+                    ) : (null)}
+                    <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
+                    <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
+                      <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
+                      <Ionicons style={{ marginHorizontal: 10 }} name="ios-location-outline" size={24} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.accionButton} onPress={addEventToCalendar}>
+                      <Text style={{ margin: 10 }}>{t('Event.Afegir_cal')}</Text>
+                      <MaterialIcons style={{ marginHorizontal: 10 }} name="calendar-today" size={24} color="black" />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.subtitle}>{t('Event.Comentaris')}</Text>
+                  <CommentForm eventId={event.id} fetchComments={fetchComments} />
+                  <FlatList
+                    data={commentsEvent.results}
+                    renderItem={({ item }) => (
+                      <Comment username={item.username} time={item.created_at} text={item.text} />
+                    )}
+                    keyExtractor={item => item.id}
+                  />
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
+            <View style={styles.bottomContainer}>
+              <Text style={[Platform.OS === 'ios' && styles.iosPrice, Platform.OS === 'android' && styles.androidPrice]}>
+                {isNaN(event.preu) ? event.preu : `${Number(event.preu)} €`}
+              </Text>
+              <TouchableOpacity
+                style={[Platform.OS === 'ios' && styles.iosBuyButton, Platform.OS === 'android' && styles.androidBuyButton,
+                {
+                  opacity: buyButtonEnabled || event.preu == t('Event.No_disp') ? 0.5 : 1,
+                },
+                ]}
+                onPress={handleBuy}
+                disabled={buyButtonEnabled || event.preu === t('Event.No_disp')}
+              >
+                <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
               </TouchableOpacity>
-              <View style={[styles.iconContainer, styles.buyIcon]} >
-                <Ionicons name="bookmark-outline" size={24} color="black" style={{ margin: 6 }} />
-              </View>
-              <TouchableOpacity style={styles.shareIcon}>
-                <ShareMenu enllac={event?.enllacos_list?.length > 0 ? event.enllacos_list[0] : "https://analisi.transparenciacatalunya.cat/Cultura-oci/Agenda-cultural-de-Catalunya-per-localitzacions-/rhpv-yr4f"} />
-              </TouchableOpacity>
-            </ImageBackground>
-          </View>
-          <View style={{ marginHorizontal: '7.5%' }}>
-            <Text style={styles.title}>{event.nom}</Text>
-            <Text style={{ color: '#ff6961' }}>{transformDate(event?.dataIni)}</Text>
-            <Text>{event.espai?.nom}</Text>
-            <Chip text="Music" color="#d2d0d0" />
-            <Text style={styles.subtitle}>{t('Event.Descripcio')}</Text>
-            <Text>{event.descripcio}</Text>
-            <View style={{ marginVertical: 10 }}>
-              <TouchableOpacity style={styles.accionButton} onPress={handleUsers}>
-                <Text style={{ margin: 10 }}>{t('Event.Assistents')}</Text>
-              </TouchableOpacity>
-              <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
-              <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
-                <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.accionButton} onPress={addEventToCalendar}>
-                <Text style={{ margin: 10 }}>{t('Event.Afegir_cal')}</Text>
-              </TouchableOpacity>
+              <BuyModal eventNom={eventNom} eventId={eventId} price={event.preu} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
             </View>
-            <Text style={styles.subtitle}>{t('Event.Comentaris')}</Text>
-            <CommentForm eventId={event.id} fetchComments={fetchComments} />
-            <FlatList
-              data={commentsEvent.results}
-              renderItem={({ item }) => (
-                <Comment username={item.user} time={item.created_at} text={item.text} />
-              )}
-              keyExtractor={item => item.id}
-            />
-          </View>
-        </ScrollView>
-        <View style={styles.bottomContainer}>
-          <Text style={styles.price}>{parsedPrice(event.preu)}</Text>
-          <TouchableOpacity
-            style={[styles.buyButton,
-            { opacity: buyButtonEnabled ? 1 : 0.5 }
-            ]}
-            onPress={handleBuy}
-            disabled={!buyButtonEnabled || parsedPrice(event.preu) === t('Event.No_disp')}
-
-          >
-            <Text style={{ fontSize: 20, marginHorizontal: 15, marginVertical: 10 }}>Comprar</Text>
-          </TouchableOpacity>
-          <BuyModal eventNom={eventNom} eventId={eventId} price={parsedPriceCalc(event.preu)} buyVisible={buyVisible} setBuyVisible={setBuyVisible} setBuyButtonEnabled={setBuyButtonEnabled} />
-        </View>
-      </View>
+          </>
+        )}
+      </SafeAreaView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
+  androidView: {
+    backgroundColor: '#ffffff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    marginTop: 60,
+  },
+  androidMarginTop: {
+    marginTop: 40,
   },
   imageContainer: {
-    marginVertical: 20,
-    width: '85%',
-    marginHorizontal: '7.5%',
+    marginVertical: 10,
+    width: '90%',
+    marginHorizontal: '5%',
     aspectRatio: 1,
   },
   fotoLogo: {
@@ -330,29 +329,42 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  date: { 
+    fontSize: 15,
+    color: '#ff6961',
+    marginBottom: 5,
+  },
+  espai: { 
+    fontSize: 15,
+    marginBottom: 5,
   },
   subtitle: {
     fontSize: 25,
+    marginVertical: 5,
   },
   accionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 5,
     marginVertical: 2,
-
   },
   bottomContainer: {
     backgroundColor: colors.primary,
-    height: '12%',
+    height: '11%',
   },
-  price: {
+  iosPrice: {
     position: 'absolute',
     bottom: '40%',
     left: '8%',
     fontSize: 25,
     margin: 5,
   },
-  buyButton: {
+  iosBuyButton: {
     position: 'absolute',
     bottom: '40%',
     right: '8%',
@@ -360,5 +372,19 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 100,
   },
-
+  androidPrice: {
+    position: 'absolute',
+    bottom: '32%',
+    left: '8%',
+    fontSize: 25,
+    margin: 5,
+  },
+  androidBuyButton: {
+    position: 'absolute',
+    bottom: '32%',
+    right: '8%',
+    backgroundColor: colors.terciary,
+    color: 'black',
+    borderRadius: 100,
+  },
 });

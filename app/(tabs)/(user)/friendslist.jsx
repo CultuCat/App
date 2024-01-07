@@ -3,19 +3,29 @@ import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Page() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
+  const handlePress = (friendId) => {
+    console.log(friendId);
+    navigation.navigate('profilefriend', { id: friendId });
+  };
+  
+  
+ 
+  const Item = ({ id, username, image }) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePress(id)}>
+      <Image source={{ uri: image.uri }} style={styles.image} />
 
-  const Item = ({ title, image }) => (
-    <TouchableOpacity style={styles.item}>
-      <Image source={image} style={styles.image} />
       <View style={styles.itemText}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{username}</Text>
       </View>
     </TouchableOpacity>
   );
+    
 
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
@@ -45,17 +55,32 @@ export default function Page() {
           console.error('User data not found in AsyncStorage');
           return;
         }
-        setUser(userData);
-        setData(userData.friends || []);
+
+        const userString = await AsyncStorage.getItem("@user");
+        const token = JSON.parse(userString).token; 
+
+        const headers = {
+          'Authorization': `Token ${token}`,
+        };
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
+          method: 'GET',
+          headers,
+        });
+        if (response.ok) {
+          const responseData = await response.json();
+          setUser(userData);
+          setData(responseData.friends || []);
+        } else {
+          console.error('Error fetching user data:', response.statusText);
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
-
-
+  
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())
   );
@@ -71,12 +96,13 @@ export default function Page() {
         containerStyle={styles.searchBarContainer}
       />
       <FlatList
-        data={filteredData}
-        renderItem={({ item }) => (
-          <Item title={item.username} image={{ uri: item.imatge }} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      style={styles.list}
+      data={filteredData}
+      renderItem={({ item }) => (
+        <Item id={item.id} username={item.username} image={{ uri: item.imatge }} />
+      )}
+      keyExtractor={(item) => item.id.toString()}
+    />
     </SafeAreaView>
   );
 }
@@ -122,4 +148,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 40,
   },
+  list: {
+    marginTop:60,
+  }
+ 
 });

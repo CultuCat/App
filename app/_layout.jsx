@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stack } from 'expo-router/stack';
 import { useState, useEffect } from 'react';
 import { Button, Text, View } from "react-native";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import i18next from '../languages/i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,9 +16,11 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default function Layout() {
-  const [expoPushToken, setExpoPushToken] = useState('');
 
+export default function Layout() {
+  const [lang, setLang] = useState('cat');
+  const [expoPushToken, setExpoPushToken] = useState('');
+  
   useEffect(() => {
     console.log("Registering for push notifications...");
     registerForPushNotificationsAsync()
@@ -82,42 +87,98 @@ export default function Layout() {
       body: JSON.stringify(message),
     });
   };
-  
+
+
+  const getLocalUser = async () => {
+    try {
+      const dataString = await AsyncStorage.getItem("@user");
+      if (!dataString) return null;
+      const data = JSON.parse(dataString);
+      return data.user.id;
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userID = await getLocalUser();
+        if (!userID) {
+          setLang('cat');
+          return;
+        }
+
+        const userTokenString = await AsyncStorage.getItem("@user");
+        if (!userTokenString) {
+          console.error('User token not found in AsyncStorage');
+          return;
+        }
+
+        const userToken = JSON.parse(userTokenString).token;
+        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+          headers: {
+            'Authorization': `Token ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+
+        const userData = await response.json();
+        setLang(userData.language);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    i18next.changeLanguage(lang);
+  }, [lang]);
+
 
 
   return (
-    <>
-      {/* 
-      <View style={{ marginTop: 100, alignItems: "center" }}>
-        <Text style={{ marginVertical: 30 }}>Expo RN Push Notifications</Text>
-        <Button title="Send push notification" onPress={sendNotification} />
-      </View>*/}
-      
-      <Stack>
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: 'Login',
+          headerShown: false,
+        }} />
+      <Stack.Screen
+        name="signup"
+        options={{
+          title: 'Signup',
+          headerShown: false,
+        }} />
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }} />
+      <Stack.Screen
+        name="event"
+        options={{
+          headerShown: false,
+        }} />
+      <Stack.Screen
+        name="eventList"
+        options={{
+          headerShown: false,
+        }} />
         <Stack.Screen
-          name="index"
-          options={{
-            title: 'Login',
-            headerShown: false,
-          }} />
-        <Stack.Screen
-          name="signup"
-          options={{
-            title: 'Signup',
-            headerShown: false,
-          }} />
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }} />
-        <Stack.Screen
-          name="event"
-          options={{
-            headerShown: false,
-          }} />
-      </Stack>
-    </>
+        name="chatScreen"
+        options={{
+          headerShown: false,
+        }} />
+    </Stack>
   );
    
 }

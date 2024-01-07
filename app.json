@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "App",
-    "slug": "App",
+    "name": "CultuCat",
+    "slug": "CultuCat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -38,16 +38,22 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
-    ],
-    "extra": {
-      "router": {
-        "origin": false
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "Selecct and upload images."
+          }
+        ],
+        "expo-router"
+      ],
+      "extra": {
+        "router": {
+          "origin": false
+        },
+        "eas": {
+          "projectId": "8c1fb42d-6ad6-4db4-906a-39dd9794da7f"
+        }
       },
-      "eas": {
-        "projectId": "8c1fb42d-6ad6-4db4-906a-39dd9794da7f"
-      }
-    },
-    "owner": "nuriacn"
+      "owner": "nuriacn"
   }
 }

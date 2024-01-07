@@ -6,14 +6,14 @@ import es from './es.json';
 
 export const languageResources = {
     en: { translation: en },
-    ca: { translation: ca },
+    cat: { translation: ca },
     es: { translation: es },
 };
 
+
 i18next.use(initReactI18next).init({
     compatibilityJSON: 'v3',
-    lng: 'ca',
-    fallbackLng: 'ca',
+    fallbackLng: 'cat',
     resources: languageResources,
 });
 
