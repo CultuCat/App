@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
     "@react-native-async-storage/async-storage": "1.18.2",
+    "@react-native-firebase/app": "^18.7.3",
     "@react-native-picker/picker": "2.4.10",
     "axios": "^1.6.2",
     "expo": "~49.0.13",
@@ -47,7 +48,8 @@
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "metro-config": "^0.80.2"
   },
   "private": true
 }

@@ -76,6 +76,7 @@
   },
   "Index": {
     "Eror_credencials": "Incorrect username or password",
+    "Block": "Account blocked",
     "Benvingut": "Welcome",
     "User": "Username",
     "Password": "Password"
