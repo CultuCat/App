@@ -29,22 +29,22 @@ export default function Page() {
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [items, setItems] = useState([
     {
-      label: 'Data asc', value: 'dataIni', icon: () => (
+      label: t('Search.DataAsc'), value: 'dataIni', icon: () => (
         <MaterialCommunityIcons value="dataIni" name="order-numeric-ascending" size={24} color="black" />
       )
     },
     {
-      label: 'Data desc', value: '-dataIni', icon: () => (
+      label: t('Search.DataDesc'), value: '-dataIni', icon: () => (
         <MaterialCommunityIcons value="-dataIni" name="order-numeric-descending" size={24} color="black" />
       )
     },
     {
-      label: 'Nom asc', value: 'nom', icon: () => (
+      label: t('Search.NomAsc'), value: 'nom', icon: () => (
         <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
       )
     },
     {
-      label: 'Nom desc', value: '-nom', icon: () => (
+      label: t('Search.NomDesc'), value: '-nom', icon: () => (
         <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
       )
     },
@@ -160,8 +160,6 @@ export default function Page() {
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
   };
-
-
 
 
   const handleAccept = async () => {
@@ -305,8 +303,8 @@ export default function Page() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
             <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
-              <Chip text='Tags' color="#87ceec" flex='1' />
-            </TouchableOpacity>
+              <Chip text={t('Search.Tags')} color="#87ceec" flex='1' />
+            </TouchableOpacity >
             <TagModal
               tagVisible={tagVisible}
               setTagVisible={setTagVisible}
@@ -315,7 +313,7 @@ export default function Page() {
               setSelectedTags={setSelectedTags}
             />
             <TouchableOpacity onPress={handleOpenCalendar}>
-              <Chip text='Data' color="#87ceec" />
+              <Chip text={t('Search.Data')} color="#87ceec" />
             </TouchableOpacity>
             <CustomCalendarPicker
               calendarVisible={calendarVisible}
@@ -326,33 +324,35 @@ export default function Page() {
               setSelectedStartDate={setSelectedStartDate}
               setSelectedEndDate={setSelectedEndDate}
             />
-          </View>
+          </View >
 
-        </View>
-        {isloading ? (
-          <ActivityIndicator />
-        ) : (
-          <FlatList
-            data={data}
-            ListHeaderComponentStyle={{ zIndex: 10 }}
-            renderItem={({ item }) => (
-              <EventPreview
-                event={item.nom}
-                dataIni={item.dataIni}
-                dataFi={item.dataFi}
-                espai={item.espai.nom}
-                imatge={item.imatges_list[0]}
-                onPress={() => handlePressEvent(item.id)}
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: '5%' }}
-            onEndReachedThreshold={0.5}
-            onEndReached={loadMoreData}
-          />
-        )}
-      </SafeAreaView>
-    </View>
+        </View >
+        {
+          isloading ? (
+            <ActivityIndicator />
+          ) : (
+            <FlatList
+              data={data}
+              ListHeaderComponentStyle={{ zIndex: 10 }}
+              renderItem={({ item }) => (
+                <EventPreview
+                  event={item.nom}
+                  dataIni={item.dataIni}
+                  dataFi={item.dataFi}
+                  espai={item.espai.nom}
+                  imatge={item.imatges_list[0]}
+                  onPress={() => handlePressEvent(item.id)}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={{ paddingHorizontal: '5%' }}
+              onEndReachedThreshold={0.5}
+              onEndReached={loadMoreData}
+            />
+          )
+        }
+      </SafeAreaView >
+    </View >
   );
 }
 
