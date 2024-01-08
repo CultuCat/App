@@ -8,6 +8,7 @@ import language_list from '../../languages/language_list.json';
 import { useTranslation } from 'react-i18next';
 import colors from '../../constants/colors';
 import Divider from './divider';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 const ConfigModal = ({
@@ -20,8 +21,9 @@ const ConfigModal = ({
   const [UserWantsToTalk, setUserWantsToTalk] = useState(null);
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(i18next.language);
+  const [open, setOpen] = useState(false);
+  const [selectedLanguageName, setSelectedLanguageName] = useState(language_list[i18next.language].name);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
 
@@ -120,11 +122,16 @@ const ConfigModal = ({
 
   const changeLng = lng => {
     i18next.changeLanguage(lng);
-    setVisible(false);
     setSelectedLanguage(lng);
+    setSelectedLanguageName(language_list[lng].name);
     //PUT
     saveUserLanguage(lng);
   };
+
+  const dropdownItems = Object.keys(languageResources).filter((key) => key !== selectedLanguage).map((key) => ({
+    label: language_list[key].name,
+    value: key,
+  }));
 
   const saveUserLanguage = async (lng) => {
     try {
@@ -183,7 +190,7 @@ const ConfigModal = ({
       onRequestClose={closeModal}
       style={{ height: '50%' }}
     >
-      <View style={[styles.modalContainer, Platform.OS === 'android' && {marginTop: '0'}]}>
+      <View style={[styles.modalContainer, Platform.OS === 'android' && { marginTop: '0' }]}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -212,25 +219,20 @@ const ConfigModal = ({
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 10,
+              zIndex: 2,
+              marginHorizontal: '25%',
             }}>
-              <TouchableOpacity style={styles.deleteAcc} onPress={() => { setVisible(true) }}>
-                <Text style={styles.compte}>{t('Config.Canvi_idioma')}</Text>
-              </TouchableOpacity>
-              <Modal visible={visible} onRequestClose={() => setVisible(false)}>
-                <View style={styles.languagesList}>
-                  <FlatList
-                    data={Object.keys(languageResources)}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity style={[styles.languageButton, selectedLanguage === item ? { backgroundColor: 'grey' } : null]}
-                        onPress={() => changeLng(item)}>
-                        <Text style={styles.lngName}>
-                          {language_list[item].name}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  />
-                </View>
-              </Modal>
+              <DropDownPicker
+                defaultValue={selectedLanguage}
+                style={{ borderRadius: 5 }}
+                onSelectItem={(item) => {
+                  changeLng(item.value);
+                }}
+                open={open}
+                items={dropdownItems}
+                setOpen={setOpen}
+                placeholder={`${selectedLanguageName}`}
+              />
             </View>
             <Divider />
             <View style={{
@@ -257,7 +259,7 @@ const ConfigModal = ({
                 value={isUserPrivate}
                 onValueChange={profilePrivacy}
               />
-              <Text style={{ marginLeft: 5 }}>{isUserPrivate ? t('Config.User_no_vis') : t('Config.User_vis')}</Text>
+              <Text style={{ marginLeft: 5, opacity: 0.5 }}>{isUserPrivate ? t('Config.User_no_vis') : t('Config.User_vis')}</Text>
             </View>
             <View style={{
               flexDirection: 'row',
@@ -273,7 +275,7 @@ const ConfigModal = ({
                 value={UserWantsToTalk}
                 onValueChange={wantsToTalk}
               />
-              <Text style={{ marginLeft: 5 }}>{UserWantsToTalk ? t('Config.User_xat') : t('Config.User_no_xat')}</Text>
+              <Text style={{ marginLeft: 5, opacity: 0.5  }}>{UserWantsToTalk ? t('Config.User_xat') : t('Config.User_no_xat')}</Text>
             </View>
             <Divider />
             <Text style={[styles.subtitle, { marginBottom: 20, marginTop: 10 }]}> {t('Config.Eliminar')}</Text>
@@ -282,7 +284,7 @@ const ConfigModal = ({
               justifyContent: 'center',
               marginBottom: 10,
             }}>
-              <TouchableOpacity style={styles.deleteAcc} onPress={deleteAlert}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#ff6961' }]} onPress={deleteAlert}>
                 <Text>{t('Config.Eliminar')}</Text>
               </TouchableOpacity>
             </View>
@@ -292,7 +294,7 @@ const ConfigModal = ({
               justifyContent: 'center',
               marginTop: 10,
             }}>
-              <TouchableOpacity style={styles.editButton} onPress={logoutAlert}>
+              <TouchableOpacity style={styles.button} onPress={logoutAlert}>
                 <Text>{t('Config.Sessio')}</Text>
               </TouchableOpacity>
             </View>
@@ -328,70 +330,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
   },
-  editButton: {
-    width: 130,
-    height: 40,
-    backgroundColor: 'transparent',
-    color: 'red',
-    borderWidth: 1,
-    borderColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-  },
-  saveButton: {
-    width: 130,
-    height: 40,
-    backgroundColor: 'transparent',
-    color: 'red',
-    borderWidth: 1,
-    borderColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-  },
   subtitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginRight: 10,
   },
-  deleteAcc: {
+  button: {
     width: 170,
     height: 40,
-    backgroundColor: 'transparent',
-    color: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'coral',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 6,
-  },
-  languagesList: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 10,
-    backgroundColor: '#ff6961',
-  },
-  languageButton: {
-    padding: 10,
-    borderBottomColor: '#dddddd',
-    borderBottomWidth: 1,
-  },
-  lngName: {
-    fontSize: 18,
-    color: 'white',
-  },
-  modalContainer2: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent2: {
-    backgroundColor: '#E7E7E7',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
+    borderColor: '#ff6961',
   },
 });
 

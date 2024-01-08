@@ -417,13 +417,13 @@ const User = () => {
                             <MaterialCommunityIcons name={getTrofeuIcon(trofeu)} />
                           </Text>
                           <Divider />
-                          <Text>Descripció del trofeu:</Text>
+                          <Text>{t('User.DescripcioTrofeu')}:</Text>
                           <Text style={styles.descripcio2}>{trofeu.descripcio}</Text>
                           <Divider />
                           <Text style={styles.descripcio2}>
-                            {trofeu.level_achived_user !== -1 ? `Nivell ${trofeu.level_achived_user}` : t('User.Notrophy')}
+                            {trofeu.level_achived_user !== -1 ? `${t('User.Nivel')} ${trofeu.level_achived_user}` : t('User.Notrophy')}
                           </Text>
-                          <Button title="Tancar" onPress={toggleModal} />
+                          <Button title={t('tancar')} onPress={toggleModal} />
                         </View>
                       </View>
                     </Modal>
