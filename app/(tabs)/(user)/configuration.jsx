@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert, FlatList } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import i18next, { languageResources } from '../../../languages/i18next';
 import language_list from '../../../languages/language_list.json';
 import { useTranslation } from 'react-i18next';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 export default function Configuration() {
@@ -18,6 +19,9 @@ export default function Configuration() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(i18next.language);
+  const [open, setOpen] = useState(false);
+  const [selectedLanguageName, setSelectedLanguageName] = useState(language_list[i18next.language].name);
+
 
 
   const styles = StyleSheet.create({
@@ -279,8 +283,8 @@ export default function Configuration() {
 
   const changeLng = lng => {
     i18next.changeLanguage(lng);
-    setVisible(false);
     setSelectedLanguage(lng);
+    setSelectedLanguageName(language_list[lng].name);
     //PUT
     saveUserLanguage(lng);
   };
@@ -307,6 +311,11 @@ export default function Configuration() {
       console.error('Error updating user language:', error);
     }
   };
+
+  const dropdownItems = Object.keys(languageResources).filter((key) => key !== selectedLanguage).map((key) => ({
+    label: language_list[key].name,
+    value: key,
+  }));
 
 
   return (
@@ -344,24 +353,20 @@ export default function Configuration() {
       <Text style={styles.xatejar}>{t('Config.Idioma')}</Text>
       <Ionicons style={styles.globe} name="globe-sharp" size={25} color="#ff6961" />
       <View style={styles.separator2} />
-      <Modal visible={visible} onRequestClose={() => setVisible(false)}>
-        <View style={styles.languagesList}>
-          <FlatList
-            data={Object.keys(languageResources)}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={[styles.languageButton, selectedLanguage === item ? { backgroundColor: 'grey' } : null]}
-                onPress={() => changeLng(item)}>
-                <Text style={styles.lngName}>
-                  {language_list[item].name}
-                </Text>
-              </TouchableOpacity>
-            )}
+      <View style={{ marginVertical: '3%', marginHorizontal: '20%', zIndex: '100', alignItems: 'center' }}>
+          <DropDownPicker
+            defaultValue={selectedLanguage}
+            style={{ backgroundColor: '#ff6961'}}
+            onSelectItem={(item) => {
+              changeLng(item.value);
+            }}
+            open={open}
+            items={dropdownItems}
+            setOpen={setOpen}
+            placeholder={`${selectedLanguageName}`}
           />
-        </View>
-      </Modal>
-      <TouchableOpacity style={styles.deleteAcc} onPress={() => { setVisible(true) }}>
-        <Text style={styles.compte}> {t('Config.Canvi_idioma')}</Text>
-      </TouchableOpacity>
+      </View>
+
       <View style={styles.separator2} />
       <Text style={styles.xatejar}> {t('Config.Eliminar')}</Text>
       <View style={styles.separator2} />

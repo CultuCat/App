@@ -55,7 +55,7 @@ const CustomCalendarPicker = ({
             selectedEndDate={selectedEndDate}
           />
         </View>
-        <Button title="Filtrar per data" onPress={handleAccept} />
+        <Button title={t('Search.Calendari')} onPress={handleAccept} />
       </View>
     </Modal>
   );

@@ -2,6 +2,7 @@
   "Carregant": "Cargando...",
   "Cancel": "Cancelar",
   "Delete": "Eliminar",
+  "tancar": "Cerrar",
   "Config": {
     "Visibilitat": "Visibilidad",
     "User_vis": "Usuario Visible",
@@ -48,13 +49,23 @@
     "Ranking": "Ver ranking",
     "Rank": "Ranking",
     "Edit": "Editar perfil",
-    "User": "Usuario"
+    "User": "Usuario",
+    "Notrophy": "No has conseguido este trofeo",
+    "DescripcioTrofeu": "Descripción del trofeo",
+    "Nivel": "Nivel"
   },
   "Search": {
     "Search": "Buscar",
     "Busca": "Buscar...",
     "Order": "Ordenar",
-    "Mapa": "Ver mapa"
+    "Mapa": "Ver mapa",
+    "DataAsc": "Data asc",
+    "DataDesc": "Data desc",
+    "NomAsc": "Nombre asc",
+    "NomDesc": "Nombre desc",
+    "Data": "Data",
+    "Tags": "Etiquetas",
+    "Calendari": "Filtrar por data"
   },
   "Event": {
     "No_disp": "No disponible",
@@ -85,14 +96,14 @@
     "Esdeveniments": "Eventos"
   },
   "Ticket": {
-    "Tots": "Ver todos los tickets",
+    "Tots": "Ver todas las entradas",
     "No_tickets_propers": "No tienes entradas para próximos eventos",
     "No_tickets": "No tienes entradas a eventos",
     "Comprat": "Entrada comprada!",
-    "Ticket_donat": "Ya tienes tu ticket para este evento",
+    "Ticket_donat": "Ya tienes tu entrada para este evento",
     "Vols_ticket": "Quieres comprar la entrada para",
     "Codi_descompte": "Validar codigo de descuento:",
-    "Ticket": "Tickets",
+    "Ticket": "Entradas",
     "Entrada_a": "Entrada a"
   },
   "Signup": {
