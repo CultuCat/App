@@ -1,11 +1,11 @@
 {
     "cat": {
-        "name": "Català" 
+        "name": "CAT" 
     },
     "es": {
-        "name": "Español"
+        "name": "ESP"
     },
     "en": {
-        "name": "English"
+        "name": "ENG"
     }
 }
