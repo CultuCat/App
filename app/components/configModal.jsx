@@ -188,7 +188,6 @@ const ConfigModal = ({
       animationType="slide"
       visible={configVisible}
       onRequestClose={closeModal}
-      style={{ height: '50%' }}
     >
       <View style={[styles.modalContainer, Platform.OS === 'android' && { marginTop: '0' }]}>
         <View style={{
