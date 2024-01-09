@@ -177,6 +177,11 @@ export default function Layout() {
         options={{
           headerShown: false,
         }} />
+        <Stack.Screen
+        name="map"
+        options={{
+          headerShown: false,
+        }} />
     </Stack>
   );
    

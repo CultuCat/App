@@ -10,6 +10,7 @@ import TagModal from '../components/tagModal.jsx';
 import DropdownOrder from '../components/dropdownOrder.jsx';
 import EventPreview from '../components/eventPreview.jsx';
 import CustomCalendarPicker from '../components/calendarPicker.jsx';
+import colors from '../../constants/colors.js';
 
 export default function Page() {
   const { t } = useTranslation();
@@ -294,14 +295,8 @@ export default function Page() {
           />
         </View>
         <View style={{ marginHorizontal: '5%', zIndex: 100 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%', zIndex: 100 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' }}>
             <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
-            <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
-              <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
-              <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
             <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
               <Chip text={t('Search.Tags')} color="#87ceec" flex='1' />
             </TouchableOpacity >
@@ -324,8 +319,7 @@ export default function Page() {
               setSelectedStartDate={setSelectedStartDate}
               setSelectedEndDate={setSelectedEndDate}
             />
-          </View >
-
+          </View>
         </View >
         {
           isloading ? (
@@ -333,7 +327,6 @@ export default function Page() {
           ) : (
             <FlatList
               data={data}
-              ListHeaderComponentStyle={{ zIndex: 10 }}
               renderItem={({ item }) => (
                 <EventPreview
                   event={item.nom}
@@ -352,6 +345,10 @@ export default function Page() {
           )
         }
       </SafeAreaView >
+      <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
+        <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
+        <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
+      </TouchableOpacity>
     </View >
   );
 }
@@ -427,12 +424,15 @@ const styles = StyleSheet.create({
     marginRight: '2%',
   },
   mapButton: {
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: colors.secondary,
     padding: 10,
     borderRadius: 10,
-    borderColor: 'black',
+    borderColor: colors.secondary,
     borderWidth: 1,
   },
   searchBarInputContainer: {
@@ -449,5 +449,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'black'
   },
-
 });

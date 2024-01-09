@@ -1,31 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
-import { SearchBar } from 'react-native-elements';
-import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
+import EventPreview from './components/eventPreview';
 import { useTranslation } from 'react-i18next';
+import colors from '../constants/colors';
 
 export default function Page() {
   const { t } = useTranslation();
-  const Item = ({ title, ubicacion, data, image, onPress }) => (
-    <TouchableOpacity style={styles.item} onPress={onPress}>
-      <Image source={image} style={styles.image} />
-      <View style={styles.itemText}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.data}>{data}</Text>
-        <Text style={styles.ubicacion}>{ubicacion}</Text>
-        <TouchableOpacity>
-          <MaterialIcons
-            style={styles.ticket}
-            name="local-activity"
-          />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
-  const [urldef, setUrldef] = useState('https://cultucat.hemanuelpc.es/');
   const [customMarkers, setCustomMarkers] = useState([]);
   const [customRegion, setCustomRegion] = useState({
     latitude: 41.3927672,
@@ -33,10 +17,8 @@ export default function Page() {
     latitudeDelta: 3,
     longitudeDelta: 4,
   });
-  const [showEvents, setShowEvents] = useState(false);
   const [events, setEvents] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
-  const [search, setSearch] = useState('');
   const [nMarkers, setNMarkers] = useState(1300);
 
   useEffect(() => {
@@ -81,32 +63,22 @@ export default function Page() {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          setEvents(
-            data.results.map((item) => ({
-              id: item.id,
-              title: item.nom,
-              data: item.dataIni,
-              //ubicacion: item.espai.nom,
-              image: item.imatges_list.length > 0 ? { uri: item.imatges_list[0] } : 'https://www.legrand.es/modules/custom/legrand_ecat/assets/img/no-image.png',
-            }))
-          );
+          setEvents(data);
         })
         .catch((error) => console.error(error));
     } else {
       setSelectedMarker(null);
       setEvents([]);
     }
-    setShowEvents(!!marker);
-  };
-
-  const updateSearch = (search) => {
-    setSearch(search);
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
+        <Ionicons name="ios-close-outline" size={36} color="black" />
+      </TouchableOpacity>
       <MapView
-        style={[styles.map, showEvents && { height: '60%' }]}
+        style={styles.map}
         initialRegion={customRegion}
         onRegionChange={onRegionChange}
         onTouchEnd={onTouchEnd}
@@ -123,119 +95,73 @@ export default function Page() {
           />
         ))}
       </MapView>
-      <SearchBar
-        inputContainerStyle={styles.searchBarInputContainer}
-        placeholder={t('Friendlist.Busca')}
-        onChangeText={updateSearch}
-        value={search}
-        platform="ios"
-        containerStyle={styles.searchBarContainer}
-      />
-      <View style={[styles.buttonEvents, showEvents && { height: '10%' }]}>
-        <TouchableOpacity
-          title="Esdeveniments"
-          onPress={() => toggleEvents(selectedMarker)}
-          disabled={!selectedMarker}
-          style={styles.button}
-        >
+      <View style={{flex: 1, backgroundColor: 'white'}}>
+        <View style={styles.button}>
           <Text style={styles.eventsText}>{t('Map.Esdeveniments')}</Text>
-        </TouchableOpacity>
-
-      </View>
-      {showEvents && (
-        <View style={styles.list}>
-          <Text style={styles.markerTitle}>{selectedMarker.title}</Text>
-          <FlatList
-            data={events}
-            renderItem={({ item }) => (
-              <Item
-                title={item.title}
-                data={item.data}
-                ubicacion={item.ubicacion}
-                image={item.image}
-                onPress={() => handlePressEvent(item.id)}
-              />
-            )}
-            keyExtractor={item => item.id}
-          />
         </View>
-      )}
+        {selectedMarker ? (
+          <View style={styles.eventList}>
+            <FlatList
+              data={events.results}
+              renderItem={({ item }) => (
+                <EventPreview
+                  event={item.nom}
+                  dataIni={item.dataIni}
+                  dataFi={item.dataFi}
+                  espai={item.espai.nom}
+                  imatge={item.imatges_list[0]}
+                  onPress={() => handlePressEvent(item.id)}
+                />
+              )}
+              keyExtractor={item => item.id}
+              contentContainerStyle={{ paddingHorizontal: '5%' }}
+            />
+          </View>
+        ) : (
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Fes click a un marcador per veure els events
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: '#e0e0e0',
-    padding: 15,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 20,
-    flexDirection: 'row',
-    marginTop: 14,
-  },
-  image: {
-    width: 70,
-    height: 70,
-    marginRight: 10,
-    borderRadius: 10
-  },
-  itemText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  ubicacion: {
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-  data: {
-    fontSize: 12,
-    color: '#f07b75',
-    marginTop: 5,
-  },
   container: {
     flex: 1,
     flexDirection: 'column',
   },
-  text: {
-    padding: 10,
-    backgroundColor: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  iconContainer: {
+    backgroundColor: colors.terciary,
+    borderRadius: 100,
+    aspectRatio: 1,
+    position: 'absolute',
+    zIndex: 2,
   },
-  list: {
-    marginVertical: 0,
-    paddingVertical: 0,
-    flex: 1
+  closeIcon: {
+    top: 50,
+    right: '5%',
+  },
+  eventList: {
+    marginBottom: '5%',
+    flex: 1,
   },
   map: {
     width: '100%',
-    height: '80%',
-  },
-  buttonEvents: {
-    width: '100%',
-    height: '80%',
+    height: '60%',
   },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    height: '100vh',
     backgroundColor: '#ff6961',
   },
   eventsText: {
     color: 'white',
     marginLeft: 2.5,
     fontSize: 20,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 0,
-    height: '10%',
   },
   markerTitle: {
     fontSize: 18,
@@ -244,18 +170,16 @@ const styles = StyleSheet.create({
     marginVertical: 0,
     paddingVertical: 0,
   },
-  searchBarContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    backgroundColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderTopColor: 'transparent',
+  modalContent: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
-  searchBarInputContainer: {
-    backgroundColor: '#fff',
-    height: 40,
+  modalText: {
+    fontSize: 18,
+    marginBottom: '10%',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
