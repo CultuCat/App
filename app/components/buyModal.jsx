@@ -46,9 +46,7 @@ const BuyModal = ({
             body: JSON.stringify(requestBody),
         });
 
-        if (response.ok) {
-            console.log('Solicitud POST exitosa');
-        } else {
+        if (!response.ok) {
             console.error('Error en la solicitud POST:', response.status);
         }
       Alert.alert('Entrada comprada!', 'Ja tens el teu ticket per aquest event');
