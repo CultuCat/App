@@ -3,11 +3,12 @@ import { Link } from 'expo-router';
 import { React, useState, useEffect } from 'react';
 import Chip from '../../components/chip.jsx';
 import Divider from '../../components/divider';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import FriendStatusIcon from '../../components/friendStatusIcon'; 
+import FriendStatusIcon from '../../components/friendStatusIcon';
+import FriendListModal from '../../components/friendlistModal.jsx';
 
 
 export default function ProfileFriend() {
@@ -16,9 +17,12 @@ export default function ProfileFriend() {
   const route = useRoute();
   const userId = route.params.id;
   const navigation = useNavigation();
+  const [friendsVisible, setFriendsVisible] = useState(false);
 
-  
-  
+  const handleFriends = () => {
+    setFriendsVisible(true);
+  };
+
   const handleBackToProfile = () => {
     navigation.navigate('user');
   };
@@ -88,15 +92,14 @@ export default function ProfileFriend() {
               <Text style={styles.name}>{user.first_name}</Text>
               <Text style={styles.username}>{user.username}</Text>
             </View>
-            <Image
-              style={styles.fotoVerificacio}
-              source={{
-                uri: 'https://cdn-icons-png.flaticon.com/512/6364/6364343.png',
-              }}
-            />
-            <FriendStatusIcon 
-                id={userId} 
-            />
+            <View style={{
+              position: 'absolute',
+              right: 0,
+            }}>
+              <FriendStatusIcon
+                id={userId}
+              />
+            </View>
           </View>
 
           <View style={{
@@ -106,16 +109,22 @@ export default function ProfileFriend() {
             <Text style={styles.userCardText}>{t('User.Punts')}</Text>
             <Text style={styles.userCardText}>{user.puntuacio}</Text>
             <View style={styles.separator2} />
-            <Text style={styles.userCardText}>{t('User.Amics')}</Text>
+            <Text style={styles.userCardText} onPress={handleFriends}>{t('User.Amics')}</Text>
+            <FriendListModal users={user.friends} friendsVisible={friendsVisible} setFriendsVisible={setFriendsVisible} />
             <Text style={styles.userCardText}>{user.friends.length}</Text>
           </View>
         </View>
-        <ScrollView>
+        <ScrollView
+          marginTop={15}
+          marginBottom={10}
+        >
           <Text style={styles.titles}>{t('User.Bio')}</Text>
           <Text style={styles.bio}>{user.bio}</Text>
           <Divider />
           <Text style={styles.titles}>{t('User.Tags_favs')}</Text>
           <ScrollView
+            marginTop={10}
+            marginBottom={10}
             horizontal
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
@@ -134,13 +143,15 @@ export default function ProfileFriend() {
                 </TouchableOpacity>
               ))
             ) : (
-              <Text>{t('User.No_tags')}</Text>
+              <Text style={{ marginHorizontal: 20 }}>{t('User.No_tags')}</Text>
             )}
           </ScrollView>
           <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
           <Divider />
           <Text style={styles.titles}>{t('User.Llocs_favs')}</Text>
           <ScrollView
+            marginTop={10}
+            marginBottom={10}
             horizontal
             alwaysBounceHorizontal={true}
             contentContainerStyle={styles.chipContainer}
@@ -158,10 +169,9 @@ export default function ProfileFriend() {
                 </TouchableOpacity>
               ))
             ) : (
-              <Text>{t('User.No_llocs')}</Text>
+              <Text style={{ marginHorizontal: 20 }}>{t('User.No_llocs')}</Text>
             )}
           </ScrollView>
-          <Divider />
 
           <View style={{
             flexDirection: 'row',
@@ -265,7 +275,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#87ceec',
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#87ceec',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
@@ -277,6 +287,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     marginHorizontal: '5%',
+    marginTop: 8,
   },
   botoFletxaTr: {
     width: 10,

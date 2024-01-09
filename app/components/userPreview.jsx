@@ -19,7 +19,6 @@ const UserPreview = ({ id, image, name, username }) => {
                 <Text style={styles.name}>{name}</Text>
                 <Text>{username}</Text>
             </View>
-            <Ionicons name="ios-chevron-forward" size={24} color="black" />
         </TouchableOpacity>
     );
 }

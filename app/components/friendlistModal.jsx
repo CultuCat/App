@@ -3,14 +3,14 @@ import { FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import UserPreview from './userPreview';
-import FriendStatusIcon from '../components/friendStatusIcon';
+import FriendStatusIcon from './friendStatusIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 
-const UserListModal = ({
+const FriendListModal = ({
     users,
-    usersVisible,
-    setUsersVisible,
+    friendsVisible,
+    setFriendsVisible,
 }) => {
     const { t } = useTranslation();
     const [localUserId, setLocalUserId] = useState(null);
@@ -25,7 +25,7 @@ const UserListModal = ({
     }, []);
 
     const closeModal = () => {
-        setUsersVisible(false);
+        setFriendsVisible(false);
     };
 
     const getLocalUser = async () => {
@@ -47,7 +47,7 @@ const UserListModal = ({
     return (
         <Modal
             animationType="slide"
-            visible={usersVisible}
+            visible={friendsVisible}
             onRequestClose={closeModal}
         >
             <View style={[styles.modalContainer, Platform.OS === 'android' && { marginTop: '0' }]}>
@@ -58,7 +58,7 @@ const UserListModal = ({
                     marginTop: '1%',
                     marginHorizontal: 20,
                 }}>
-                    <Text style={styles.title}>{t('Event.Assistents_list')}</Text>
+                    <Text style={styles.title}>{t('User.Amics')}</Text>
                     <TouchableOpacity style={styles.iconContainer} onPress={closeModal}>
                         <Ionicons name="ios-close-outline" size={36} color="black" />
                     </TouchableOpacity>
@@ -84,12 +84,12 @@ const UserListModal = ({
                 ) : (
                     <View style={styles.modalContent}>
                         <Text style={styles.modalText}>
-                            {t('Event.No_assistents')}
+                            No tens amics afegits
                         </Text>
                     </View>
                 )}
             </View>
-        </Modal >
+        </Modal>
     );
 };
 
@@ -129,4 +129,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UserListModal;
+export default FriendListModal;

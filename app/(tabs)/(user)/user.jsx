@@ -344,7 +344,7 @@ const User = () => {
                   </TouchableOpacity>
                 ))
               ) : (
-                <Text>{t('User.No_tags')}</Text>
+                <Text style={{ marginHorizontal: 20 }}>{t('User.No_tags')}</Text>
               )}
             </ScrollView>
             <Link href={'/(tabs)/(user)/favplaces'} asChild></Link>
@@ -371,7 +371,7 @@ const User = () => {
                   </TouchableOpacity>
                 ))
               ) : (
-                <Text>{t('User.No_llocs')}</Text>
+                <Text style={{ marginHorizontal: 20 }}>{t('User.No_llocs')}</Text>
               )}
             </ScrollView>
             <Divider />

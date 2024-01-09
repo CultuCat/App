@@ -9,7 +9,42 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
 
 
-const ItemWithButtons = ({ id, username, name, image }) => {
+const ItemWithButtons = ({ user, id, username, name, image }) => {
+  const navigation = useNavigation();
+
+  const getLocalUser = async () => {
+    try {
+      const userString = await AsyncStorage.getItem("@user");
+      if (!userString) {
+        console.error('User token not found in AsyncStorage');
+        return;
+      }
+      const userJSON = JSON.parse(userString).user;
+      const userID = userJSON.id;
+      const userToken = JSON.parse(userString).token;
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}`, {
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+      const userData = await response.json();
+      return userData;
+
+    } catch (error) {
+      console.error('Error getting local user data:', error);
+      return null;
+    }
+  };
+  
+  const handlePress = (friendId) => {
+    navigation.navigate('profilefriend', { id: friendId });
+  };
+
   const handleAccept = async (id) => {
     const rId = user.pending_friend_requests.find(request => request.from_user.id === id).id;
     const response = await fetch(`https://cultucat.hemanuelpc.es/users/${user.id}/accept_friend_request/`, {
@@ -54,10 +89,14 @@ const ItemWithButtons = ({ id, username, name, image }) => {
 
   return (
     <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.item}>
-        <Image source={{ uri: image }} style={styles.image} />
+      <TouchableOpacity style={styles.user} onPress={() => handlePress(id)}>
+        <Image
+          source={{ uri: image }}
+          style={styles.image}
+        />
         <View style={styles.itemText}>
-          <Text style={styles.subtitle}>{name}</Text>
+          <Text style={styles.name}>{name}</Text>
+          <Text>{username}</Text>
         </View>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
@@ -161,7 +200,7 @@ export default function Page() {
           <TouchableOpacity style={[styles.iconContainer, styles.closeIcon]} onPress={() => navigation.goBack()}>
             <Ionicons name="ios-close-outline" size={36} color="black" />
           </TouchableOpacity>
-          <Text style={styles.title}>Friends</Text>
+          <Text style={styles.title}>{t('User.Amics')}</Text>
         </View>
         <View style={{ marginHorizontal: '3%', marginBottom: '3%' }}>
           <SearchBar
@@ -177,7 +216,7 @@ export default function Page() {
             <FlatList
               data={pending}
               renderItem={({ item }) => (
-                <ItemWithButtons id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
+                <ItemWithButtons user={user} id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
               )}
               keyExtractor={(item) => item.id.toString()}
             />
@@ -244,34 +283,31 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
-  subtitle: {
-    fontSize: 19,
-    marginTop: 7,
-    marginLeft: 10,
-  },
   searchBarInputContainer: {
     height: 30,
     borderWidth: 0,
     borderRadius: 10,
     default: 'ios',
   },
-  item: {
-    backgroundColor: '#e0e0e0',
-    padding: 15,
-    marginVertical: 4,
-    marginHorizontal: 16,
-    borderRadius: 20,
+  user: {
+    flex: 4,
+    padding: 14,
     flexDirection: 'row',
-    marginTop: 10,
-    flex: 1,
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 5,
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     marginRight: 10,
-    borderRadius: 100
+    borderRadius: 100,
   },
   itemText: {
-    //flex: 1,
+    flex: 1,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
