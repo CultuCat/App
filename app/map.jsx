@@ -17,7 +17,6 @@ export default function Page() {
     latitudeDelta: 3,
     longitudeDelta: 4,
   });
-  const [showEvents, setShowEvents] = useState(false);
   const [events, setEvents] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [nMarkers, setNMarkers] = useState(1300);
@@ -71,7 +70,6 @@ export default function Page() {
       setSelectedMarker(null);
       setEvents([]);
     }
-    setShowEvents(!!marker);
   };
 
   return (
