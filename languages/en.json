@@ -2,13 +2,16 @@
   "Carregant": "Loading...",
   "Cancel": "Cancel",
   "Delete": "Delete",
+  "tancar": "Close",
   "Config": {
-    "Visibilitat": "Visibility",
-    "User_vis": "Visible User",
-    "User_no_vis": "Invisible User",
+    "Config": "Settings",
+    "Permissions": "User permissions",
+    "Visibilitat": "Profile privacy",
+    "User_vis": "Public",
+    "User_no_vis": "Private",
     "Xat": "Chat with users",
-    "User_xat": "User wants to chat",
-    "User_no_xat": "User doesn't want to chat",
+    "User_xat": "Yes",
+    "User_no_xat": "No",
     "Idioma": "Languages",
     "Canvi_idioma": "Change language",
     "Eliminar": "Delete Account",
@@ -48,13 +51,23 @@
     "Ranking": "View ranking",
     "Rank": "Ranking",
     "Edit": "Edit profile",
-    "User": "User"
+    "User": "User",
+    "Notrophy": "Yo don't achieve this trophy",
+    "DescripcioTrofeu": "Trophy description",
+    "Nivel": "Level"
   },
   "Search": {
     "Search": "Search",
     "Busca": "Search...",
     "Order": "Order",
-    "Mapa": "View map"
+    "Mapa": "View map",
+    "DataAsc": "Date asc",
+    "DataDesc": "Date desc",
+    "NomAsc": "Name asc",
+    "NomDesc": "Name desc",
+    "Data": "Date",
+    "Tags": "Tags",
+    "Calendari": "Filter by date"
   },
   "Event": {
     "No_disp": "Not available",
@@ -76,6 +89,7 @@
   },
   "Index": {
     "Eror_credencials": "Incorrect username or password",
+    "Block": "Account blocked",
     "Benvingut": "Welcome",
     "User": "Username",
     "Password": "Password"

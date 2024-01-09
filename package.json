@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
     "@react-native-async-storage/async-storage": "1.18.2",
+    "@react-native-firebase/app": "^18.7.3",
     "@react-native-picker/picker": "2.4.10",
     "axios": "^1.6.2",
     "expo": "~49.0.13",
@@ -44,10 +45,13 @@
     "react-native-screens": "~3.22.0",
     "react-native-select-dropdown": "^3.4.0",
     "react-native-vector-icons": "^10.0.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-notifications": "~0.20.1",
+    "expo-device": "~5.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "metro-config": "^0.80.2"
   },
   "private": true
 }

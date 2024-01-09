@@ -2,13 +2,16 @@
   "Carregant": "Carregant...",
   "Cancel": "Cancelar",
   "Delete": "Eliminar",
+  "tancar": "Tancar",
   "Config": {
-    "Visibilitat": "Visibilitat Usuari",
-    "User_vis": "Usuari Visible",
-    "User_no_vis": "Usuari no Visible",
+    "Config": "Configuració",
+    "Permissions": "Permissos d'usuari",
+    "Visibilitat": "Privacitat del perfil",
+    "User_vis": "Públic",
+    "User_no_vis": "Privat",
     "Xat": "Xatejar amb usuaris",
-    "User_xat": "Usuari vol xatejar",
-    "User_no_xat": "Usuari no vol xatejar",
+    "User_xat": "Si",
+    "User_no_xat": "No",
     "Idioma": "Idiomes",
     "Canvi_idioma": "Canviar idioma",
     "Eliminar": "Eliminar Compte",
@@ -31,31 +34,40 @@
   "User": {
     "Eliminar_lloc_fav": "Eliminar lloc favorit",
     "Conf_lloc_fav": "Estàs segur que vols eliminar el lloc favorit ?",
-    "Delete_tag": "Eliminar tag",
-    "Conf_delete_tag": "Estàs segur que vols eliminar aquesta tag ?",
+    "Delete_tag": "Eliminar etiqueta",
+    "Conf_delete_tag": "Estàs segur que vols eliminar aquesta etiqueta ?",
     "Espai_delete": "Espai Eliminat",
     "Espai_delete_text": "El lloc preferit ha estat eliminat correctament",
-    "Tag_delete": "Tag Eliminat",
-    "Tag_delete_text": "El tag ha estat eliminat correctament",
+    "Tag_delete": "Etiqueta Eliminada",
+    "Tag_delete_text": "L'etiqueta ha estat eliminada correctament",
     "Punts": "Punts",
     "Amics": "Amics",
     "Bio": "Biografia",
     "Tags_favs": "Etiquetes Preferides",
     "Llocs_favs": "Llocs Preferits",
-    "No_tags": "No hi ha tags",
+    "No_tags": "No hi ha etiquetes",
     "No_llocs": "No hi ha llocs preferits",
     "Trofeus": "Trofeus",
     "Ranking": "Veure rànquing",
     "Rank": "Rànquing",
     "Edit": "Editar perfil",
     "User": "Usuari",
-    "Notrophy": "No has aconseguit aquest trofeu"
+    "Notrophy": "No has aconseguit aquest trofeu",
+    "DescripcioTrofeu": "Descripció del trofeu",
+    "Nivel": "Nivell"
   },
   "Search": {
     "Search": "Cerca",
     "Busca": "Cerca...",
     "Order": "Ordenar",
-    "Mapa": "Veure mapa"
+    "Mapa": "Veure mapa",
+    "DataAsc": "Data asc",
+    "DataDesc": "Data desc",
+    "NomAsc": "Nom asc",
+    "NomDesc": "Nom desc",
+    "Data": "Data",
+    "Tags": "Etiquetes",
+    "Calendari": "Filtrar per data"
   },
   "Event": {
     "No_disp": "No disponible",
@@ -77,6 +89,7 @@
   },
   "Index": {
     "Eror_credencials": "Usuari o contrasenya incorrecte",
+    "Block": "Compte bloquejada",
     "Benvingut": "Benvingut/da",
     "User": "Nom d'usuari",
     "Password": "Contrasenya"
@@ -85,14 +98,14 @@
     "Esdeveniments": "Esdeveniments"
   },
   "Ticket": {
-    "Tots": "Veure tots els tiquets",
+    "Tots": "Veure totes les entrades",
     "No_tickets_propers": "No tens entrades per propers esdeveniments",
     "No_tickets": "No tens entrades a esdeveniments",
     "Comprat": "Entrada comprada!",
-    "Ticket_donat": "Ja tens el teu tiquet per aquest esdeveniment",
+    "Ticket_donat": "Ja tens la teva entrada per aquest esdeveniment",
     "Vols_ticket": "Vols comprar una entrada per",
     "Codi_descompte": "Validar codi descompte:",
-    "Ticket": "Tiquets",
+    "Ticket": "Entrades",
     "Entrada_a": "Entrada a"
   },
   "Signup": {
@@ -114,7 +127,7 @@
   },
   "Filters": {
     "Filter": "Filtrar",
-    "Tags": "Escull els tags pels que vols filtrar"
+    "Tags": "Escull les etiquetes per les que vols filtrar"
   },
   "Home": {
     "Welcome": "Benvingut/da",

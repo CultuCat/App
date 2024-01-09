@@ -108,7 +108,8 @@ export default function Page() {
               <EventCard
                 key={item.id}
                 event={item.nom}
-                data={item.dataIni}
+                dataIni={item.dataIni}
+                dataFi={item.dataFi}
                 imatge={item.imatges_list[0]}
                 espai={item.espai.nom}
                 onPress={() => handlePressEvent(item.id)}

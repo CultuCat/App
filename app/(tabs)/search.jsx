@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator,Modal,Button, Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ActivityIndicator, Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { SearchBar } from 'react-native-elements';
 import Chip from '../components/chip.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import TagModal from '../components/tagModal.jsx';
-import DropdownOrder from '../components/dropdownOrder.jsx'; 
+import DropdownOrder from '../components/dropdownOrder.jsx';
 import EventPreview from '../components/eventPreview.jsx';
 import CustomCalendarPicker from '../components/calendarPicker.jsx';
+import colors from '../../constants/colors.js';
 
 export default function Page() {
   const { t } = useTranslation();
@@ -28,20 +29,24 @@ export default function Page() {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [items, setItems] = useState([
-    { label: 'Data asc', value: 'dataIni',  icon: () => (
-      <MaterialCommunityIcons value= "dataIni"name="order-numeric-ascending" size={24} color="black" />
-   )
+    {
+      label: t('Search.DataAsc'), value: 'dataIni', icon: () => (
+        <MaterialCommunityIcons value="dataIni" name="order-numeric-ascending" size={24} color="black" />
+      )
     },
-    { label: 'Data desc',  value: '-dataIni', icon: () => (
-      <MaterialCommunityIcons value= "-dataIni" name="order-numeric-descending" size={24} color="black" />
-   )
+    {
+      label: t('Search.DataDesc'), value: '-dataIni', icon: () => (
+        <MaterialCommunityIcons value="-dataIni" name="order-numeric-descending" size={24} color="black" />
+      )
     },
-    { label: 'Nom asc' ,value: 'nom', icon: () => (
-    <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
-    )
-  },
-    { label: 'Nom desc' ,value: '-nom',icon: () => (
-      <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
+    {
+      label: t('Search.NomAsc'), value: 'nom', icon: () => (
+        <MaterialCommunityIcons name="order-alphabetical-ascending" size={24} color="black" />
+      )
+    },
+    {
+      label: t('Search.NomDesc'), value: '-nom', icon: () => (
+        <MaterialCommunityIcons name="order-alphabetical-descending" size={24} color="black" />
       )
     },
   ]);
@@ -53,7 +58,7 @@ export default function Page() {
         setPage(1);
         const userTokenString = await AsyncStorage.getItem("@user");
         const userToken = JSON.parse(userTokenString).token;
-        
+
         const response = await fetch('https://cultucat.hemanuelpc.es/events/', {
           method: 'GET',
           headers: {
@@ -61,7 +66,7 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (response.ok) {
           const dataFromServer = await response.json();
           setData(dataFromServer.results);
@@ -74,24 +79,24 @@ export default function Page() {
         setIsLoading(false);
       }
     };
-  
+
     fetchData();
-  }, []);  
+  }, []);
 
   const loadMoreData = async () => {
     if (loading || !hasMoreData) return;
-  
+
     try {
       setLoading(true);
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const dataMin = formatDate(selectedStartDate);
       const dataMax = formatDate(selectedEndDate);
-  
+
       const nextPage = page + 1;
       const url = `https://cultucat.hemanuelpc.es/events/?page=${nextPage}&data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`;
       const response = await fetch(url);
       const newData = await response.json();
-  
+
       if (newData?.results && newData.results.length > 0) {
         setData((prevData) => [...prevData, ...newData.results]);
         setPage(nextPage);
@@ -104,7 +109,7 @@ export default function Page() {
       setLoading(false);
     }
   };
-  
+
   const formatDate = (date) => {
     if (date) {
       return new Date(date).toLocaleDateString().replace(/\//g, '-');
@@ -112,41 +117,41 @@ export default function Page() {
     return '';
   };
 
- const handleAcceptCalendar = async () => {
+  const handleAcceptCalendar = async () => {
 
-  try {
-    setIsLoading(true);
-    const userTokenString = await AsyncStorage.getItem("@user");
-    const userToken = JSON.parse(userTokenString).token;
-    const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
-    const dataMin = formatDate(selectedStartDate);
-    const dataMax = formatDate(selectedEndDate);
-    const response = await fetch(`https://cultucat.hemanuelpc.es/events/?data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Token ${userToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      setIsLoading(true);
+      const userTokenString = await AsyncStorage.getItem("@user");
+      const userToken = JSON.parse(userTokenString).token;
+      const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
+      const dataMin = formatDate(selectedStartDate);
+      const dataMax = formatDate(selectedEndDate);
+      const response = await fetch(`https://cultucat.hemanuelpc.es/events/?data_min=${dataMin}&data_max=${dataMax}&query=${search}&${tagsQueryString}&ordering=${value}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${userToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (response.ok) {
-      const filteredEvents = await response.json();
-      setData(filteredEvents.results);
-      setPage(1);
-      if (data.length > 0) {
-        setHasMoreData(true);
+      if (response.ok) {
+        const filteredEvents = await response.json();
+        setData(filteredEvents.results);
+        setPage(1);
+        if (data.length > 0) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
       } else {
-        setHasMoreData(false);
+        console.error('Error en la solicitud GET:', response.status, response.statusText);
       }
-    } else {
-      console.error('Error en la solicitud GET:', response.status, response.statusText);
+    } catch (error) {
+      console.error('Error en la solicitud GET:', error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error en la solicitud GET:', error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const navigation = useNavigation();
   const handlePressMap = () => {
@@ -157,8 +162,6 @@ export default function Page() {
     navigation.navigate('event', { eventId });
   };
 
-  
-  
 
   const handleAccept = async () => {
     try {
@@ -213,7 +216,7 @@ export default function Page() {
   const handleSearch = async () => {
     try {
       setIsLoading(true);
-      
+
       const userTokenString = await AsyncStorage.getItem("@user");
       const userToken = JSON.parse(userTokenString).token;
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
@@ -251,15 +254,15 @@ export default function Page() {
       setIsLoading(true);
       setValue(selectedValue);
       setHasMoreData(true);
-  
+
       const tagsQueryString = selectedTags.map((tag) => `tag=${tag.id}`).join('&');
       const dataMin = formatDate(selectedStartDate);
       const dataMax = formatDate(selectedEndDate);
       const url = `https://cultucat.hemanuelpc.es/events/?query=${search}&${tagsQueryString}&ordering=${selectedValue}&data_min=${dataMin}&data_max=${dataMax}`;
-  
+
       const response = await fetch(url);
       const dataFromServer = await response.json();
-  
+
       if (response.ok) {
         setData(dataFromServer.results);
       } else {
@@ -275,13 +278,13 @@ export default function Page() {
     }
 
   };
-  
+
 
   return (
     <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
       <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
         <Text style={styles.title}>{t('Search.Search')}</Text>
-        <View style={{ marginHorizontal: '3%' , marginBottom: '3%'}}>
+        <View style={{ marginHorizontal: '3%', marginBottom: '3%' }}>
           <SearchBar
             inputContainerStyle={styles.searchBarInputContainer}
             placeholder={t('Search.Busca')}
@@ -291,18 +294,12 @@ export default function Page() {
             platform="ios"
           />
         </View>
-        <View style={{ marginHorizontal: '5%', zIndex: '100' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' , zIndex: '100'}}>
-          <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
-            <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
-            <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
-              <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%' }}>
+        <View style={{ marginHorizontal: '5%', zIndex: 100 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '4%' }}>
+            <DropdownOrder defaultValue={orderOption} items={items} onValueChange={handleOrderChange} />
             <TouchableOpacity style={{ marginRight: '2%' }} onPress={handleOpenTags}>
-              <Chip text='Tags' color="#87ceec" flex='1'/>
-            </TouchableOpacity>
+              <Chip text={t('Search.Tags')} color="#87ceec" flex='1' />
+            </TouchableOpacity >
             <TagModal
               tagVisible={tagVisible}
               setTagVisible={setTagVisible}
@@ -311,7 +308,7 @@ export default function Page() {
               setSelectedTags={setSelectedTags}
             />
             <TouchableOpacity onPress={handleOpenCalendar}>
-              <Chip text='Data' color="#87ceec" />
+              <Chip text={t('Search.Data')} color="#87ceec" />
             </TouchableOpacity>
             <CustomCalendarPicker
               calendarVisible={calendarVisible}
@@ -321,33 +318,38 @@ export default function Page() {
               selectedEndDate={selectedEndDate}
               setSelectedStartDate={setSelectedStartDate}
               setSelectedEndDate={setSelectedEndDate}
-            />   
+            />
           </View>
-          
-        </View>
-        {isloading ? (
-          <ActivityIndicator />
-        ) : (
-          <FlatList
-            data={data}
-            ListHeaderComponentStyle={{ zIndex: 10 }}
-            renderItem={({ item }) => (
-              <EventPreview
-                event={item.nom}
-                data={item.dataIni}
-                espai={item.espai.nom}
-                imatge={item.imatges_list[0]}
-                onPress={() => handlePressEvent(item.id)}
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: '5%' }}
-            onEndReachedThreshold={0.5}
-            onEndReached={loadMoreData}
-          />
-        )}
-      </SafeAreaView>
-    </View>
+        </View >
+        {
+          isloading ? (
+            <ActivityIndicator />
+          ) : (
+            <FlatList
+              data={data}
+              renderItem={({ item }) => (
+                <EventPreview
+                  event={item.nom}
+                  dataIni={item.dataIni}
+                  dataFi={item.dataFi}
+                  espai={item.espai.nom}
+                  imatge={item.imatges_list[0]}
+                  onPress={() => handlePressEvent(item.id)}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={{ paddingHorizontal: '5%' }}
+              onEndReachedThreshold={0.5}
+              onEndReached={loadMoreData}
+            />
+          )
+        }
+      </SafeAreaView >
+      <TouchableOpacity style={styles.mapButton} onPress={handlePressMap}>
+        <Ionicons name="ios-location-outline" size={16} color="black" marginRight="4%" />
+        <Text style={styles.mapText}> {t('Search.Mapa')}</Text>
+      </TouchableOpacity>
+    </View >
   );
 }
 
@@ -422,12 +424,15 @@ const styles = StyleSheet.create({
     marginRight: '2%',
   },
   mapButton: {
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: colors.secondary,
     padding: 10,
     borderRadius: 10,
-    borderColor: 'black',
+    borderColor: colors.secondary,
     borderWidth: 1,
   },
   searchBarInputContainer: {
@@ -444,5 +449,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'black'
   },
-  
 });

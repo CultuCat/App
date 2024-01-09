@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView } from 'react-native';
+import { Alert, Image, View, Text, Button, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
 import { router } from 'expo-router';
 import colors from '../constants/colors';
 import * as Google from 'expo-auth-session/providers/google';
@@ -11,8 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Page() {
     const { t } = useTranslation();
-
-    const [userInfo, setUserInfo] = React.useState(null);
+    const googlePassword = "$W4#yLz2*QsFv@6uG8hJ1pA5nDx@9oP3r";
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: 'CLIENT_ID',
         iosClientId: '852693017999-3bur3t29c1stjg1ft95njoagkjfao394.apps.googleusercontent.com',
@@ -22,45 +21,21 @@ export default function Page() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
+        getLocalUser();
         handleSignInWithGoogle();
     }, [response])
-
-    async function handleSignInWithGoogle() {
-        const user = await getLocalUser();
-        if (!user) {
-            if (response?.type === "success") {
-                getUserInfo(response.authentication.accessToken);
-            }
-        }
-        else {
-            setUserInfo(user);
-        }
-    }
-
-    /*async function handleSignInWithGoogle() {
-        if (response?.type === "success") {
-          const accessToken = response.authentication.accessToken;
-          const response = await fetch('http://localhost:8000/users/sign_in/google-oauth2/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ access_token: accessToken }),
-          });
-      
-          if (response.status === 200) {
-            const data = await response.json();
-
-          }
-        }
-      }*/
-
 
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
         if (!data) return null;
         router.replace('/(tabs)/home');
+    }
+
+    async function handleSignInWithGoogle() {
+        if (response?.type === "success") {
+            getUserInfo(response.authentication.accessToken);
+        }
     }
 
     const getUserInfo = async (token) => {
@@ -72,39 +47,34 @@ export default function Page() {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-
             if (response.ok) {
                 const user = await response.json();
-                await AsyncStorage.setItem("@user", JSON.stringify(user));
-                setUserInfo(user);
-
-                await postUserData(token);
+                await fetch("https://cultucat.hemanuelpc.es/users/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: user.email.split('@')[0],
+                        password: googlePassword,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.token) {
+                            AsyncStorage.setItem("@user", JSON.stringify(data));
+                            router.replace('/(tabs)/home');
+                        }
+                        else if (data.detail.includes('bloquejat'))
+                            Alert.alert("Error", t('Index.Eror_credencials'));
+                        else
+                            Alert.alert("Error", t('Index.Eror_credencials'));
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
             } else {
                 console.error(`Error al obtener la información del usuario: ${response.status}`);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const postUserData = async (token) => {
-        try {
-            const postResponse = await fetch(
-                "http://localhost:8000/users",
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({}),
-                }
-            );
-
-            if (postResponse.ok) {
-                console.log("Información del usuario enviada con éxito.");
-            } else {
-                console.error(`Error al enviar la información del usuario: ${postResponse.status}`);
             }
         } catch (e) {
             console.error(e);
@@ -122,69 +92,86 @@ export default function Page() {
                 password: password,
             }),
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Incorrect username or password");
-                }
-                return response.json();
-            })
+            .then((response) => response.json())
             .then((data) => {
                 if (data.token) {
                     AsyncStorage.setItem("@user", JSON.stringify(data));
                     router.replace('/(tabs)/home');
                 }
+                else if (data.detail.includes('bloquejat'))
+                    Alert.alert("Error", t('Index.Eror_credencials'));
+                else
+                    Alert.alert("Error", t('Index.Eror_credencials'));
             })
             .catch((error) => {
                 console.error("Error:", error);
-                Alert.alert("Error", t('Index.Eror_credencials'));
             });
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Image
-                style={{ margin: 15, width: 270, height: 75 }}
-                source={require('../assets/full-logo.png')}
-            />
-            <View style={styles.centeredContent}>
-                <Text style={styles.title}>{t('Index.Benvingut')}</Text>
-                <GoogleButton onPress={() => {
-                    promptAsync();
-                }} />
-                <Divider />
-                <TextInput
-                    style={styles.input}
-                    placeholder={t('Index.User')}
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder={t('Index.Password')}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    autoCapitalize="none"
-                />
-                <Button title="Login" onPress={onLoginPress} />
-                <Button title="Signup" onPress={() => router.replace('signup')} />
-            </View>
-        </SafeAreaView>
+        <View style={[{ flex: 1 }, Platform.OS === 'android' && styles.androidView]}>
+            <SafeAreaView style={[styles.container, Platform.OS === 'android' && styles.androidMarginTop]}>
+                <View style={styles.imageContainer}>
+                    <Image
+                        style={{ flex: 1, resizeMode: 'contain' }}
+                        source={require('../assets/full-logo.png')}
+                    />
+                </View>
+                <View style={styles.centeredContent}>
+                    <Text style={styles.title}>{t('Index.Benvingut')}</Text>
+                    <GoogleButton onPress={() => {
+                        promptAsync();
+                    }} />
+                    <Divider />
+                    <TextInput
+                        style={styles.input}
+                        placeholder={t('Index.User')}
+                        value={username}
+                        onChangeText={setUsername}
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder={t('Index.Password')}
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        autoCapitalize="none"
+                    />
+                    <TouchableOpacity style={styles.login} onPress={onLoginPress}>
+                        <Text style={styles.loginText}>LOGIN</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => router.replace('signup')}>
+                        <Text style={styles.signup}>Signup</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    androidView: {
+        backgroundColor: '#ffffff',
+    },
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+    },
+    androidMarginTop: {
+        marginTop: 40,
+    },
+    imageContainer: {
+        margin: 15,
+        width: '70%',
+        aspectRatio: 3.6,
+        alignItems: 'center'
     },
     centeredContent: {
         flex: 1,
         justifyContent: 'center',
-        marginBottom: 100,
+        marginBottom: '25%',
         width: '80%',
     },
     title: {
@@ -195,10 +182,27 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 5,
+        borderColor: colors.primary,
         marginVertical: 10,
         paddingHorizontal: 10,
 
+    },
+    login: {
+        backgroundColor: colors.primary,
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    loginText: {
+        fontSize: 18,
+        color: 'white',
+    },
+    signup: {
+        color: colors.primary,
+        marginVertical: 10,
+        textDecorationLine: 'underline',
     },
 });
