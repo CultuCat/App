@@ -239,7 +239,7 @@ export default function Page() {
                         <Ionicons style={{ marginHorizontal: 10 }} name="ios-people-outline" size={24} color="black" />
                       </TouchableOpacity>
                     ) : (null)}
-                    <UserListModal eventId={event.id} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
+                    <UserListModal users={event.assistents} usersVisible={usersVisible} setUsersVisible={setUsersVisible} />
                     <TouchableOpacity style={styles.accionButton} onPress={handleMaps}>
                       <Text style={{ margin: 10 }}>{t('Event.Ubicacio')}</Text>
                       <Ionicons style={{ marginHorizontal: 10 }} name="ios-location-outline" size={24} color="black" />
@@ -331,12 +331,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  date: { 
+  date: {
     fontSize: 15,
     color: '#ff6961',
     marginBottom: 5,
   },
-  espai: { 
+  espai: {
     fontSize: 15,
     marginBottom: 5,
   },

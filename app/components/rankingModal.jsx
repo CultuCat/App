@@ -47,7 +47,9 @@ const RankingModal = ({
                 }
             })
             .then((data) => {
-                setUsers(data);
+                setUsers(data.filter((item) =>
+                    item.isVisible && !item.isBlocked
+                ));
             })
             .catch((error) => {
                 console.error(error);

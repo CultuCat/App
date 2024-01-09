@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Stack } from 'expo-router/stack';
-import { Button, Text, View } from "react-native";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import i18next from '../languages/i18next';
@@ -21,13 +20,11 @@ export default function Layout() {
   const [expoPushToken, setExpoPushToken] = useState('');
   
   useEffect(() => {
-    console.log("Registering for push notifications...");
     registerForPushNotificationsAsync()
       .then((token) => {
-        console.log("token: ", token);
         setExpoPushToken(token);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }, []);
 
   async function registerForPushNotificationsAsync() {
@@ -53,10 +50,7 @@ export default function Layout() {
         alert('Failed to get push token for push notification!');
         return;
       }
-      // Learn more about projectId:
-      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
       token = (await Notifications.getExpoPushTokenAsync({ projectId: '8c1fb42d-6ad6-4db4-906a-39dd9794da7f' })).data;
-      console.log(token);
     } else {
       alert('Must use physical device for Push Notifications');
     }
@@ -65,9 +59,6 @@ export default function Layout() {
   }
 
   const sendNotification = async () => {
-    console.log("Sending push notification...");
-
-    // notification message
     const message = {
       to: expoPushToken,
       sound: "default",
