@@ -15,7 +15,7 @@ const DropdownOrder = ({ defaultValue, items, onValueChange }) => {
           width: 120,
           marginRight: 10,
         }}
-        style={{ backgroundColor: '#ff6961', minHeight: 40, borderRadius: 10 }}
+        style={{ backgroundColor: '#ff6961', minHeight: 40, borderRadius: 10, borderColor: '#ff6961'}}
         labelStyle={{
           fontSize: 14,
           textAlign: 'left',
