@@ -38,7 +38,7 @@ export default function ProfileFriend() {
       const data = await response.json();
       if (data.friends.some(friend => friend.id === userId)) {
         setFriendStatus('isFriend');
-      } else if (data.pending_friend_requests_sent.some(request => request.to_user === userId)) {
+      } else if (data.pending_friend_requests_sent.some(request => request.to_user.id === userId) || data.pending_friend_requests.some(request => request.from_user.id === userId)) {
         setFriendStatus('requestSent');
       }
 
@@ -54,7 +54,7 @@ export default function ProfileFriend() {
     }
     const userID = JSON.parse(userString).user.id;
 
-    const response = await fetch(`https://cultucat.hemanuelpc.es/${userID}/send_friend_request/`, {
+    const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userID}/send_friend_request/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

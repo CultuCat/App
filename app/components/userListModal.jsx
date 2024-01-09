@@ -3,12 +3,16 @@ import { FlatList, StyleSheet, Modal, View, Text, TouchableOpacity } from 'react
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import UserPreview from './userPreview';
+import FriendStatusIcon from '../components/friendStatusIcon'; 
 
 const UserListModal = ({
     users,
     usersVisible,
     setUsersVisible,
+    
 }) => {
+    
+  
     const closeModal = () => {
         setUsersVisible(false);
     };
@@ -34,7 +38,17 @@ const UserListModal = ({
                     <FlatList
                         data={filteredUsers}
                         renderItem={({ item }) => (
-                            <UserPreview id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ flex: 4 }}>
+                                    <UserPreview id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
+                                </View>
+                                <FriendStatusIcon 
+                                    style={{ marginRight: 20 }}
+                                    id={item.id} 
+                                />
+                                
+                            </View>
+                            
                         )}
                         keyExtractor={(item) => item.id}
                     />
