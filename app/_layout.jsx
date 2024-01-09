@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Stack } from 'expo-router/stack';
-import { Button, Text, View } from "react-native";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import i18next from '../languages/i18next';
