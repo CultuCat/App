@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, TouchableOpacity, Image, View, TextInput, Modal, Platform, KeyboardAvoidingView } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
@@ -93,7 +92,7 @@ const EditModal = ({
       updatedProfile.append('username', username || user.username);
       if (user.imatge) {
         const uri = Platform.OS === 'android' ? user.imatge : user.imatge.replace('file://', '');
-        updatedProfile.append('imatge', { uri, name: 'dd.jpeg', type: 'image/jpeg' });
+        updatedProfile.append('imatge', { uri, name: `${user.id}.png`, type: 'image/png' });
       }
 
       const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userId}/`, {
@@ -182,16 +181,9 @@ const EditModal = ({
             justifyContent: 'center',
             marginTop: 10,
           }}>
-            <Link href={'(user)/user'} asChild>
-              <TouchableOpacity style={styles.cancelButton}>
-                <Text style={styles.rankingText}>{t('Cancel')}</Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href={'(user)/user'} asChild>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
-              </TouchableOpacity>
-            </Link>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+              <Text style={styles.rankingText}>{t('Edit_User.Desar_can')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -273,7 +265,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#ff6961',
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#ff6961',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
