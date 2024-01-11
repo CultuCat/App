@@ -84,7 +84,7 @@ const FriendListModal = ({
                 ) : (
                     <View style={styles.modalContent}>
                         <Text style={styles.modalText}>
-                            No tens amics afegits
+                            {t('User.No_amics')}
                         </Text>
                     </View>
                 )}

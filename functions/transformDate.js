@@ -1,4 +1,7 @@
+import i18next from "i18next";
+
 export const transformDate = (date) => {
+
   try {
     const dateObj = new Date(date);
     const formatOptions = {
@@ -7,7 +10,7 @@ export const transformDate = (date) => {
       day: 'numeric',
       year: 'numeric',
     };
-    const formatter = new Intl.DateTimeFormat('en-US', formatOptions);
+    const formatter = new Intl.DateTimeFormat(i18next.t('data'), formatOptions);
     return formatter.format(dateObj);
   } catch (error) {
     console.error('Error transforming date:', error);

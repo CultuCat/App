@@ -120,7 +120,7 @@ export default function Page() {
         ) : (
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-              Fes click a un marcador per veure els events
+              {t('Map.Click')}
             </Text>
           </View>
         )}

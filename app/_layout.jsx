@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Stack } from 'expo-router/stack';
+import { Platform, Text, View, Button } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import i18next from '../languages/i18next';
@@ -22,6 +23,7 @@ export default function Layout() {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
+        console.log("token: ", token);
         setExpoPushToken(token);
       })
       .catch((err) => console.error(err));
@@ -44,6 +46,7 @@ export default function Layout() {
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
+        console.log('Notification Permissions:', status);
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
@@ -134,7 +137,7 @@ export default function Layout() {
 
 
 
-  return (
+  return (    
     <Stack>
       <Stack.Screen
         name="index"

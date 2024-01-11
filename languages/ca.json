@@ -3,6 +3,7 @@
   "Cancel": "Cancelar",
   "Delete": "Eliminar",
   "tancar": "Tancar",
+  "data": "ca-CA",
   "Config": {
     "Config": "Configuració",
     "Permissions": "Permissos d'usuari",
@@ -54,7 +55,8 @@
     "User": "Usuari",
     "Notrophy": "No has aconseguit aquest trofeu",
     "DescripcioTrofeu": "Descripció del trofeu",
-    "Nivel": "Nivell"
+    "Nivel": "Nivell",
+    "No_amics": "No tens amics afegits"
   },
   "Search": {
     "Search": "Cerca",
@@ -95,7 +97,8 @@
     "Password": "Contrasenya"
   },
   "Map": {
-    "Esdeveniments": "Esdeveniments"
+    "Esdeveniments": "Esdeveniments",
+    "Click": "Fes click a un marcador per veure els events"
   },
   "Ticket": {
     "Tots": "Veure totes les entrades",
