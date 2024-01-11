@@ -93,7 +93,7 @@ const Tickets = () => {
                 <FlatList
                   data={filteredTickets}
                   renderItem={renderTicketCard}
-                  keyExtractor={(item) => item.nomEvent}
+                  keyExtractor={(item) => item.id}
                   refreshControl={
                     <RefreshControl refreshing={loading} onRefresh={fetchData} />
                   }
