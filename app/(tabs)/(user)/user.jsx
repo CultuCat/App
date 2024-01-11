@@ -461,7 +461,13 @@ const User = () => {
                   <Ionicons name="ios-person-circle-outline" size={16} color="black" />
                 </View>
               </TouchableOpacity>
-              <EditModal userId={user.id} editVisible={editVisible} setEditVisible={setEditVisible} />
+              <EditModal
+                userId={user.id}
+                editVisible={editVisible}
+                setEditVisible={setEditVisible}
+                onUpdateUser={(updatedUserData) => setUser(updatedUserData)}
+              />
+
             </View>
           </ScrollView>
         </View>)}

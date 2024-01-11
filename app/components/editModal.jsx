@@ -11,6 +11,7 @@ const EditModal = ({
   userId,
   editVisible,
   setEditVisible,
+  onUpdateUser,
 }) => {
   const [first_name, setName] = useState('');
   const [bio, setBio] = useState('');
@@ -108,9 +109,15 @@ const EditModal = ({
         throw new Error('Error en la solicitud');
       }
 
-      const updatedUserData = await response.json();
-      setUser(updatedUserData);
-      closeModal();
+      const responseData = await response.json();
+
+      if (responseData && responseData.data) {
+        setUser(responseData.data);
+        onUpdateUser(responseData.data);
+        closeModal();
+      } else {
+        console.error('Invalid response structure:', updatedUserData);
+      }
     } catch (error) {
       console.error('Error updating user data:', error);
     }
