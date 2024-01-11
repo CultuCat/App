@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View, Text, Switch, SafeAreaView } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text, Switch, SafeAreaView, RefreshControl } from 'react-native';
 import EventCard from '../components/eventCard';
 import TicketDetails from '../components/ticketDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -48,27 +48,27 @@ const Tickets = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const id = await getLocalUser();
-        if (!id) {
-          console.error('User data not found in AsyncStorage');
-          return;
-        }
-        const response = await fetch(`https://cultucat.hemanuelpc.es/tickets/?user=${id}`);
-
-        if (!response.ok) {
-          throw new Error('No se pudo obtener el archivo JSON');
-        }
-        const data = await response.json();
-        setTickets(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error:', error);
+  const fetchData = async () => {
+    try {
+      const id = await getLocalUser();
+      if (!id) {
+        console.error('User data not found in AsyncStorage');
+        return;
       }
-    };
+      const response = await fetch(`https://cultucat.hemanuelpc.es/tickets/?user=${id}`);
 
+      if (!response.ok) {
+        throw new Error('No se pudo obtener el archivo JSON');
+      }
+      const data = await response.json();
+      setTickets(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [tickets]);
 
@@ -94,6 +94,9 @@ const Tickets = () => {
                   data={filteredTickets}
                   renderItem={renderTicketCard}
                   keyExtractor={(item) => item.nomEvent}
+                  refreshControl={
+                    <RefreshControl refreshing={loading} onRefresh={fetchData} />
+                  }
                 />
               ) : (
                 <Text>{t('Ticket.No_tickets_propers')}</Text>

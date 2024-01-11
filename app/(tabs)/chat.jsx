@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Divider from '../components/divider';
 import { useTranslation } from 'react-i18next';
@@ -30,23 +30,22 @@ const Chat = () => {
     getLocalUser();
   }, []);
 
+  const fetchFriends = async () => {
+    setloading(true);
+    try {
+      const response = await fetch(`${url}/users/${uId}/`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setFriends(data.friends);
+      setloading(false);
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchFriends = async () => {
-      setloading(true);
-      try {
-        const response = await fetch(`${url}/users/${uId}/`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setFriends(data.friends);
-        setloading(false);
-      } catch (error) {
-        console.error('Error fetching friends:', error);
-      }
-    };
-
     fetchFriends();
   }, [uId, url]);
 
@@ -85,6 +84,9 @@ const Chat = () => {
               () => (
                 <Text style={styles.noAmics}>{t('Chat.Afegir_amic')}</Text>
               )
+            }
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={fetchFriends} />
             }
           />
         )}

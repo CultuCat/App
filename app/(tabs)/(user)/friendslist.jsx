@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { Text, View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
@@ -121,6 +121,7 @@ export default function Page() {
   };
   const [data, setData] = useState([]);
   const [pending, setPending] = useState([]);
+  const [loading, setloading] = useState(true);
 
   const getLocalUser = async () => {
     try {
@@ -151,39 +152,40 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = await getLocalUser();
-        if (!userData) {
-          console.error('User data not found in AsyncStorage');
-          return;
-        }
-
-        const userString = await AsyncStorage.getItem("@user");
-        const token = JSON.parse(userString).token;
-
-        const headers = {
-          'Authorization': `Token ${token}`,
-        };
-        const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
-          method: 'GET',
-          headers,
-        });
-        if (response.ok) {
-          const responseData = await response.json();
-          const userDetails = userData.pending_friend_requests.map(request => request.from_user);
-          setPending(userDetails);
-          setUser(userData);
-          setData(responseData.friends || []);
-        } else {
-          console.error('Error fetching user data:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+  const fetchData = async () => {
+    try {
+      const userData = await getLocalUser();
+      if (!userData) {
+        console.error('User data not found in AsyncStorage');
+        return;
       }
-    };
 
+      const userString = await AsyncStorage.getItem("@user");
+      const token = JSON.parse(userString).token;
+
+      const headers = {
+        'Authorization': `Token ${token}`,
+      };
+      const response = await fetch(`https://cultucat.hemanuelpc.es/users/${userData.id}`, {
+        method: 'GET',
+        headers,
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        const userDetails = userData.pending_friend_requests.map(request => request.from_user);
+        setPending(userDetails);
+        setUser(userData);
+        setData(responseData.friends || []);
+        setloading(false);
+      } else {
+        console.error('Error fetching user data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -228,6 +230,9 @@ export default function Page() {
             <UserPreview id={item.id} image={item.imatge} name={item.first_name} username={item.username} />
           )}
           keyExtractor={(item) => item.id.toString()}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={fetchData} />
+          }
         />
       </SafeAreaView>
     </View>
