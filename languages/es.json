@@ -55,7 +55,8 @@
     "User": "Usuario",
     "Notrophy": "No has conseguido este trofeo",
     "DescripcioTrofeu": "Descripción del trofeo",
-    "Nivel": "Nivel"
+    "Nivel": "Nivel",
+    "No_amics": "No tienes amigos añadidos"
   },
   "Search": {
     "Search": "Buscar",
@@ -96,7 +97,8 @@
     "Password": "Contraseña"
   },
   "Map": {
-    "Esdeveniments": "Eventos"
+    "Esdeveniments": "Eventos",
+    "Click": "Haz click a un marcador para ver los eventos"
   },
   "Ticket": {
     "Tots": "Ver todas las entradas",

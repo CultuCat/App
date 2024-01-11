@@ -133,7 +133,7 @@ const EditModal = ({
           justifyContent: 'space-between',
           marginTop: '1%'
         }}>
-          <Text style={styles.title}>Edit</Text>
+          <Text style={styles.title}>{t('User.Edit')}</Text>
           <TouchableOpacity style={styles.iconContainer} onPress={closeModal}>
             <Ionicons name="ios-close-outline" size={36} color="black" />
           </TouchableOpacity>

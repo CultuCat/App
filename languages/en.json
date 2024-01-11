@@ -55,7 +55,8 @@
     "User": "User",
     "Notrophy": "Yo don't achieve this trophy",
     "DescripcioTrofeu": "Trophy description",
-    "Nivel": "Level"
+    "Nivel": "Level",
+    "No_amics": "You don't have any friends added"
   },
   "Search": {
     "Search": "Search",
@@ -96,7 +97,8 @@
     "Password": "Password"
   },
   "Map": {
-    "Esdeveniments": "Events"
+    "Esdeveniments": "Events",
+    "Click": "Click on a marker to see the events"
   },
   "Ticket": {
     "Tots": "View all tickets",
