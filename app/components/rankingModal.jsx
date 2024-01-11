@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity, Platform } from 'react-native';
+import { Image, FlatList, StyleSheet, Modal, View, Text, TouchableOpacity, Platform, RefreshControl } from 'react-native';
 import colors from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -34,8 +34,9 @@ const RankingModal = ({
 }) => {
     const { t } = useTranslation();
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchData = () => {
         fetch(`https://cultucat.hemanuelpc.es/users/?ordering=-puntuacio`, {
             method: "GET"
         })
@@ -53,8 +54,12 @@ const RankingModal = ({
             })
             .catch((error) => {
                 console.error(error);
-            });
+            })
+            .finally(() => setLoading(false));
+    };
 
+    useEffect(() => {
+        fetchData();
     }, [Platform === 'ios' && users]);
 
     const closeModal = () => {
@@ -67,7 +72,7 @@ const RankingModal = ({
             visible={rankingVisible}
             onRequestClose={closeModal}
         >
-            <View style={[styles.modalContainer, Platform.OS === 'android' && {marginTop: '0'}]}>
+            <View style={[styles.modalContainer, Platform.OS === 'android' && { marginTop: '0' }]}>
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -85,6 +90,9 @@ const RankingModal = ({
                         <User position={index + 1} me={item.id === userId} imatge={item.imatge} name={item.first_name} username={item.username} points={item.puntuacio} />
                     )}
                     keyExtractor={(item) => item.id}
+                    refreshControl={
+                        <RefreshControl refreshing={loading} onRefresh={fetchData} />
+                    }
                 />
             </View>
         </Modal>
