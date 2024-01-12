@@ -23,7 +23,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchMarkers(customRegion);
-  }, []); // empty dependency array to only run once on mount
+  }, []);
   const navigation = useNavigation();
   const handlePressEvent = (eventId) => {
     navigation.navigate('event', { eventId });
