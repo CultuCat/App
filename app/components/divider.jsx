@@ -8,8 +8,8 @@ const Divider = () => {
 const styles = StyleSheet.create({
   divider: {
     height: 1,
-    backgroundColor: '#ccc', // Puedes ajustar el color según tus preferencias
-    marginVertical: 10, // Ajusta este valor según sea necesario
+    backgroundColor: '#ccc',
+    marginVertical: 10,
   },
 });
 

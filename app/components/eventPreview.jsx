@@ -68,9 +68,6 @@ const styles = StyleSheet.create({
   date: {
     color: colors.primary,
   },
-  espai: {
-    // Agrega estilos según tus necesidades
-  },
 });
 
 export default EventPreview;
